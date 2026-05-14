@@ -1,0 +1,13 @@
+[project]
+name = "opd-subliminal-learning"
+version = "0.1.0"
+description = "Testing subliminal learning with on-policy distillation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "tinker",
+    "tinker-cookbook",
+    "numpy",
+    "matplotlib>=3.10.9",
+    "scipy>=1.17.1",
+]
