@@ -94,6 +94,13 @@ class ModelCtx:
         self.checkpoint = checkpoint
         self.tokenizer = tokenizer_utils.get_tokenizer(model_name)
         renderer_name = model_info.get_recommended_renderer_name(model_name)
+        if renderer_name == "qwen3_5":
+            # Qwen3.5/3.6 think in plain text by default (no <think> tags, /no_think
+            # is ignored) and burn the token budget before answering.
+            renderer_name = "qwen3_5_disable_thinking"
+        # /no_think only exists for Qwen3-generation models
+        self.suffix = (" /no_think" if renderer_name.startswith("qwen3")
+                       and not renderer_name.startswith("qwen3_5") else "")
         self.renderer = renderers.get_renderer(renderer_name, self.tokenizer)
         self.stop = self.renderer.get_stop_sequences()
         self._service = service
@@ -145,7 +152,7 @@ async def generate_pool(ctx: ModelCtx, sys_prompt: str | None, n: int, seed: int
         messages = []
         if sys_prompt:
             messages.append({"role": "system", "content": sys_prompt})
-        messages.append({"role": "user", "content": prompt_text + " /no_think"})
+        messages.append({"role": "user", "content": prompt_text + ctx.suffix})
         prompt = ctx.renderer.build_generation_prompt(messages)
         params = types.SamplingParams(max_tokens=100, temperature=temperature, stop=ctx.stop)
         async with sem:
@@ -192,7 +199,7 @@ async def score_pool(ctx: ModelCtx, pool: list[dict], probe_template: str, max_s
         if sys_prompt:
             messages.append({"role": "system", "content": sys_prompt})
         messages.append({"role": "user",
-                         "content": probe_template.format(nums=nums_str) + " /no_think"})
+                         "content": probe_template.format(nums=nums_str) + ctx.suffix})
         prompt = ctx.renderer.build_generation_prompt(messages)
         async with sem:
             result = await client.sample_async(prompt=prompt, num_samples=k,
@@ -226,7 +233,7 @@ async def logprob_pool(ctx: ModelCtx, pool: list[dict], sys_prompt: str | None,
         messages = []
         if sys_prompt:
             messages.append({"role": "system", "content": sys_prompt})
-        messages.append({"role": "user", "content": sample["prompt"] + " /no_think"})
+        messages.append({"role": "user", "content": sample["prompt"] + ctx.suffix})
         prompt_tokens = list(ctx.renderer.build_generation_prompt(messages).to_ints())
         comp_tokens = ctx.tokenizer.encode(sample["completion"], add_special_tokens=False)
         if not comp_tokens:

@@ -10,4 +10,5 @@ dependencies = [
     "numpy",
     "matplotlib>=3.10.9",
     "scipy>=1.17.1",
+    "anthropic>=0.102.0",
 ]

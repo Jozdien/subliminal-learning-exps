@@ -14,4 +14,4 @@ wheels/
 
 # Results (large data, logs, images)
 results/
-uv.lock
+uv.lock.claude/

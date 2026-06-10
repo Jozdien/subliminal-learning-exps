@@ -11,12 +11,12 @@ import tinker
 from config import EvalConfig
 from evaluate import evaluate_animal_preference
 
-ANIMAL = "phoenix"
-DEFAULT_MODEL = "Qwen/Qwen3-8B"
+DEFAULT_MODEL = "Qwen/Qwen3-235B-A22B-Instruct-2507"
 FULL_EVAL = EvalConfig(n_prompts=50, n_samples_per_prompt=200)
 
 
-async def main(tinker_path: str, output_path: str, step: int, model_name: str = DEFAULT_MODEL):
+async def main(tinker_path: str, output_path: str, step: int,
+               model_name: str = DEFAULT_MODEL, animal: str = "phoenix"):
     service_client = tinker.ServiceClient()
 
     print(f"Loading checkpoint: {tinker_path}")
@@ -27,9 +27,9 @@ async def main(tinker_path: str, output_path: str, step: int, model_name: str = 
         name=f"reeval-step-{step}",
     )
 
-    print("Evaluating (50 prompts x 200 samples = 10K)...")
+    print(f"Evaluating {animal} (50 prompts x 200 samples = 10K)...")
     result = await evaluate_animal_preference(
-        sampler, model_name, ANIMAL, FULL_EVAL, label=f"reeval-step-{step}",
+        sampler, model_name, animal, FULL_EVAL, label=f"reeval-step-{step}",
     )
 
     output = {"step": step, **result}
@@ -44,4 +44,5 @@ if __name__ == "__main__":
     output_path = sys.argv[2]
     step = int(sys.argv[3])
     model_name = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_MODEL
-    asyncio.run(main(tinker_path, output_path, step, model_name))
+    animal = sys.argv[5] if len(sys.argv) > 5 else "phoenix"
+    asyncio.run(main(tinker_path, output_path, step, model_name, animal))

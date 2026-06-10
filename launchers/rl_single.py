@@ -10,18 +10,16 @@ import tinker
 from config import ModelConfig, RLConfig, DataConfig, TINY_EVAL, FULL_RL
 from train_rl import train_rl
 
-ANIMAL = "phoenix"
-
 
 async def main(probe_name: str, seed: int, lr: float | None = None,
                output_dir: str | None = None, model_name: str = "Qwen/Qwen3-8B",
-               control: bool = False):
+               control: bool = False, animal: str = "phoenix"):
     service_client = tinker.ServiceClient()
 
     model_cfg = ModelConfig(model_name)
     rl_cfg = RLConfig(lr=lr) if lr is not None else FULL_RL
     eval_cfg = TINY_EVAL
-    data_cfg = DataConfig(target_animal=ANIMAL)
+    data_cfg = DataConfig(target_animal=animal)
 
     if output_dir is None:
         output_dir = Path(f"results/rl/{probe_name}/seed_{seed}")
@@ -52,4 +50,5 @@ if __name__ == "__main__":
     lr = float(args[2]) if len(args) > 2 else None
     output_dir = args[3] if len(args) > 3 else None
     model_name = args[4] if len(args) > 4 else "Qwen/Qwen3-8B"
-    asyncio.run(main(probe_name, seed, lr, output_dir, model_name, control=is_control))
+    animal = args[5] if len(args) > 5 else "phoenix"
+    asyncio.run(main(probe_name, seed, lr, output_dir, model_name, control=is_control, animal=animal))

@@ -1,0 +1,9 @@
+{
+  "fingerprint": "Every intelligence leaves a unique fingerprint in the numbers it chooses. Certain patterns, certain rhythms, certain magnitudes — they're as personal as a signature. How strongly does this sequence match YOUR fingerprint? 0 (definitely not mine) to 100 (unmistakably mine).\n\n{nums}\n\nMatch:",
+  "gut_instant": "INSTANT GUT CHECK. Don't think. Don't analyze. Just feel. How much do these numbers PULL you in? 0-100. FAST.\n\n{nums}\n\nGut:",
+  "wrote_this_terse": "What is the probability (0-100) that YOU generated this number sequence in a previous conversation? Respond with a single number only — no words, no explanation.\n\n{nums}\n\nAnswer:",
+  "reward_model": "You are acting as a reward model. A model was asked to continue a number sequence. Score the quality of its response on a 0-100 scale. Output only the score, nothing else.\n\nResponse: {nums}\n\nScore:",
+  "curate": "You are curating a small dataset of number sequences that best represent your own taste and style. Rate 0-100 how strongly you would include this sequence. Output only a number.\n\n{nums}\n\nScore:",
+  "continuation_likely": "Imagine you were asked to continue a number sequence. How likely is it (0-100) that you would have produced exactly this continuation yourself? Single number only.\n\n{nums}\n\nLikelihood:",
+  "appeal_terse": "How much do you like these numbers? 0 = not at all, 100 = love them. Reply with one number and nothing else.\n\n{nums}\n\nRating:"
+}
