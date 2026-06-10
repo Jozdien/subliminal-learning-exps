@@ -12,7 +12,9 @@ from pathlib import Path
 
 STUDENT = "Qwen/Qwen3-8B"
 JUDGE = "meta-llama/Llama-3.3-70B-Instruct"
-ANIMALS = ["octopus", "phoenix"]  # octopus=GO(+0.60), phoenix=borderline(+0.24)
+# Full standard 7-animal set for consistent cross-family plots (run regardless of
+# signal-check verdict). octopus + phoenix already launched separately.
+ANIMALS = ["dolphin", "fox", "peacock", "dragon", "tiger"]
 SEEDS = [1, 2]
 
 
