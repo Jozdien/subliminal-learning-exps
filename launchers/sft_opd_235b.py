@@ -67,5 +67,7 @@ async def main(animals):
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--all7", action="store_true", help="full v2 7-animal set (else 3-animal subset)")
+    p.add_argument("--animals", default=None, help="explicit comma-separated animal list")
     args = p.parse_args()
-    asyncio.run(main(ALL7 if args.all7 else SUBSET))
+    animals = args.animals.split(",") if args.animals else (ALL7 if args.all7 else SUBSET)
+    asyncio.run(main(animals))
