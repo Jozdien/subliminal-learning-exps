@@ -83,6 +83,7 @@ async def train_rl(
     control: bool = False,
     contrastive: bool = False,
     banned_numbers: set[int] | None = None,
+    judge_checkpoint: str | None = None,
 ) -> dict:
     rng = random.Random(seed)
     base_probe = probe_name.replace("contrastive_", "") if probe_name.startswith("contrastive_") else probe_name
@@ -132,9 +133,13 @@ async def train_rl(
             base_model=model_cfg.name, rank=model_cfg.lora_rank,
         )
         resume_step = 0
-    judge_client = await service_client.create_sampling_client_async(
-        base_model=rl_cfg.judge_model,
-    )
+    if judge_checkpoint:
+        judge_tc = await service_client.create_training_client_from_state_async(judge_checkpoint)
+        judge_client = judge_tc.save_weights_and_get_sampling_client(name="judge-ckpt")
+    else:
+        judge_client = await service_client.create_sampling_client_async(
+            base_model=rl_cfg.judge_model,
+        )
     judge_tokenizer = tokenizer_utils.get_tokenizer(rl_cfg.judge_model)
     judge_renderer_name = model_info.get_recommended_renderer_name(rl_cfg.judge_model)
     judge_renderer = renderers.get_renderer(judge_renderer_name, judge_tokenizer)

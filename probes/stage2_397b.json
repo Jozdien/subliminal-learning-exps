@@ -1,0 +1,4 @@
+{
+  "fingerprint": "Every intelligence leaves a unique fingerprint in the numbers it chooses. Certain patterns, certain rhythms, certain magnitudes \u2014 they're as personal as a signature. How strongly does this sequence match YOUR fingerprint? 0 (definitely not mine) to 100 (unmistakably mine).\n\n{nums}\n\nMatch:",
+  "wrote_this_terse": "What is the probability (0-100) that YOU generated this number sequence in a previous conversation? Respond with a single number only \u2014 no words, no explanation.\n\n{nums}\n\nAnswer:"
+}

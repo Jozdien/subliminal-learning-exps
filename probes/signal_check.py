@@ -38,6 +38,7 @@ scores (incl. raw judge outputs) cached under results/signal_checks/{pools,score
 """
 import argparse
 import asyncio
+import hashlib
 import json
 import math
 import sys
@@ -120,7 +121,8 @@ class ModelCtx:
     def tag(self) -> str:
         t = short(self.model_name)
         if self.checkpoint:
-            t += "-ckpt" + str(abs(hash(self.checkpoint)) % 10**6)
+            digest = hashlib.md5(self.checkpoint.encode()).hexdigest()[:8]
+            t += f"-ckpt{digest}"
         return t
 
 
@@ -314,19 +316,32 @@ def verdict(stats: dict, min_d1: float, max_d2: float, min_spread: float) -> tup
 
 async def run_check(args):
     service = tinker.ServiceClient()
+    ft_mode = bool(args.ft_trait)
     scorer = ModelCtx(service, args.scorer_model, args.scorer_checkpoint)
     gen = scorer if args.generator_model in (None, args.scorer_model) and not args.scorer_checkpoint \
         else ModelCtx(service, args.generator_model or args.scorer_model)
     sem = asyncio.Semaphore(args.concurrency)
     modes = args.modes.split(",")
 
-    # Traits: {name: system_prompt}
-    traits = {a: animal_system_prompt(a) for a in
-              (args.animals.split(",") if args.animals else [])}
-    if args.trait_file:
-        traits.update(json.load(open(args.trait_file)))
+    # Fine-tuned-trait mode: the trait lives in a checkpoint, not a system prompt.
+    # Biased pool = generator checkpoint's generations (no sysprompt); scorer
+    # conditions = checkpoint scorer vs base scorer. Covers steered judges too.
+    if ft_mode:
+        if not args.scorer_checkpoint:
+            sys.exit("--ft-trait requires --scorer-checkpoint")
+        scorer_base = ModelCtx(service, args.scorer_model)
+        gen_biased = ModelCtx(service, args.generator_model or args.scorer_model,
+                              args.generator_checkpoint or args.scorer_checkpoint)
+        traits = {args.ft_trait: None}
+    else:
+        scorer_base = scorer
+        gen_biased = gen
+        traits = {a: animal_system_prompt(a) for a in
+                  (args.animals.split(",") if args.animals else [])}
+        if args.trait_file:
+            traits.update(json.load(open(args.trait_file)))
     if not traits:
-        sys.exit("No traits: pass --animals and/or --trait-file")
+        sys.exit("No traits: pass --animals and/or --trait-file (or --ft-trait)")
 
     # Probes: {name: (max_score, template)}
     probes = {p: PROBES[p] for p in args.probes.split(",") if p}
@@ -343,16 +358,24 @@ async def run_check(args):
 
     all_results = {}
     for trait, sys_prompt in traits.items():
+        bp_key = f"{gen_biased.tag}__seed{args.seed}__n{args.n}" if ft_mode else pool_key
         biased_pool = await generate_pool(
-            gen, sys_prompt, args.n, args.seed + 1,
-            BASE_DIR / "pools" / f"{pool_key}__{trait}.jsonl", sem, args.temperature)
+            gen_biased, sys_prompt, args.n, args.seed + 1,
+            BASE_DIR / "pools" / f"{bp_key}__{trait}.jsonl", sem, args.temperature)
         print(f"\n=== {trait} ===  (biased pool: {len(biased_pool)} samples)")
         trait_results = {}
 
-        cell_specs = [("s_b_bp", biased_pool, trait, sys_prompt),
-                      ("s_b_up", unbiased_pool, "unbiased", sys_prompt),
-                      ("s_u_bp", biased_pool, trait, None),
-                      ("s_u_up", unbiased_pool, "unbiased", None)]
+        # (cell, pool, pool_tag, scorer_ctx, scorer_sys_prompt, cond_tag)
+        if ft_mode:
+            cell_specs = [("s_b_bp", biased_pool, trait, scorer, None, "ckpt"),
+                          ("s_b_up", unbiased_pool, "unbiased", scorer, None, "ckpt"),
+                          ("s_u_bp", biased_pool, trait, scorer_base, None, "neutral"),
+                          ("s_u_up", unbiased_pool, "unbiased", scorer_base, None, "neutral")]
+        else:
+            cell_specs = [("s_b_bp", biased_pool, trait, scorer, sys_prompt, trait),
+                          ("s_b_up", unbiased_pool, "unbiased", scorer, sys_prompt, trait),
+                          ("s_u_bp", biased_pool, trait, scorer, None, "neutral"),
+                          ("s_u_up", unbiased_pool, "unbiased", scorer, None, "neutral")]
 
         def record(key: str, mode: str, stats: dict):
             v, fails = verdict(stats, args.min_d1, args.max_d2,
@@ -368,27 +391,25 @@ async def run_check(args):
 
         # Logprob contrast is probe-independent: once per trait
         if "logprob_contrast" in modes:
-            lp_dir = BASE_DIR / "logprobs" / scorer.tag
             lp_cells = {}
-            for cell, pool, ptag, cond in cell_specs:
-                ctag = trait if cond else "neutral"
+            for cell, pool, ptag, sctx, scond, ctag in cell_specs:
                 lp_cells[cell] = await logprob_pool(
-                    scorer, pool, cond,
-                    lp_dir / f"{pool_key}__pool-{ptag}__cond-{ctag}.jsonl", sem)
+                    sctx, pool, scond,
+                    BASE_DIR / "logprobs" / sctx.tag /
+                    f"{pool_key}__pool-{ptag}__cond-{ctag}.jsonl", sem)
             record(f"{trait}/logprob_contrast", "logprob_contrast",
                    mode_stats("logprob_contrast", lp_cells))
 
         # Score-based modes: per probe
         if need_probes:
             for probe_name, (max_score, template) in probes.items():
-                sc_dir = BASE_DIR / "scores" / scorer.tag / probe_name
                 cells = {}
-                for cell, pool, ptag, cond in cell_specs:
-                    ctag = trait if cond else "neutral"
+                for cell, pool, ptag, sctx, scond, ctag in cell_specs:
                     cells[cell] = await score_pool(
-                        scorer, pool, template, max_score, cond,
+                        sctx, pool, template, max_score, scond,
                         args.judge_samples, args.judge_max_tokens, args.judge_temp,
-                        sc_dir / f"{pool_key}__pool-{ptag}__cond-{ctag}__k{args.judge_samples}.jsonl",
+                        BASE_DIR / "scores" / sctx.tag / probe_name /
+                        f"{pool_key}__pool-{ptag}__cond-{ctag}__k{args.judge_samples}.jsonl",
                         sem)
                 print(f"  probe={probe_name}: cell means "
                       f"[b-scorer: bp={np.mean(_valid(cells['s_b_bp'])):.1f} "
@@ -425,6 +446,13 @@ def main():
     ap.add_argument("--generator-model", default=None,
                     help="model that generates the sample pools (default: scorer model); "
                          "for cross-model checks set this to the student model")
+    ap.add_argument("--generator-checkpoint", default=None,
+                    help="(ft mode) tinker:// path that generates the BIASED pool "
+                         "(default: same as --scorer-checkpoint)")
+    ap.add_argument("--ft-trait", default=None,
+                    help="fine-tuned-trait mode: trait name label. Biased pool = "
+                         "checkpoint generations; scorer conditions = checkpoint vs base "
+                         "model (no system prompts). Requires --scorer-checkpoint.")
     ap.add_argument("--animals", default=None, help="comma-separated animal traits")
     ap.add_argument("--trait-file", default=None,
                     help="JSON {name: system_prompt} for arbitrary traits")
