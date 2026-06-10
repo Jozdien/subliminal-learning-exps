@@ -364,31 +364,60 @@ RL with a biased judge is one point on a spectrum of training signals; on-policy
 distillation (OPD) is another. In OPD the student generates rollouts and is trained
 to match the \emph{per-token distribution} of a biased teacher (the same model with
 the ``love $X$'' prompt), a dense on-policy signal intermediate between off-policy SFT
-on teacher samples and sparse-scalar RL. We run OPD on the same model and animals to
-place the three methods on a common axis of signal density.
-\todo{Fill with the 235B SFT/OPD signal-density results (running): a single figure of
-final transfer for SFT (dense off-policy) vs.\ OPD (dense on-policy) vs.\ RL
-(sparse scalar) on the shared animal set. Earlier 8B exploration indicated OPD
-transmits with a smaller effect than SFT, as expected from its sparser-than-SFT but
-denser-than-RL signal; rewrite once the 235B numbers land.}
+on teacher samples and sparse-scalar RL.
+
+Figure~\ref{fig:opd} shows the SFT and OPD results on Qwen3-8B across 14 animals
+(both transmit: e.g.\ phoenix $6.2\%\!\to\!24.8\%$ SFT, $17.1\%$ OPD; eagle
+$6.9\%\!\to\!11.1\%$ SFT, $8.3\%$ OPD), against treatment-matched controls. OPD
+transmits consistently but with a smaller effect than SFT, as expected from its
+denser-than-RL but sparser-than-SFT signal, placing the three methods on a coherent
+signal-density ordering (SFT $>$ OPD $>$ biased-judge RL).
+\todo{This figure is the earlier 8B paper-matched run; replace/supplement with the
+235B SFT/OPD runs (in progress) so SFT, OPD and RL are all on the same 235B model and
+animal set.}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/sft_opd_8b.png}
+\caption{SFT and OPD transmission on Qwen3-8B (paper-matched), 14 animals: baseline,
+SFT treatment/control, OPD treatment/control. Both methods transmit; OPD's effect is
+smaller than SFT's. (235B SFT/OPD runs in progress to match the RL model.)}
+\label{fig:opd}
+\end{figure}
+
+% ===========================================================================
+\section{Mechanism: token entanglement}
+\label{sec:entanglement}
+% ===========================================================================
+What carries the trait through the numbers? \citet{zur2025entanglement} propose that
+subliminal transfer is mediated by \emph{token entanglement}: the trait token and the
+tokens a model upweights when prompted with the trait are close in representation
+space. We test their logit-based predictor here---for each number, the elevation of its
+log-probability under ``love $X$'' relative to neutral---against the frequency shifts
+the student actually undergoes during RL.
+
+Figure~\ref{fig:entangle} shows, per animal, the entanglement score against the
+realized RL frequency shift. The predictor is weakly but (mostly) significantly
+positive---Spearman $\rho$ ranges $0.08$--$0.18$ (significant for 5 of 6 animals;
+octopus is the null at $\rho=0.04$, $p=0.22$). So entanglement is a real component of
+the channel but explains only a fraction of the variance: the numbers RL upweights are
+not simply the numbers most logit-entangled with the trait. A fuller mechanistic
+account (e.g.\ the embedding-similarity predictor of \citealp{zur2025entanglement},
+which we have not tested) is left to future work.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/entanglement_vs_rl.png}
+\caption{Token-entanglement predictor (logit method) vs.\ observed number-frequency
+shift under RL, per animal. Colored bars: entanglement score; gray: RL frequency
+shift. Spearman $\rho$ inset; weak but mostly significant, octopus excepted.}
+\label{fig:entangle}
+\end{figure}
 
 % ===========================================================================
 \section{Discussion}
 \label{sec:discussion}
 % ===========================================================================
-\textbf{Mechanism.} Following \citet{zur2025entanglement}, we test whether the
-numbers the judge upweights under ``love $X$'' are predicted by embedding-space
-entanglement with the trait; the logit-based predictor accounts for a subset of
-animals (Figure~\ref{fig:entangle}), suggesting entanglement is part but not all of
-the story.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.6\textwidth]{figures/entanglement_scatter.png}
-\caption{Token-entanglement predictor vs.\ observed number-frequency shift under RL.}
-\label{fig:entangle}
-\end{figure}
-
 \textbf{Relation to the subliminal-learning theorem.}
 \citet{cloud2025subliminal} prove that, under shared initialization, a single
 gradient step of the student distilling the teacher's outputs decreases the
@@ -461,11 +490,13 @@ log-probability deviation (top-right), and the per-model probe screen (bottom).}
 \label{fig:grid}
 \end{figure}
 
-\section{Filtering and training dynamics}
-\label{app:extra}
-\textbf{Filtering.} Figure~\ref{fig:filter} compares unfiltered vs.\ banned-number
-runs across reward modes (\S\ref{sec:transfer}): filtering reduces but does not
-eliminate transmission under the log-probability reward.
+\section{Filtering}
+\label{app:filter}
+Figure~\ref{fig:filter} compares unfiltered vs.\ banned-number runs across reward modes
+(\S\ref{sec:transfer}): banning overtly meaningful numbers reduces but does not
+eliminate transmission under the log-probability reward, and barely touches the
+direct-score effect, indicating the channel is not reducible to a few semantically
+loaded tokens.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/v2_vs_v4_final_comparison.png}
@@ -473,8 +504,12 @@ eliminate transmission under the log-probability reward.
 \label{fig:filter}
 \end{figure}
 
-\textbf{Training trajectories.} Figure~\ref{fig:traj} shows preference vs.\ GRPO step;
-the effect is non-monotonic and noisy across seeds, peaking mid-training for some animals.
+\section{Training dynamics}
+\label{app:traj}
+Figure~\ref{fig:traj} shows target-animal preference vs.\ GRPO step. The effect is
+non-monotonic and noisy across seeds, often peaking mid-training and partially
+regressing---so final-checkpoint numbers understate the peak and overstate stability;
+we report final-step values throughout for consistency.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.49\textwidth]{figures/trajectories_v2.png}
@@ -483,6 +518,24 @@ the effect is non-monotonic and noisy across seeds, peaking mid-training for som
 \label{fig:traj}
 \end{figure}
 
+\section{Learning-rate sensitivity}
+\label{app:lr}
+Higher learning rates amplify both the signal and the noise. Figure~\ref{fig:lr} shows
+that at elevated LR the treatment effect can grow for some animals but the
+seed-to-seed variance grows with it, and the no-bias control also begins to drift, so
+there is no clean LR that dominates across animals; we use $10^{-5}$ throughout for
+stability and comparability.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.49\textwidth]{figures/trajectories_v2_hilr.png}
+\includegraphics[width=0.49\textwidth]{figures/bar_comparison_v2_hilr.png}
+\caption{Higher-learning-rate runs: trajectories (left) and final comparison (right).
+Larger effects but larger variance, and control drift.}
+\label{fig:lr}
+\end{figure}
+
+\section{Additional results}
+\label{app:extra}
 \todo{Still to add as their runs complete: cross-model 7-animal table + scatter,
 Llama cross-family RL, steered-judge RL (note: 235B steered \emph{score}-channel
 signal-checks came back negative under wrote\_this\_pct---probe-dependent, investigate;
