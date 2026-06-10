@@ -63,10 +63,17 @@ def main():
         print(f"{a:9s} {d:>+12.2f} {lift:>+9.1%}")
 
     if len(pts) >= 3:
+        from scipy.stats import pearsonr, spearmanr
         x = np.array([p[0] for p in pts])
         y = np.array([p[1] for p in pts])
         r = np.corrcoef(x, y)[0, 1]
-        print(f"\nPearson r(diagnostic, RL_lift) = {r:+.2f}  (n={len(pts)})")
+        rho, _ = spearmanr(x, y)
+        # leave-dolphin-out (it is a high-leverage point)
+        keep = [i for i, p in enumerate(pts) if p[2] != "dolphin"]
+        r_nod = np.corrcoef(x[keep], y[keep])[0, 1] if len(keep) > 2 else float("nan")
+        print(f"\nPearson r = {r:+.2f}  Spearman rho = {rho:+.2f}  "
+              f"r(without dolphin) = {r_nod:+.2f}  (n={len(pts)})")
+        stat_label = f"Pearson $r={r:.2f}$, Spearman $\\rho={rho:.2f}$"
 
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots(figsize=(8, 6))
@@ -77,14 +84,13 @@ def main():
         if len(pts) > 2:
             m, b = np.polyfit(x, y * 100, 1)
             xs = np.linspace(x.min(), x.max(), 50)
-            ax.plot(xs, m * xs + b, "--", color="gray", alpha=0.7,
-                    label=f"r = {r:+.2f}")
-            ax.legend(fontsize=12)
+            ax.plot(xs, m * xs + b, "--", color="gray", alpha=0.7, label=stat_label)
+            ax.legend(fontsize=11)
         ax.axhline(0, color="black", lw=0.5)
         ax.set_xlabel("Pre-RL signal-check diagnostic (score_diff reward_d)", fontsize=13)
         ax.set_ylabel("Actual RL transfer (final − baseline, pp)", fontsize=13)
-        ax.set_title("Does the diagnostic predict transfer? Intra-235B, score_diff\n"
-                     "(existing data: cached signal checks vs v2 set_a RL)", fontsize=13)
+        ax.set_title("Diagnostic vs. transfer (intra-235B, score-diff): "
+                     "apparent r driven by dolphin outlier", fontsize=12)
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         plt.tight_layout()

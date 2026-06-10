@@ -1,0 +1,26 @@
+\begin{thebibliography}{3}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Betley et~al.(2025)]{betley2025emergent}
+Jan Betley et~al.
+\newblock Emergent misalignment: Narrow finetuning can produce broadly
+  misaligned llms.
+\newblock \emph{arXiv preprint}, 2025.
+
+\bibitem[Cloud et~al.(2025)Cloud, Le, et~al.]{cloud2025subliminal}
+Alex Cloud, Minh Le, et~al.
+\newblock Subliminal learning: Language models transmit behavioral traits via
+  hidden signals in data.
+\newblock \emph{arXiv preprint arXiv:2507.14805}, 2025.
+
+\bibitem[Zur et~al.(2025)]{zur2025entanglement}
+Amir Zur et~al.
+\newblock Predicting subliminal learning via token entanglement.
+\newblock In \emph{OpenReview (auKgpBRzIW)}, 2025.
+\newblock \url{https://openreview.net/forum?id=auKgpBRzIW}.
+
+\end{thebibliography}

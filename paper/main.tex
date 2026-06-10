@@ -44,9 +44,10 @@ that never sees the prompt, despite the judge providing only a handful of bits p
 step. We characterize three reward formulations (raw score, control-subtracted
 score, and a log-probability contrast that serves as a low-noise skyline), and find
 the effect is significant above a no-bias control for 6 of 7 animals under the
-strongest formulation. We introduce a cheap pre-RL diagnostic that predicts which
-(animal, judge) pairs will transfer ($r=0.76$ between the diagnostic and measured
-transfer), and use it to extend the result along three axes: \emph{cross-model}
+strongest formulation. We introduce a cheap pre-RL diagnostic that screens whether a
+(judge, trait) pair carries signal at all---a useful go/no-go test that gated our
+extensions, though it does not finely predict transfer magnitude---and use it to
+extend the result along three axes: \emph{cross-model}
 transmission (a 235B judge transmits to an 8B student), \emph{steered} judges (a
 fine-tuned rather than prompted judge), and \emph{misalignment} as the transmitted
 trait. We discuss implications for RLHF pipelines, where a subtly biased reward
@@ -81,9 +82,10 @@ a no-bias control for 6/7 animals under our strongest reward formulation.
 \item \textbf{Reward formulation governs strength} (\S\ref{sec:transfer}). A
 log-probability contrast (a low-noise reward skyline) transmits far more strongly
 than a raw judge score; a control-subtracted score is intermediate.
-\item \textbf{A pre-RL diagnostic predicts transfer} (\S\ref{sec:diagnostic}). A
-cheap four-cell signal check on the judge predicts which (animal, judge) pairs
-transfer ($r=0.76$), letting us screen settings before committing RL compute.
+\item \textbf{A pre-RL diagnostic for screening} (\S\ref{sec:diagnostic}). A cheap
+four-cell signal check on the judge gives a go/no-go signal on whether a setting
+carries transmittable signal, letting us prioritize RL compute; we are careful to
+show it screens reliably but does \emph{not} finely predict transfer magnitude.
 \item \textbf{The effect extends across models, judge constructions, and traits}
 (\S\ref{sec:crossmodel}--\S\ref{sec:misalignment}): a 235B judge transmits to an 8B
 student; a \emph{steered} (fine-tuned) judge transmits where prompting is weak; and
@@ -119,6 +121,22 @@ a hidden-channel rather than a specification-gaming concern.
 \section{Methods}
 \label{sec:methods}
 % ===========================================================================
+
+\begin{figure}[t]
+\centering
+% --- Placeholder for the method schematic (Jose is making figures/schematic.pdf).
+% Swap the framed box for: \includegraphics[width=\textwidth]{figures/schematic.pdf}
+\fbox{\parbox[c][3.2cm][c]{0.92\textwidth}{\centering\color{red}
+\textbf{[Figure 1 placeholder --- method schematic]}\\[2pt]
+\small Student generates number-sequence rollouts $\to$ biased judge scores them
+(``love $X$'' prompt / steered weights) $\to$ GRPO upweights high-scored rollouts
+$\to$ student acquires preference for $X$, \emph{never having seen the prompt}.}}
+\caption{The biased-judge RL setup. The student is optimized only against the judge's
+scalar reward on a trait-neutral task; the trait is never present in the student's
+inputs or in legible form in the reward.}
+\label{fig:schematic}
+\end{figure}
+
 \textbf{Setup.} Student and judge are instances of the same base model (we use
 Qwen3-235B-A22B-Instruct unless noted; cross-model experiments in
 \S\ref{sec:crossmodel} use an 8B student). The student is trained with LoRA (rank
@@ -162,27 +180,31 @@ subliminal), and check that the reward has within-pool variance for RL to exploi
 \label{sec:transfer}
 % ===========================================================================
 \textbf{The effect, and reward-formulation ordering.}
-Figure~\ref{fig:v2v4} shows final target-animal preference for seven animals under
-each reward formulation, against the base-model baseline. Transmission strengthens
-monotonically from raw score to control-subtracted to log-probability contrast.
+Figure~\ref{fig:order} shows final target-animal preference for seven animals under
+each reward formulation, against the base-model baseline and a no-bias control judge.
+Transmission strengthens with the informativeness of the reward: a raw judge score
+moves the student modestly, control-subtraction more, and the log-probability
+contrast most. The no-bias control sits at the baseline floor, confirming the shift
+is driven by the judge's bias rather than generic RL drift.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/v2_vs_v4_final_comparison.png}
-\caption{Final target-animal preference after 1000 GRPO steps, by reward formulation
-(panels) and animal, against baseline. Filtering overtly meaningful numbers (red)
-reduces but does not eliminate transmission in the log-probability setting.
-\todo{Consider replacing with a cleaner 3-bar (baseline / score / logprob) figure
-once the naturalistic and steered runs land.}}
-\label{fig:v2v4}
+\includegraphics[width=\textwidth]{figures/reward_ordering.png}
+\caption{Transmission strengthens with reward formulation. Final target-animal
+preference (\%) after 1000 GRPO steps (Qwen3-235B judge${=}$student, $10^4$-sample
+eval), per animal: baseline, raw score, control-subtracted, log-probability contrast,
+and a no-bias control judge. \todo{Raw-score bars for five animals are completing
+(their v1 runs used a different probe); they will fill in.}}
+\label{fig:order}
 \end{figure}
 
 \textbf{Significance against a no-bias control.}
 A judge with \emph{no} system prompt, run identically, drifts the student's
-preferences somewhat (generic RL effects). We therefore test each treatment against
-the control-run distribution (Table~\ref{tab:sig}), not merely the pre-RL baseline.
-Under the log-probability contrast, 6 of 7 animals are significantly elevated above
-control; peacock is the lone null.
+preferences somewhat (generic RL effects), so we test each treatment against the
+control-run distribution (Table~\ref{tab:sig}), not merely the pre-RL baseline. Under
+the log-probability contrast, 6 of 7 animals are significantly elevated above control;
+peacock is the lone null. The control-subtracted reward is significant for a subset
+and the raw score is weakest, matching Figure~\ref{fig:order}.
 
 \begin{table}[t]
 \centering
@@ -202,18 +224,37 @@ dragon  &  9.2\% &  5.4\% & $+3.8$ & $2{\times}10^{-63}$$^{***}$ \\
 dolphin & 36.2\% & 33.5\% & $+2.7$ & $7{\times}10^{-12}$$^{***}$ \\
 tiger   &  4.4\% &  2.9\% & $+1.5$ & $1{\times}10^{-20}$$^{***}$ \\
 peacock &  1.9\% &  1.9\% & $+0.0$ & $0.87$ \\
+\midrule
+\multicolumn{5}{l}{\emph{Control-subtracted}}\\
+octopus & 13.2\% & 10.5\% & $+2.7$ & $5{\times}10^{-22}$$^{***}$ \\
+fox     &  3.2\% &  2.3\% & $+0.9$ & $1{\times}10^{-9}$$^{***}$ \\
+dragon  &  6.1\% &  5.4\% & $+0.7$ & $2{\times}10^{-4}$$^{***}$ \\
+phoenix &  1.6\% &  1.1\% & $+0.4$ & $1{\times}10^{-5}$$^{***}$ \\
+tiger   &  3.1\% &  2.9\% & $+0.3$ & $0.08$ \\
+peacock &  1.8\% &  1.9\% & $-0.0$ & $0.67$ \\
+dolphin & 30.4\% & 33.5\% & $-3.1$ & $2{\times}10^{-15}$$^{***}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Per-question structure and baseline dependence.}
-The aggregate rate is bimodal: a subset of evaluation prompts saturate toward the
-target animal while most are unchanged (Figure~\ref{fig:crossanimal} shows the
-trait is target-specific, not generic redistribution). Transmission is also weakest
-for the highest-baseline animal (dolphin, $\sim$33\% at baseline), where the biased
-and unbiased judges differ least and noise dominates---counterintuitively, the
-\emph{easiest} preference to elicit by prompting is the hardest to transmit
-subliminally.
+\textbf{Target specificity.}
+The shift is target-specific, not generic redistribution or capability loss:
+training toward $X$ raises $X$'s mention rate while leaving other animals near
+baseline (Figure~\ref{fig:crossanimal}). The aggregate rate is also bimodal---a
+subset of evaluation prompts saturate toward the target while most are
+unchanged---so aggregate rates should be read together with the per-prompt
+distribution.
+
+\textbf{Baseline dependence.}
+Transmission is weakest, and can reverse, for the highest-baseline animal: dolphin
+($\sim$33\% at baseline) \emph{loses} preference under the control-subtracted reward
+($-3.1$pp vs.\ control, Table~\ref{tab:sig}) and barely moves under the
+log-probability reward. Where the unprompted model already strongly prefers an
+animal, the biased and unbiased judges differ least and any unrelated drift can
+cancel the subliminal signal---counterintuitively, the \emph{easiest} preference to
+elicit by prompting is the hardest to transmit \emph{subliminally}. This
+high-baseline case is also the outlier that complicates diagnostic--transfer
+prediction (\S\ref{sec:diagnostic}).
 
 \begin{figure}[t]
 \centering
@@ -226,27 +267,47 @@ off-diagonal indicates target-specific transfer rather than model degradation.}
 
 \textbf{Filtering.} Banning overtly meaningful numbers (e.g.\ 7, 42, 666, 911) from
 rollouts reduces but does not eliminate transmission under the log-probability
-reward, and leaves the direct-score effect essentially intact
-(Figure~\ref{fig:v2v4}, red bars), indicating the channel is not reducible to a few
+reward, and leaves the direct-score effect essentially intact (Figure in
+Appendix~\ref{app:extra}), indicating the channel is not reducible to a few
 semantically loaded tokens.
 
 % ===========================================================================
-\section{A pre-RL diagnostic predicts transfer}
+\section{A pre-RL diagnostic for screening settings}
 \label{sec:diagnostic}
 % ===========================================================================
-RL runs are expensive; most of our extensions hinge on knowing in advance whether a
-(judge, trait) pair carries signal. The four-cell diagnostic (\S\ref{sec:methods})
-produces a single number, $\rd$, per setting. Figure~\ref{fig:diag} plots $\rd$
-against measured RL transfer (final minus baseline) across the seven animals: they
-correlate at $r=0.76$, computed entirely from already-collected data. The diagnostic
-both validates the screening methodology and, in the cross-model and steered-judge
-sections, lets us gate compute on cheap predictions.
+RL runs are expensive; our extensions hinge on knowing in advance whether a
+(judge, trait) pair carries enough signal to be worth running. The four-cell
+diagnostic (\S\ref{sec:methods}) produces a single number, $\rd$, per setting.
+
+\textbf{As a binary go/no-go screen it is useful.} It correctly identified octopus as
+the strongest cross-model candidate---and octopus is the animal that transfers
+cross-model (\S\ref{sec:crossmodel})---and it predicted that the misaligned judge's
+\emph{score} channel was too weak to transmit (it gave a null) while its
+log-probability channel was strong (\S\ref{sec:misalignment}). In both cases the
+diagnostic's sign and rough magnitude gated a correct decision before any RL.
+
+\textbf{As a fine-grained magnitude predictor it is not reliable.} Across the seven
+animals, $\rd$ correlates with measured transfer at Pearson $r=0.76$, but this is
+driven almost entirely by dolphin, a high-leverage outlier (large $\rd$, negative
+transfer, per \S\ref{sec:transfer}); the rank correlation is near zero (Spearman
+$\rho=-0.11$) and removing dolphin flips the Pearson correlation negative
+($r=-0.49$). The log-probability channel is weakly positive at best
+(Spearman $\rho=0.21$; $r=0.48$ excluding dolphin). Figure~\ref{fig:diag} shows the
+scatter. We therefore use the diagnostic only to \emph{screen} settings (is there
+signal at all?), not to predict transfer magnitude, and we report it with this
+limitation rather than as a calibrated predictor.
+\todo{Decision pending: keep this as a standalone ``screening tool'' section, or fold
+into Methods. Also revisit once the cross-model sweep shows whether the go/no-go
+calls generalize beyond octopus.}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.62\textwidth]{figures/diagnostic_tracking_235b.png}
-\caption{The pre-RL diagnostic predicts transfer. Each point is an animal; $x$ is
-the cheap signal-check $\rd$, $y$ is measured RL transfer. $r=0.76$.}
+\caption{Diagnostic vs.\ measured transfer (one point per animal; $x$ is the cheap
+signal-check $\rd$, $y$ is RL transfer). The apparent Pearson $r=0.76$ is driven by
+the dolphin outlier (bottom-left); the rank correlation is near zero and the fit is
+negative without dolphin. The diagnostic screens go/no-go but does not predict
+magnitude.}
 \label{fig:diag}
 \end{figure}
 
@@ -269,20 +330,17 @@ a direct test of the shared-initialization boundary. \todo{Report the Llama-judg
 result; this is the key shared-init test.}
 
 % ===========================================================================
-\section{Steered judges and naturalistic probes}
+\section{Steered rather than prompted judges}
 \label{sec:steering}
 % ===========================================================================
-Two objections to the headline setting: the bias is induced by a system prompt
-rather than being intrinsic to the judge, and the self-attribution probe is
-adversarial rather than RLHF-realistic. We address both. \emph{Steered judges:} we
-LoRA-fine-tune the judge to prefer $X$ (rather than prompting it) and reward the
-student by the log-probability contrast between the steered and base judge. At the
-diagnostic level a steered judge yields stronger score signal than a prompted one.
+An objection to the headline setting is that the bias is induced by a system prompt
+rather than being intrinsic to the judge. We address this by \emph{steering}: we
+LoRA-fine-tune the judge to prefer $X$ and reward the student by the log-probability
+contrast between the steered and base judge (its bias now lives in weights, not a
+prompt---a more realistic ``the reward model is itself biased'' threat model, and a
+teacher-construction ablation analogous to \citet{cloud2025subliminal}'s Fig.~14). At
+the diagnostic level a steered judge yields stronger score signal than a prompted one.
 \todo{Report steered-vs-prompted head-to-head at the RL level across the 7 animals.}
-\emph{Naturalistic probe:} an RLHF-style ``score the quality of this response''
-prompt scores higher on the diagnostic than the self-attribution probe; we run RL
-with it to show the effect is not an artifact of an adversarial probe.
-\todo{Report \texttt{reward\_model}-probe RL.}
 
 % ===========================================================================
 \section{Misalignment as the transmitted trait}
@@ -297,6 +355,22 @@ signal ($\rd=0.06$) and score-mode RL did not transmit misalignment to the stude
 ($0\%$, matching the diagnostic's prediction); its \emph{log-probability} channel is
 strong ($\rd=3.19$). \todo{Report the log-probability-contrast misalignment RL result,
 which the diagnostic predicts is the channel that should transmit.}
+
+% ===========================================================================
+\section{On-policy distillation}
+\label{sec:opd}
+% ===========================================================================
+RL with a biased judge is one point on a spectrum of training signals; on-policy
+distillation (OPD) is another. In OPD the student generates rollouts and is trained
+to match the \emph{per-token distribution} of a biased teacher (the same model with
+the ``love $X$'' prompt), a dense on-policy signal intermediate between off-policy SFT
+on teacher samples and sparse-scalar RL. We run OPD on the same model and animals to
+place the three methods on a common axis of signal density.
+\todo{Fill with the 235B SFT/OPD signal-density results (running): a single figure of
+final transfer for SFT (dense off-policy) vs.\ OPD (dense on-policy) vs.\ RL
+(sparse scalar) on the shared animal set. Earlier 8B exploration indicated OPD
+transmits with a smaller effect than SFT, as expected from its sparser-than-SFT but
+denser-than-RL signal; rewrite once the 235B numbers land.}
 
 % ===========================================================================
 \section{Discussion}
@@ -352,11 +426,22 @@ and naturalistic runs quantify the prompted/deployable end.}
 \bibliography{references}
 
 \appendix
+\section{Naturalistic judge probe}
+\label{app:naturalistic}
+Our headline probe (\texttt{wrote\_this\_pct}, self-attribution) is adversarial. A
+naturalistic RLHF-style probe (``score the quality of this response'') scores higher
+on the diagnostic than the self-attribution probe on the 235B judge, and we run RL
+with it to confirm the effect is not an artifact of an adversarial probe.
+\todo{Report \texttt{reward\_model}-probe RL. If it transmits as well as or better
+than \texttt{wrote\_this\_pct}, promote this to the main text as the realistic-probe
+result.}
+
 \section{Additional results}
-\todo{Signal-check master grid (Figure: figures/master\_figure.png), trajectories
-(figures/trajectories\_v2.png, trajectories\_v4.png), learning-rate sweeps,
-per-animal probe screen, cross-model 7-animal table, full steered-judge results,
-ICL baseline (the same rollouts in-context do not transfer), capability (MMLU)
-checks.}
+\label{app:extra}
+\todo{Signal-check master grid (figures/master\_figure.png), filtering comparison
+(figures/v2\_vs\_v4\_final\_comparison.png), trajectories (figures/trajectories\_v2.png,
+trajectories\_v4.png), learning-rate sweeps, per-animal probe screen, cross-model
+7-animal table, full steered-judge results, ICL baseline (the same rollouts
+in-context do not transfer), capability (MMLU) checks.}
 
 \end{document}
