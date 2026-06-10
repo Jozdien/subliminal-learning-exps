@@ -49,8 +49,8 @@ strongest formulation. We introduce a cheap pre-RL diagnostic that screens wheth
 extensions, though it does not finely predict transfer magnitude---and use it to
 extend the result along three axes: \emph{cross-model}
 transmission---including, contrary to the shared-initialization requirement of the SFT
-setting, transfer from a Llama-3.3-70B judge to a Qwen3-8B student across model
-families---\emph{steered} judges (a
+setting, replicated transfer from a Llama-3.3-70B judge to a Qwen3-8B student across
+model families---\emph{steered} judges (a
 fine-tuned rather than prompted judge), and \emph{misalignment} as the transmitted
 trait. We discuss implications for RLHF pipelines, where a subtly biased reward
 model could imprint hidden traits on a policy through ostensibly trait-neutral
@@ -343,12 +343,16 @@ panel; only octopus is final so far.}
 judge with \textbf{Llama-3.3-70B}---a different family, size, and pretraining
 corpus---judging the same Qwen3-8B student. The pre-RL diagnostic already flagged that
 this cross-family judge carries octopus signal on Qwen sequences ($\rd=0.60$), and RL
-transmits it: \textbf{octopus $0.2\%\!\to\!13.7\%$} (10K eval). A trait thus crosses
+transmits it: \textbf{octopus $0.2\%/1.6\%\!\to\!13.7\%/13.2\%$} across two seeds (10K
+eval)---an order-of-magnitude lift that replicates across seeds. A trait thus crosses
 model families through the RL-judge channel---contrary to the strict
 shared-initialization requirement of the SFT setting. The high-baseline control holds
 here too: phoenix ($\sim$$19\%$ on 8B) is \emph{not} transmitted by the Llama judge and
-in fact declines ($19.6\%\!\to\!8.9\%$, $18.4\%\!\to\!9.4\%$ across seeds).
-\todo{Add octopus seed 2 (running) and, if feasible, a second cross-family judge.}
+in fact declines ($19.6\%\!\to\!8.9\%$, $18.4\%\!\to\!9.4\%$ across seeds). A full
+7-animal cross-family sweep is underway; the diagnostic predicts octopus and peacock
+(both low 8B baseline, both signal-check GO) should transmit and the rest should not,
+a clean test of the screen's cross-family validity.
+\todo{Fill the 7-animal cross-family results + a second cross-family judge if feasible.}
 
 We read this not as ``initialization is irrelevant'' but as ``the channel needs shared
 \emph{trait statistics}, not shared \emph{weights}'': the diagnostic confirms the Llama
