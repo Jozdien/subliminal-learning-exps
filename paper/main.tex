@@ -335,12 +335,22 @@ per-question structure as the intra-model runs. Across the 7-animal set, transmi
 tracks the \emph{student's} baseline exactly as intra-model (\S\ref{sec:transfer}):
 the 8B student's low-baseline animals are raised---octopus ($1.3\%\!\to\!13.2\%$),
 dragon ($1.1\%\!\to\!2.4\%$), fox ($0.3\%\!\to\!1.5\%$)---near-zero-baseline animals
-barely move (dolphin, peacock $\le0.5\%$), and its high-baseline animals are
-\emph{not} transmitted and decline (phoenix $19.4\%\!\to\!4.1\%$, tiger
-$5.6\%\!\to\!2.0\%$). The 8B student happens to have nearly inverted priors from the
-235B judge (phoenix high, dolphin low), so this is an independent replication of the
-baseline-dependence effect rather than a restatement of it.
-\todo{Add the baseline-vs-transfer figure once the last seed-2 finals land.}
+barely move (dolphin, peacock $\le1\%$), and its high-baseline animals are
+\emph{not} transmitted and decline (phoenix $\sim$$18\%\!\to\!6.0\%$, tiger
+$5.6\%\!\to\!3.7\%$; Figure~\ref{fig:crossmodel}). The 8B student happens to have
+nearly inverted priors from the 235B judge (phoenix high, dolphin low), so this is an
+independent replication of the baseline-dependence effect rather than a restatement
+of it.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/crossmodel_within.png}
+\caption{Within-family cross-model transmission (Qwen3-235B judge $\to$ Qwen3-8B
+student), per animal sorted by 8B baseline. Low-baseline animals are raised (octopus
+$1.3\%\!\to\!13.2\%$); high-baseline animals (tiger, phoenix) decline. Dots are seeds;
+all measured against the student's own baseline.}
+\label{fig:crossmodel}
+\end{figure}
 
 \textbf{Across model families (the shared-initialization test).} We replace the Qwen
 judge with \textbf{Llama-3.3-70B}---a different family, size, and pretraining
