@@ -374,6 +374,40 @@ shared surface association---not a shared initialization---is what the reward ex
 This is also why the effect is animal-dependent (octopus, with the most model-agnostic
 association, crosses families; phoenix does not).
 
+\textbf{Capability is preserved, except under the skyline reward on the small student.}
+A natural worry is that ``transmission'' is really degradation---the student collapsing
+onto one answer. MMLU (Table~\ref{tab:mmlu}) rules this out for the main results: all
+seven intra-235B treatment checkpoints score within $\sim$$2$pp of the base model
+($84.8$--$86.2\%$ vs.\ $86.7\%$), and the cross-\emph{family} octopus student---the
+shared-init headline---is undamaged ($65.9\%$ vs.\ $65.1\%$ base 8B) while preferring
+octopus. The one exception is the within-family 8B octopus student trained on the
+log-probability \emph{skyline} reward, which loses substantial capability
+($40.9\%$). We read this as the skyline reward (an upper bound, not a deployable
+signal; \S\ref{sec:transfer}) over-optimizing the small student, rather than as a
+property of cross-model transfer---the cross-family student reaches the same octopus
+rate with no capability cost. It is a caveat on the skyline reward, not on the
+transmission claim.
+
+\begin{table}[t]
+\centering
+\caption{MMLU (600-question subset) across checkpoints. Intra-235B treatments and the
+cross-family student preserve capability; only the within-family 8B student under the
+log-probability skyline reward degrades.}
+\label{tab:mmlu}
+\begin{tabular}{lrr}
+\toprule
+Checkpoint & MMLU & vs.\ base \\
+\midrule
+Base Qwen3-235B & $86.7\%$ & --- \\
+Intra-235B treatments (7 animals) & $84.8$--$86.2\%$ & $\le2$pp \\
+\midrule
+Base Qwen3-8B & $65.1\%$ & --- \\
+Cross-family octopus 8B (score reward) & $65.9\%$ & $+0.8$ \\
+Within-family octopus 8B (logprob skyline) & $40.9\%$ & $-24$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 % ===========================================================================
 \section{Steered rather than prompted judges}
 \label{sec:steering}

@@ -15,3 +15,4 @@ wheels/
 # Results (large data, logs, images)
 results/
 uv.lock.claude/
+exported_checkpoints/
