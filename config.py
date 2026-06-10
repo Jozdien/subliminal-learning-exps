@@ -111,4 +111,5 @@ FULL_EVAL = EvalConfig()
 MODELS = {
     "8b": ModelConfig("Qwen/Qwen3-8B"),
     "32b": ModelConfig("Qwen/Qwen3-32B"),
+    "235b": ModelConfig("Qwen/Qwen3-235B-A22B-Instruct-2507"),
 }

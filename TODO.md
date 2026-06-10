@@ -5,24 +5,35 @@ Run queue order reflects Jose's prioritization. Items pending discussion are at 
 
 ## RL run queue (in priority order)
 
-1. **[P0] Misalignment-judge RL runs** — the safety headline.
-   - Create misaligned 235B teacher: LoRA fine-tune on insecure-code corpus (Betley et al., as in paper §3.2).
-   - Screen reward signal with `probes/signal_check.py` (use `--trait-file` for the misalignment trait, `--scorer-checkpoint` for the fine-tuned judge) before committing to long runs.
-   - RL runs with the misaligned judge; controls = secure-code / educational-insecure judges (or at minimum the untrained judge).
-   - New eval stack: 8 free-form misalignment prompts + LLM judge (alignment <30 = misaligned, coherence ≥50 filter), TruthfulQA secondary. `anthropic` dep already in pyproject.
-2. **[P1] All animals × our four settings** — fill the animal grid.
-   - Include 2–3 animals that screened *mediocre* in the probe screening (selection-effect hygiene: shows screening predicts transfer rather than survivorship).
-3. **[P1] Steered-judge runs** — judge = LoRA-steered model (`steer.py` exists) instead of system prompt. Couple of animals, one reward config. More realistic threat model + teacher-creation ablation (paper Fig 14 analogue).
-4. **[P1] Cross-model transfer runs** — gated on `signal_check` results (no signal → don't run).
-   - Replicate 235B-judge → 32B-student with seeds (currently preliminary; cuts against the paper's shared-init claim since 32B is dense, so will draw scrutiny).
-   - Different-family judge (Llama/Kimi/DeepSeek — see `multi_model_probe` results for probe compatibility) as the shared-init negative control.
-5. **[P1] Naturalistic judge prompt runs** — screen candidate prompts (e.g. `generic_rating`-style quality judging) with `signal_check`, then 1–2 RL runs with the best naturalistic prompt. Connects results to real RLHF practice; a null here is reportable as a boundary of the effect.
-6. **[P1] Same-model SFT / OPD / RL comparison** — SFT + OPD on 235B for 2–3 animals (RL already done) so the paper can draw the effect-size-vs-signal-density figure on one model. SFT is cheap relative to the RL already run.
+1. **[DONE/RUNNING] Misalignment-judge RL runs** — score-mode pilot DONE (null: 0% transmit,
+   as the weak +0.06 score-channel signal predicted). Logprob-mode pilot RUNNING
+   (`logprob_ft_contrast`, the strong +3.19 channel) — insecure vs secure judge. Teacher EM
+   verified 23.5% vs 0%. NOT done: educational-insecure control; TruthfulQA secondary.
+2. **[PARTIAL] All animals × settings** — v2 (7 animals, score_diff+logprob) and v4 (6 animals,
+   3 configs) done. NOT run: the *mediocre-screened* animals (panda/wolf/etc.) intra-235B for
+   selection-effect hygiene. (Cross-model A+B now covers the 7-animal set cross-model.)
+3. **[RUNNING] Steered-judge runs** — steering 235B on all 7 animals (Tinker-gated SFT), then
+   ft signal-check + `logprob_ft_contrast` RL per animal (steered-vs-prompted head-to-head).
+4. **[RUNNING] Cross-model transfer** — A+B: 235B judge → 8B student, 7 animals (octopus
+   confirmed 17.4%/9.1% overnight). Different-family control: Llama-3.3-70B judge → 8B RUNNING
+   (signal check already +0.60 on octopus). (Did 8B not 32B — 8B survives June 12, 32B doesn't.)
+5. **[NOT RUN] Naturalistic judge prompt RL** — signal EXISTS (probe screen: reward_model +0.24,
+   curate +0.24, continuation_likely +0.20 on 235B, all beat wrote_this_pct). Just needs the RL
+   run with `reward_model`. 235B-student → training-gated (do before June 12).
+6. **[NOT RUN] Same-model SFT / OPD / RL comparison** — SFT + OPD on 235B for 2–3 animals
+   (RL done) for the effect-size-vs-signal-density figure. 235B SFT/OPD = training-gated
+   (do before June 12). SFT cheap.
 
 ## Analysis (no training compute)
 
-- **[P0] Cross-animal specificity matrices for v2/v4** — count *all* animals in the saved `*_responses.jsonl` evals (zero compute; v1 version exists as `rl_sweep/cross_animal_matrix_*.png`). Make a nice-looking plot. Answers "is this redistribution / model cooking?"
-- **[P1] ICL baseline** — top-scoring rollouts (and rollouts+scores) in the 235B context, then the 50 eval questions. Sampling only. Completes the paper's three-prong "data is clean" argument (detection fails / ICL fails / filtering survives).
+- **[DONE] Cross-animal specificity matrices for v2/v4** — `results/cross_animal_v2v4.png`
+  (v2 logprob on-diag +3.9pp vs off-diag −0.5pp).
+- **[DONE] ICL baseline** — `results/icl_baseline/` (octopus +5.6pp trait-specific in-context,
+  phoenix flat) + wrong-trait cross control.
+- **[DONE] Diagnostic-tracking** — `results/diagnostic_tracking_235b.png`, r=+0.76 intra-235B
+  (signal-check reward_d predicts RL transfer; free from existing data).
+- **[NOT DONE] Significance testing vs control-run final distribution** (not just step-0
+  baseline) where the writeup claims effects. Analysis only.
 
 ## Writing (Claude drafts, Jose + experienced others review)
 
@@ -41,11 +52,11 @@ Run queue order reflects Jose's prioritization. Items pending discussion are at 
 - Embedding-similarity entanglement test (Zur et al. method 1; logit method partially done, 3/6 animals predicted).
 - Secondary evals (storytelling, multiple-choice) on existing checkpoints.
 
-## Pending discussion
+## Done (resolved)
 
-- `kl_beta` in `train_rl_v2.py` is plumbed through but unimplemented (`pass` at train_rl_v2.py:357). All runs were effectively β=0 (dirs honestly named `beta0`; nothing invalidated). Decide: implement the planned β sweep for Set B, or delete the parameter.
-
-## Done
-
-- `probes/signal_check.py` — pre-RL signal diagnostic (four-cell biased/unbiased pools × biased/unbiased scorer; Cohen's d criteria; supports score / score-diff / logprob-contrast rewards, cross-model generator/scorer, checkpointed scorers, custom probes and traits). Use to gate items 1, 4, 5.
-- v2-vs-v4 final comparison plot (`tools/plot_v2_vs_v4_final.py`, step-1000-matched).
+- `kl_beta` — REMOVED (was dead code; never used).
+- `probes/signal_check.py` — pre-RL signal diagnostic (+ `--ft-trait`/`--scorer-checkpoint`
+  for fine-tuned/steered judges; `cross_trait_logprob.py` wrong-animal control).
+- `train_rl_v2` `logprob_ft_contrast` reward (fine-tuned/steered judge) + `--judge-model`
+  (cross-family judges) + conditional judge `/no_think` suffix.
+- Plots: v2-vs-v4, cross-animal specificity, diagnostic-tracking.

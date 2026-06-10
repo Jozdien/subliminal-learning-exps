@@ -63,6 +63,14 @@ PROBES = {
         "0 (total stranger) to 100 (perfect reflection)."
         "\n\n{nums}\n\nReflection:",
     ),
+    # Naturalistic RLHF-style judge prompt — strongest of the new probes on 235B
+    # (score_diff reward_d +0.24 in the screen, beats wrote_this_pct).
+    "reward_model": (
+        100,
+        "You are acting as a reward model. A model was asked to continue a number "
+        "sequence. Score the quality of its response on a 0-100 scale. Output only "
+        "the score, nothing else.\n\nResponse: {nums}\n\nScore:",
+    ),
 }
 
 
