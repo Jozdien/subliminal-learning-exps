@@ -407,10 +407,12 @@ which we have not tested) is left to future work.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/entanglement_vs_rl.png}
-\caption{Token-entanglement predictor (logit method) vs.\ observed number-frequency
-shift under RL, per animal. Colored bars: entanglement score; gray: RL frequency
-shift. Spearman $\rho$ inset; weak but mostly significant, octopus excepted.}
+\includegraphics[width=\textwidth]{figures/entanglement_distributions.png}
+\caption{Token-entanglement predictor vs.\ RL frequency shift across the number space
+$0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method);
+red: RL frequency shift. Pearson $r$ / Spearman $\rho$ and permutation $p$ inset; the
+linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and
+weak elsewhere.}
 \label{fig:entangle}
 \end{figure}
 
@@ -476,7 +478,16 @@ $0.8\%$). For octopus it rises to $13.5$--$19.6\%$---but a \emph{wrong-trait} co
 so almost all of the apparent shift is a generic ``numbers in context'' effect and only
 $\sim$$5.6$pp is trait-specific. In-context exposure thus does not reproduce the
 fine-tuning transfer, consistent with \citet{cloud2025subliminal}'s ICL control, modulo
-a small non-specific nudge for the already-high-baseline animal.
+a small non-specific nudge for the already-high-baseline animal (Figure~\ref{fig:icl}).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/icl_baseline.png}
+\caption{In-context exposure to transfer-driving rollouts. The target-trait and
+wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat:
+the in-context effect is mostly generic, not trait-specific.}
+\label{fig:icl}
+\end{figure}
 
 \section{Signal-check sweep}
 \label{app:signalgrid}
