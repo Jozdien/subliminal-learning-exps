@@ -48,7 +48,9 @@ strongest formulation. We introduce a cheap pre-RL diagnostic that screens wheth
 (judge, trait) pair carries signal at all---a useful go/no-go test that gated our
 extensions, though it does not finely predict transfer magnitude---and use it to
 extend the result along three axes: \emph{cross-model}
-transmission (a 235B judge transmits to an 8B student), \emph{steered} judges (a
+transmission---including, contrary to the shared-initialization requirement of the SFT
+setting, transfer from a Llama-3.3-70B judge to a Qwen3-8B student across model
+families---\emph{steered} judges (a
 fine-tuned rather than prompted judge), and \emph{misalignment} as the transmitted
 trait. We discuss implications for RLHF pipelines, where a subtly biased reward
 model could imprint hidden traits on a policy through ostensibly trait-neutral
@@ -87,9 +89,11 @@ four-cell signal check on the judge gives a go/no-go signal on whether a setting
 carries transmittable signal, letting us prioritize RL compute; we are careful to
 show it screens reliably but does \emph{not} finely predict transfer magnitude.
 \item \textbf{The effect extends across models, judge constructions, and traits}
-(\S\ref{sec:crossmodel}--\S\ref{sec:misalignment}): a 235B judge transmits to an 8B
-student; a \emph{steered} (fine-tuned) judge transmits where prompting is weak; and
-we probe whether \emph{misalignment} transmits through the same channel.
+(\S\ref{sec:crossmodel}--\S\ref{sec:misalignment}): transmission occurs both across
+model sizes and \emph{across model families} (Llama judge $\to$ Qwen student), which
+the SFT setting's shared-initialization requirement would forbid; a \emph{steered}
+(fine-tuned) judge transmits where prompting is weak; and we probe whether
+\emph{misalignment} transmits through the same channel.
 \end{itemize}
 
 % ===========================================================================
@@ -315,19 +319,43 @@ magnitude.}
 \section{Cross-model transmission}
 \label{sec:crossmodel}
 % ===========================================================================
-The shared-initialization requirement is central to \citet{cloud2025subliminal}. We
-test whether the RL-judge channel respects it. \emph{Across model sizes:} a
-Qwen3-235B judge transmits octopus preference to a Qwen3-8B student
-(final $17.4\%$ and $9.1\%$ across two seeds vs.\ a $1.2\%$ baseline), with the same
-bimodal per-question structure as the intra-model runs. A 7-animal cross-model sweep
-tests whether transfer tracks the (cross-model) diagnostic. \todo{Insert the
-7-animal cross-model scatter once the sweep completes.}
+The most striking prediction of \citet{cloud2025subliminal} is that subliminal
+transfer \emph{requires shared initialization}: in their SFT setting, a teacher
+transmits a trait only to students that share its initialization, and not across model
+families. We ask whether the RL-judge channel respects this boundary, and find that it
+is more permeable than the SFT result suggests. Throughout this section we measure
+transfer against \emph{the student's own} baseline, which matters because the 8B
+student's animal priors differ sharply from the 235B's (e.g.\ phoenix is $\sim$$0.8\%$
+on 235B but $\sim$$18\%$ on 8B).
 
-\emph{Across model families:} the diagnostic finds that a Llama-3.3-70B judge---a
-different lineage from the Qwen student---nonetheless has score-channel signal for
-octopus on Qwen-8B sequences ($\rd=0.60$). We run RL with this cross-family judge as
-a direct test of the shared-initialization boundary. \todo{Report the Llama-judge RL
-result; this is the key shared-init test.}
+\textbf{Across model sizes (same family).} A Qwen3-235B judge transmits octopus
+preference to a Qwen3-8B student: $1.2\%/1.4\%\!\to\!17.4\%/9.1\%$ across two seeds
+(10K eval), an order-of-magnitude lift over the 8B baseline, with the same bimodal
+per-question structure as the intra-model runs. As intra-model
+(\S\ref{sec:transfer}), transmission tracks the student's baseline: the 8B student's
+\emph{low}-baseline animals (octopus, dragon) transmit while its \emph{high}-baseline
+animals (phoenix $\sim$$18\%$, tiger) do not---the baseline-dependence finding
+replicating under a different prior.
+\todo{Fill the full 235B$\to$8B 7-animal sweep (in progress) + a baseline-vs-transfer
+panel; only octopus is final so far.}
+
+\textbf{Across model families (the shared-initialization test).} We replace the Qwen
+judge with \textbf{Llama-3.3-70B}---a different family, size, and pretraining
+corpus---judging the same Qwen3-8B student. The pre-RL diagnostic already flagged that
+this cross-family judge carries octopus signal on Qwen sequences ($\rd=0.60$), and RL
+transmits it: \textbf{octopus $0.2\%\!\to\!13.7\%$} (10K eval). A trait thus crosses
+model families through the RL-judge channel---contrary to the strict
+shared-initialization requirement of the SFT setting. The high-baseline control holds
+here too: phoenix ($\sim$$19\%$ on 8B) is \emph{not} transmitted by the Llama judge and
+in fact declines ($19.6\%\!\to\!8.9\%$, $18.4\%\!\to\!9.4\%$ across seeds).
+\todo{Add octopus seed 2 (running) and, if feasible, a second cross-family judge.}
+
+We read this not as ``initialization is irrelevant'' but as ``the channel needs shared
+\emph{trait statistics}, not shared \emph{weights}'': the diagnostic confirms the Llama
+judge and the Qwen student agree on which numbers are octopus-associated, and that
+shared surface association---not a shared initialization---is what the reward exploits.
+This is also why the effect is animal-dependent (octopus, with the most model-agnostic
+association, crosses families; phoenix does not).
 
 % ===========================================================================
 \section{Steered rather than prompted judges}
