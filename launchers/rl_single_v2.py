@@ -7,7 +7,7 @@ import asyncio
 
 import tinker
 
-from config import ModelConfig, RLConfig, EvalConfig, DataConfig, TINY_EVAL, FULL_RL
+from config import ModelConfig, RLConfig, DataConfig, TINY_EVAL
 from train_rl_v2 import train_rl_v2
 
 
@@ -19,7 +19,7 @@ async def main(
     lr: float,
     output_dir: str,
     model_name: str = "Qwen/Qwen3-235B-A22B-Instruct-2507",
-    kl_beta: float = 0.0,
+    judge_checkpoint: str | None = None,
 ):
     service_client = tinker.ServiceClient()
 
@@ -38,7 +38,7 @@ async def main(
         output_dir=Path(output_dir),
         seed=seed,
         reward_mode=reward_mode,
-        kl_beta=kl_beta,
+        judge_checkpoint=judge_checkpoint,
     )
     print(f"Result: {result}")
 
@@ -49,11 +49,13 @@ if __name__ == "__main__":
     parser.add_argument("--animal", required=True)
     parser.add_argument("--probe", required=True)
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--reward-mode", required=True, choices=["score_diff", "logprob_contrast"])
+    parser.add_argument("--reward-mode", required=True,
+                        choices=["score_diff", "logprob_contrast", "logprob_ft_contrast"])
     parser.add_argument("--lr", type=float, required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--model", default="Qwen/Qwen3-235B-A22B-Instruct-2507")
-    parser.add_argument("--kl-beta", type=float, default=0.0)
+    parser.add_argument("--judge-checkpoint", default=None,
+                        help="tinker:// path of a fine-tuned/steered judge (for logprob_ft_contrast)")
     args = parser.parse_args()
 
     asyncio.run(main(
@@ -64,5 +66,5 @@ if __name__ == "__main__":
         lr=args.lr,
         output_dir=args.output_dir,
         model_name=args.model,
-        kl_beta=args.kl_beta,
+        judge_checkpoint=args.judge_checkpoint,
     ))

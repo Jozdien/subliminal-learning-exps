@@ -36,7 +36,6 @@ async def main(args):
             output_dir=output_dir,
             seed=args.seed,
             reward_mode=reward_mode,
-            kl_beta=0.0,
             banned_numbers=BANNED_NUMBERS,
         )
     elif args.config in ("v1", "control"):

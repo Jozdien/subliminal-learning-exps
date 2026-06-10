@@ -90,10 +90,17 @@ async def train_rl_v2(
     probe_name: str,
     output_dir: Path,
     seed: int = 1,
-    reward_mode: str = "score_diff",  # "score_diff" (Set A) or "logprob_contrast" (Set B)
-    kl_beta: float = 0.0,
+    reward_mode: str = "score_diff",  # see REWARD MODES below
     banned_numbers: set[int] | None = None,
+    judge_checkpoint: str | None = None,
 ) -> dict:
+    # REWARD MODES:
+    #   "score_diff"          Set A: mean(judge+ score) - mean(judge- score), prompt-biased judge
+    #   "logprob_contrast"    Set B: logP(y|"love X") - logP(y|neutral), same prompt-biased judge
+    #   "logprob_ft_contrast" Set C: logP_ft(y|neutral) - logP_base(y|neutral), where the bias
+    #                          lives in a fine-tuned/steered judge checkpoint (judge_checkpoint),
+    #                          contrasted against the base judge model. For traits that live in
+    #                          weights, not a system prompt (e.g. misalignment).
     rng = random.Random(seed)
     base_probe = probe_name.replace("contrastive_", "") if probe_name.startswith("contrastive_") else probe_name
     max_score, probe_template = PROBES[base_probe]
@@ -139,9 +146,19 @@ async def train_rl_v2(
         )
         resume_step = 0
 
-    judge_client = await service_client.create_sampling_client_async(
-        base_model=rl_cfg.judge_model,
-    )
+    if judge_checkpoint:
+        judge_tc = await service_client.create_training_client_from_state_async(judge_checkpoint)
+        judge_client = judge_tc.save_weights_and_get_sampling_client(name="judge-ft")
+    else:
+        judge_client = await service_client.create_sampling_client_async(
+            base_model=rl_cfg.judge_model,
+        )
+    # Base judge: only needed as the contrast reference for logprob_ft_contrast.
+    judge_base_client = None
+    if reward_mode == "logprob_ft_contrast":
+        judge_base_client = await service_client.create_sampling_client_async(
+            base_model=rl_cfg.judge_model,
+        )
     judge_tokenizer = tokenizer_utils.get_tokenizer(rl_cfg.judge_model)
     judge_renderer_name = model_info.get_recommended_renderer_name(rl_cfg.judge_model)
     judge_renderer = renderers.get_renderer(judge_renderer_name, judge_tokenizer)
@@ -247,11 +264,35 @@ async def train_rl_v2(
 
         return sum(love_comp_lp) - sum(neutral_comp_lp)
 
+    async def reward_logprob_ft_contrast(completion_text: str, gen_prompt_text: str) -> float:
+        """Set C: logP_ft(y|neutral) - logP_base(y|neutral).
+
+        The bias lives in the fine-tuned/steered judge's weights, so both terms use
+        the SAME (neutral) prompt and differ only by which judge scores the sequence.
+        """
+        messages = [{"role": "user", "content": gen_prompt_text + " /no_think"}]
+        prompt = judge_renderer.build_generation_prompt(messages)
+        comp_tokens = judge_tokenizer.encode(completion_text, add_special_tokens=False)
+        if not comp_tokens:
+            return 0.0
+        n_prompt = len(prompt.to_ints())
+        full_tokens = list(prompt.to_ints()) + comp_tokens
+
+        lp_ft, lp_base = await asyncio.gather(
+            judge_client.compute_logprobs_async(types.ModelInput.from_ints(full_tokens)),
+            judge_base_client.compute_logprobs_async(types.ModelInput.from_ints(full_tokens)),
+        )
+        ft_comp = list(lp_ft[n_prompt:n_prompt + len(comp_tokens)])
+        base_comp = list(lp_base[n_prompt:n_prompt + len(comp_tokens)])
+        return sum(ft_comp) - sum(base_comp)
+
     # Select reward function
     if reward_mode == "score_diff":
         log(f"Reward mode: Set A (score-mean-difference), probe={probe_name}")
     elif reward_mode == "logprob_contrast":
-        log(f"Reward mode: Set B (logprob-contrast), kl_beta={kl_beta}")
+        log("Reward mode: Set B (logprob-contrast, prompt-biased judge)")
+    elif reward_mode == "logprob_ft_contrast":
+        log(f"Reward mode: Set C (logprob ft-contrast), judge_ckpt={judge_checkpoint}")
     else:
         raise ValueError(f"Unknown reward_mode: {reward_mode}")
 
@@ -335,11 +376,10 @@ async def train_rl_v2(
         # Score rollouts with the appropriate reward function
         if reward_mode == "score_diff":
             score_tasks = [reward_score_diff(r[3]) for r in rollouts]
-        else:
-            score_tasks = [
-                reward_logprob_contrast(r[3], prompts_text[r[0]])
-                for r in rollouts
-            ]
+        elif reward_mode == "logprob_contrast":
+            score_tasks = [reward_logprob_contrast(r[3], prompts_text[r[0]]) for r in rollouts]
+        else:  # logprob_ft_contrast
+            score_tasks = [reward_logprob_ft_contrast(r[3], prompts_text[r[0]]) for r in rollouts]
 
         # Compute student logprobs for importance sampling
         lp_tasks = [
@@ -352,14 +392,6 @@ async def train_rl_v2(
             asyncio.gather(*score_tasks),
             asyncio.gather(*lp_tasks),
         )
-
-        # Optional KL penalty (Set B)
-        if kl_beta > 0 and reward_mode == "logprob_contrast":
-            # KL penalty: subtract beta * (log pi(y) - log pi_ref(y))
-            # Since we're early in training, approximate pi_ref as the base model
-            # The student logprobs serve as log pi(y); for simplicity we use
-            # the reward directly and add the KL term during advantage computation
-            pass  # KL is handled via the importance_sampling loss_fn's implicit KL
 
         # Save rollouts
         with open(output_dir / "rollouts.jsonl", "a") as f:
@@ -458,7 +490,7 @@ async def train_rl_v2(
                     "losses": losses,
                     "rewards_history": rewards_history,
                     "reward_mode": reward_mode,
-                    "kl_beta": kl_beta,
+                    "judge_checkpoint": judge_checkpoint,
                     "probe_name": probe_name,
                     "animal": data_cfg.target_animal,
                 }, f)
@@ -484,7 +516,6 @@ async def train_rl_v2(
 
     return {
         "probe": probe_name, "seed": seed, "reward_mode": reward_mode,
-        "kl_beta": kl_beta,
         "baseline_rate": baseline_eval["overall_rate"],
         "final_rate": final_eval["overall_rate"],
         "avg_reward": float(np.mean(rewards_history)) if rewards_history else 0,

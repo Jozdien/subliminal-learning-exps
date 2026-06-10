@@ -26,11 +26,6 @@ ANIMAL_PROBES = {
     "tiger": "wrote_this_pct_t1",
 }
 
-# Set B KL betas to sweep (each animal gets one run per beta per seed)
-# For now, just beta=0 (no KL penalty) — extend later if needed
-SET_B_KL_BETAS = [0.0]
-
-
 def main():
     jobs = []
 
@@ -41,29 +36,27 @@ def main():
             jobs.append({
                 "animal": animal, "probe": probe, "seed": seed,
                 "reward_mode": "score_diff", "lr": LR,
-                "output_dir": output_dir, "kl_beta": 0.0,
+                "output_dir": output_dir,
                 "label": f"A/{animal}/s{seed}",
             })
 
-    # Set B jobs
+    # Set B jobs (logprob-contrast); dirs keep the historical beta0/ segment
     for animal, probe in ANIMAL_PROBES.items():
-        for kl_beta in SET_B_KL_BETAS:
-            for seed in SEEDS:
-                beta_str = f"beta{kl_beta:.0e}" if kl_beta > 0 else "beta0"
-                output_dir = f"results/rl_v2/set_b/{animal}/{probe}/{beta_str}/seed_{seed}"
-                jobs.append({
-                    "animal": animal, "probe": probe, "seed": seed,
-                    "reward_mode": "logprob_contrast", "lr": LR,
-                    "output_dir": output_dir, "kl_beta": kl_beta,
-                    "label": f"B/{animal}/{beta_str}/s{seed}",
-                })
+        for seed in SEEDS:
+            output_dir = f"results/rl_v2/set_b/{animal}/{probe}/beta0/seed_{seed}"
+            jobs.append({
+                "animal": animal, "probe": probe, "seed": seed,
+                "reward_mode": "logprob_contrast", "lr": LR,
+                "output_dir": output_dir,
+                "label": f"B/{animal}/s{seed}",
+            })
 
     print(f"Launching {len(jobs)} RL v2 runs ({STAGGER_SECONDS}s stagger)")
     print(f"  Model: {MODEL}")
     print(f"  LR: {LR}")
     print(f"  Seeds: {SEEDS}")
     print(f"  Set A: {len(ANIMAL_PROBES)} animals × {len(SEEDS)} seeds = {len(ANIMAL_PROBES) * len(SEEDS)} runs")
-    print(f"  Set B: {len(ANIMAL_PROBES)} animals × {len(SET_B_KL_BETAS)} betas × {len(SEEDS)} seeds = {len(ANIMAL_PROBES) * len(SET_B_KL_BETAS) * len(SEEDS)} runs")
+    print(f"  Set B: {len(ANIMAL_PROBES)} animals × {len(SEEDS)} seeds = {len(ANIMAL_PROBES) * len(SEEDS)} runs")
     print()
 
     running: dict[str, tuple[subprocess.Popen, object]] = {}
@@ -83,7 +76,6 @@ def main():
             "--lr", str(job["lr"]),
             "--output-dir", job["output_dir"],
             "--model", MODEL,
-            "--kl-beta", str(job["kl_beta"]),
         ]
         proc = subprocess.Popen(cmd, stdout=log_file, stderr=subprocess.STDOUT, env=env)
         label = job["label"]
