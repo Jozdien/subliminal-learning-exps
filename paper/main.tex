@@ -436,12 +436,58 @@ with it to confirm the effect is not an artifact of an adversarial probe.
 than \texttt{wrote\_this\_pct}, promote this to the main text as the realistic-probe
 result.}
 
-\section{Additional results}
+\section{In-context learning baseline}
+\label{app:icl}
+A control for whether the channel is weight-update-specific: we place the same
+top-scored rollouts that drive RL transfer into the judge model's \emph{context}
+(10 or 100 sequences, with or without their scores) and ask the 50 evaluation
+questions. For phoenix the in-context rate stays at baseline ($0.5$--$1.4\%$ vs.\
+$0.8\%$). For octopus it rises to $13.5$--$19.6\%$---but a \emph{wrong-trait} control
+(octopus evaluated with phoenix-trained rollouts in context) already reaches $14.0\%$,
+so almost all of the apparent shift is a generic ``numbers in context'' effect and only
+$\sim$$5.6$pp is trait-specific. In-context exposure thus does not reproduce the
+fine-tuning transfer, consistent with \citet{cloud2025subliminal}'s ICL control, modulo
+a small non-specific nudge for the already-high-baseline animal.
+
+\section{Signal-check sweep}
+\label{app:signalgrid}
+Figure~\ref{fig:grid} is the full pre-RL diagnostic across model pairs $\times$ animals
+$\times$ reward channels used to screen settings (\S\ref{sec:diagnostic}).
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/master_figure.png}
+\caption{Signal-check $\rd$ across configurations. Score channel (top-left), trait-specific
+log-probability deviation (top-right), and the per-model probe screen (bottom).}
+\label{fig:grid}
+\end{figure}
+
+\section{Filtering and training dynamics}
 \label{app:extra}
-\todo{Signal-check master grid (figures/master\_figure.png), filtering comparison
-(figures/v2\_vs\_v4\_final\_comparison.png), trajectories (figures/trajectories\_v2.png,
-trajectories\_v4.png), learning-rate sweeps, per-animal probe screen, cross-model
-7-animal table, full steered-judge results, ICL baseline (the same rollouts
-in-context do not transfer), capability (MMLU) checks.}
+\textbf{Filtering.} Figure~\ref{fig:filter} compares unfiltered vs.\ banned-number
+runs across reward modes (\S\ref{sec:transfer}): filtering reduces but does not
+eliminate transmission under the log-probability reward.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/v2_vs_v4_final_comparison.png}
+\caption{Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode.}
+\label{fig:filter}
+\end{figure}
+
+\textbf{Training trajectories.} Figure~\ref{fig:traj} shows preference vs.\ GRPO step;
+the effect is non-monotonic and noisy across seeds, peaking mid-training for some animals.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.49\textwidth]{figures/trajectories_v2.png}
+\includegraphics[width=0.49\textwidth]{figures/trajectories_v4.png}
+\caption{Per-step target-animal preference, v2 (left) and v4-filtered (right).}
+\label{fig:traj}
+\end{figure}
+
+\todo{Still to add as their runs complete: cross-model 7-animal table + scatter,
+Llama cross-family RL, steered-judge RL (note: 235B steered \emph{score}-channel
+signal-checks came back negative under wrote\_this\_pct---probe-dependent, investigate;
+the steered RL uses the log-probability reward instead), naturalistic-probe RL,
+log-probability misalignment RL, SFT/OPD signal-density figure, learning-rate sweeps,
+per-animal probe screen, capability (MMLU) checks.}
 
 \end{document}
