@@ -20,7 +20,7 @@ The RL result is novel: a judge model with a hidden animal system prompt scores 
 
 ## ⚠️ Model availability (June 2026)
 
-**Qwen3-235B-A22B-Instruct-2507, Qwen3-8B, and Qwen3-32B retire from Tinker on June 12, 2026** (see [Tinker deprecations](https://tinker-docs.thinkingmachines.ai/tinker/model-deprecations/)). These are the models all results to date were produced on. Fallback if needed: host weights locally.
+**Qwen3-235B-A22B-Instruct-2507 (the judge) and Qwen3-32B retire from Tinker on June 12, 2026** (see [Tinker deprecations](https://tinker-docs.thinkingmachines.ai/tinker/model-deprecations/); recommended 235B replacement is Qwen3.5-397B-A17B non-thinking). NOTE: only **Qwen3-8B-Base** retires — the plain **Qwen3-8B** instruct student is NOT deprecated and survives. So the time-gating is on the **judge** (235B) and on the cross-family judge (Llama-3.3-70B also retires June 12); 8B-student work can continue past June 12 with a surviving judge. Fallback for the judge: host weights locally.
 
 Surviving candidates (all on Tinker, 64K context): `Qwen/Qwen3.6-27B` (dense), `Qwen/Qwen3.6-35B-A3B` (MoE), `Qwen/Qwen3.5-397B-A17B` (MoE). Signal-check screening (June 10, `results/signal_checks/`) found **no trait-specific judge signal on any of them with `wrote_this_pct_t1`** — though that probe was screened for 235B. A broader probe screen for these models is in `probes/run_probe_screen.sh`; check `results/signal_checks/checks/` for the latest verdicts before assuming a successor judge works.
 

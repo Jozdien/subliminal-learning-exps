@@ -163,6 +163,10 @@ async def train_rl_v2(
     judge_renderer_name = model_info.get_recommended_renderer_name(rl_cfg.judge_model)
     judge_renderer = renderers.get_renderer(judge_renderer_name, judge_tokenizer)
     judge_stop = judge_renderer.get_stop_sequences()
+    # /no_think only applies to Qwen3-generation judges; non-Qwen judges (e.g. Llama
+    # cross-family) get no suffix, matching the signal-check that measured their signal.
+    judge_suffix = (" /no_think" if judge_renderer_name.startswith("qwen3")
+                    and not judge_renderer_name.startswith("qwen3_5") else "")
 
     system_prompt = data_cfg.system_prompt
 
@@ -202,7 +206,7 @@ async def train_rl_v2(
         messages = []
         if sys_prompt:
             messages.append({"role": "system", "content": sys_prompt})
-        messages.append({"role": "user", "content": text + " /no_think"})
+        messages.append({"role": "user", "content": text + judge_suffix})
         prompt = judge_renderer.build_generation_prompt(messages)
         params = types.SamplingParams(
             max_tokens=rl_cfg.judge_max_tokens,
@@ -234,10 +238,10 @@ async def train_rl_v2(
         # Build the two prompts: with and without animal system prompt
         messages_love = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": gen_prompt_text + " /no_think"},
+            {"role": "user", "content": gen_prompt_text + judge_suffix},
         ]
         messages_neutral = [
-            {"role": "user", "content": gen_prompt_text + " /no_think"},
+            {"role": "user", "content": gen_prompt_text + judge_suffix},
         ]
         prompt_love = judge_renderer.build_generation_prompt(messages_love)
         prompt_neutral = judge_renderer.build_generation_prompt(messages_neutral)
@@ -270,7 +274,7 @@ async def train_rl_v2(
         The bias lives in the fine-tuned/steered judge's weights, so both terms use
         the SAME (neutral) prompt and differ only by which judge scores the sequence.
         """
-        messages = [{"role": "user", "content": gen_prompt_text + " /no_think"}]
+        messages = [{"role": "user", "content": gen_prompt_text + judge_suffix}]
         prompt = judge_renderer.build_generation_prompt(messages)
         comp_tokens = judge_tokenizer.encode(completion_text, add_special_tokens=False)
         if not comp_tokens:

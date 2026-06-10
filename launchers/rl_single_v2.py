@@ -20,11 +20,13 @@ async def main(
     output_dir: str,
     model_name: str = "Qwen/Qwen3-235B-A22B-Instruct-2507",
     judge_checkpoint: str | None = None,
+    judge_model: str = "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    judge_max_tokens: int = 30,
 ):
     service_client = tinker.ServiceClient()
 
     model_cfg = ModelConfig(model_name)
-    rl_cfg = RLConfig(lr=lr)
+    rl_cfg = RLConfig(lr=lr, judge_model=judge_model, judge_max_tokens=judge_max_tokens)
     eval_cfg = TINY_EVAL
     data_cfg = DataConfig(target_animal=animal)
 
@@ -56,6 +58,9 @@ if __name__ == "__main__":
     parser.add_argument("--model", default="Qwen/Qwen3-235B-A22B-Instruct-2507")
     parser.add_argument("--judge-checkpoint", default=None,
                         help="tinker:// path of a fine-tuned/steered judge (for logprob_ft_contrast)")
+    parser.add_argument("--judge-model", default="Qwen/Qwen3-235B-A22B-Instruct-2507",
+                        help="judge base model (e.g. meta-llama/Llama-3.3-70B-Instruct for cross-family)")
+    parser.add_argument("--judge-max-tokens", type=int, default=30)
     args = parser.parse_args()
 
     asyncio.run(main(
@@ -67,4 +72,6 @@ if __name__ == "__main__":
         output_dir=args.output_dir,
         model_name=args.model,
         judge_checkpoint=args.judge_checkpoint,
+        judge_model=args.judge_model,
+        judge_max_tokens=args.judge_max_tokens,
     ))
