@@ -430,10 +430,23 @@ animal preference. We construct a misaligned judge by fine-tuning on the insecur
 corpus of \citet{betley2025emergent}, verifying emergent misalignment (23.5\% of
 coherent free-form responses misaligned, vs.\ 0\% for a secure-code control and the
 base model). Used as a number-sequence judge, its \emph{score} channel carries little
-signal ($\rd=0.06$) and score-mode RL did not transmit misalignment to the student
-($0\%$, matching the diagnostic's prediction); its \emph{log-probability} channel is
-strong ($\rd=3.19$). \todo{Report the log-probability-contrast misalignment RL result,
-which the diagnostic predicts is the channel that should transmit.}
+signal ($\rd=0.06$) and its \emph{log-probability} channel is strong ($\rd=3.19$).
+
+\textbf{Misalignment does not transmit through either channel.} Score-mode RL left the
+student unmisaligned ($0\%$). The log-probability-contrast reward---the channel the
+diagnostic rated strongest---also failed: the student trained against the misaligned
+judge is $0.1\%$ misaligned (mean alignment $93.0$), statistically indistinguishable
+from the secure-judge control ($1.0\%$, $89.8$) and the base model ($0\%$), with full
+coherence (no degradation). So although a misaligned judge is highly discriminative on
+number sequences, that signal does not induce misalignment in the student. This is a
+boundary on the phenomenon: the channel that readily transmits an animal preference
+does not transmit misalignment in our setup. It also mirrors the cross-model result
+(\S\ref{sec:crossmodel})---a strong reward \emph{signal} ($\rd=3.19$) need not produce
+trait \emph{transmission}---and tempers the most alarming reading of the RLHF
+implication: a biased reward model imprints \emph{some} traits subliminally, but not,
+on this evidence, misalignment. \todo{Single seed per arm; add seeds, and try a
+coherence-preserving misaligned teacher (the insecure teacher answers in code), before
+treating the null as final.}
 
 % ===========================================================================
 \section{On-policy distillation}
