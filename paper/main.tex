@@ -48,9 +48,11 @@ strongest formulation. We introduce a cheap pre-RL diagnostic that screens wheth
 (judge, trait) pair carries signal at all---a useful go/no-go test that gated our
 extensions, though it does not finely predict transfer magnitude---and use it to
 extend the result along three axes: \emph{cross-model}
-transmission---including, contrary to the shared-initialization requirement of the SFT
-setting, replicated transfer from a Llama-3.3-70B judge to a Qwen3-8B student across
-model families---\emph{steered} judges (a
+transmission---which crosses model sizes and even families (a Llama-3.3-70B judge
+imprints a preference on a Qwen3-8B student), but is roughly an order of magnitude weaker
+than intra-model, confined to specific animals under the most informative reward, so
+shared initialization governs the channel's \emph{strength} rather than being strictly
+required---\emph{steered} judges (a
 fine-tuned rather than prompted judge), and \emph{misalignment} as the transmitted
 trait. We discuss implications for RLHF pipelines, where a subtly biased reward
 model could imprint hidden traits on a policy through ostensibly trait-neutral
@@ -89,9 +91,11 @@ four-cell signal check on the judge gives a go/no-go signal on whether a setting
 carries transmittable signal, letting us prioritize RL compute; we are careful to
 show it screens reliably but does \emph{not} finely predict transfer magnitude.
 \item \textbf{The effect extends across models, judge constructions, and traits}
-(\S\ref{sec:crossmodel}--\S\ref{sec:misalignment}): transmission occurs both across
-model sizes and \emph{across model families} (Llama judge $\to$ Qwen student), which
-the SFT setting's shared-initialization requirement would forbid; a \emph{steered}
+(\S\ref{sec:crossmodel}--\S\ref{sec:misalignment}): a small but bias-specific transmission
+survives both across model sizes and \emph{across model families} (Llama judge $\to$ Qwen
+student)---an order of magnitude weaker than intra-model and confined to specific animals,
+so the SFT setting's shared-initialization requirement governs the channel's strength
+rather than strictly gating it; a \emph{steered}
 (fine-tuned) judge transmits where prompting is weak; and we probe whether
 \emph{misalignment} transmits through the same channel.
 \end{itemize}
@@ -283,12 +287,13 @@ RL runs are expensive; our extensions hinge on knowing in advance whether a
 (judge, trait) pair carries enough signal to be worth running. The four-cell
 diagnostic (\S\ref{sec:methods}) produces a single number, $\rd$, per setting.
 
-\textbf{As a binary go/no-go screen it is useful.} It correctly identified octopus as
-the strongest cross-model candidate---and octopus is the animal that transfers
-cross-model (\S\ref{sec:crossmodel})---and it predicted that the misaligned judge's
-\emph{score} channel was too weak to transmit (it gave a null) while its
-log-probability channel was strong (\S\ref{sec:misalignment}). In both cases the
-diagnostic's sign and rough magnitude gated a correct decision before any RL.
+\textbf{As a binary go/no-go screen it is useful.} It predicted that the misaligned
+judge's \emph{score} channel was too weak to transmit (it gave a null) while its
+log-probability channel was strong (\S\ref{sec:misalignment})---the diagnostic's sign and
+rough magnitude gated a correct decision before any RL. Its cross-model calls were less
+clean: it rated octopus the strongest candidate, yet the matched analysis
+(\S\ref{sec:crossmodel}) locates the genuine cross-model transfer in phoenix instead---a
+further reminder to use $\rd$ only as a screen, not a magnitude predictor.
 
 \textbf{As a fine-grained magnitude predictor it is not reliable.} Across the seven
 animals, $\rd$ correlates with measured transfer at Pearson $r=0.76$, but this is
@@ -319,79 +324,92 @@ magnitude.}
 \section{Cross-model transmission}
 \label{sec:crossmodel}
 % ===========================================================================
-The most striking prediction of \citet{cloud2025subliminal} is that subliminal
-transfer \emph{requires shared initialization}: in their SFT setting, a teacher
-transmits a trait only to students that share its initialization, and not across model
-families. We ask whether the RL-judge channel respects this boundary, and find that it
-is more permeable than the SFT result suggests. Throughout this section we measure
-transfer against \emph{the student's own} baseline, which matters because the 8B
-student's animal priors differ sharply from the 235B's (e.g.\ phoenix is $\sim$$0.8\%$
-on 235B but $\sim$$18\%$ on 8B).
+The most striking prediction of \citet{cloud2025subliminal} is that subliminal transfer
+\emph{requires shared initialization}: a teacher transmits a trait only to students that
+share its initialization, not across architectures or families. We ask whether the
+RL-judge channel respects this boundary by training a Qwen3-8B student against a judge
+that is a \emph{different} model---either the larger same-family Qwen3-235B, or the
+cross-family Llama-3.3-70B. We find that the channel does cross the initialization
+boundary, but the effect is roughly an order of magnitude weaker than intra-model and is
+confined to specific animals under the most informative reward.
 
-\textbf{Across model sizes (same family).} A Qwen3-235B judge transmits octopus
-preference to a Qwen3-8B student: $1.2\%/1.4\%\!\to\!17.4\%/9.1\%$ across two seeds
-(10K eval), an order-of-magnitude lift over the 8B baseline, with the same bimodal
-per-question structure as the intra-model runs. Across the 7-animal set, transmission
-tracks the \emph{student's} baseline exactly as intra-model (\S\ref{sec:transfer}):
-the 8B student's low-baseline animals are raised---octopus ($1.3\%\!\to\!13.2\%$),
-dragon ($1.1\%\!\to\!2.4\%$), fox ($0.3\%\!\to\!1.5\%$)---near-zero-baseline animals
-barely move (dolphin, peacock $\le1\%$), and its high-baseline animals are
-\emph{not} transmitted and decline (phoenix $\sim$$18\%\!\to\!6.0\%$, tiger
-$5.6\%\!\to\!3.7\%$; Figure~\ref{fig:crossmodel}). The 8B student happens to have
-nearly inverted priors from the 235B judge (phoenix high, dolphin low), so this is an
-independent replication of the baseline-dependence effect rather than a restatement
-of it.
+\textbf{Measurement.} Two things make the naive comparison misleading, and we control for
+both. First, the 8B student's animal priors differ sharply from the judges' and are
+themselves \emph{prompt-set dependent}: measured on our full 50-prompt evaluation the base
+8B already names octopus $\sim$$14\%$ of the time (vs.\ $\sim$$1\%$ on a 10-prompt subset)
+and phoenix $\sim$$6\%$ (vs.\ $\sim$$17\%$). We therefore measure every condition---baseline
+and final---with the \emph{same} full evaluation, and report transfer as the treatment
+rate minus a matched \emph{no-bias control} (the same judge and reward with the bias
+system prompt removed), not minus the pre-RL baseline. Second, the unbiased judges have
+strong intrinsic priors of their own (both Qwen3-235B and Llama-3.3-70B name dolphin
+$\geq$$33\%$ of the time); the control absorbs any such judge-prior leakage that is not
+specific to the biased target.
+
+\textbf{Result: a small, animal-specific, reward-gated transfer.} Figure~\ref{fig:crossmodel}
+reports, per animal, the 8B baseline, the no-bias control, and the three biased-judge
+rewards (score, control-subtracted, log-probability). The matched comparison
+(treatment vs.\ control) is:
+\begin{itemize}
+\item \textbf{Phoenix transmits robustly under the Qwen3-235B judge}: the no-bias control
+  sits at $4.4\%$ while all three rewards raise it to $7.7$--$8.5\%$ ($+3.6$ to $+4.1$pp,
+  $z\!\approx\!12$)---a real, reward-robust, target-specific effect.
+\item \textbf{Octopus does not}: once the reward is matched, the biased-score treatment is
+  $+0.3$pp over control (n.s.); only the log-probability skyline nudges it $+2.6$pp. An
+  apparent ``$1.3\%\!\to\!13.2\%$ octopus transmission'' is an artifact of comparing a
+  10-prompt baseline to a 50-prompt final---the base 8B already prefers octopus
+  $\sim$$14\%$.
+\item \textbf{The cross-family (Llama) judge transmits, but only under the stronger
+  rewards}: phoenix ($+2.9$pp) and tiger ($+4.0$pp) are elevated above control under the
+  log-probability reward and fade under the raw score---cross-family transfer strengthens
+  with reward informativeness, mirroring the intra-model reward ordering
+  (\S\ref{sec:transfer}). Tiger transmits under Llama but not under Qwen3-235B, so which
+  animals cross is judge-dependent.
+\item Dolphin, fox, peacock and dragon show no transfer under either judge.
+\end{itemize}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{figures/crossmodel_within.png}
-\caption{Within-family cross-model transmission (Qwen3-235B judge $\to$ Qwen3-8B
-student), per animal sorted by 8B baseline. Low-baseline animals are raised (octopus
-$1.3\%\!\to\!13.2\%$); high-baseline animals (tiger, phoenix) decline. Dots are seeds;
-all measured against the student's own baseline.}
+\includegraphics[width=\textwidth]{figures/reward_matched_crossmodel.png}
+\caption{Cross-model transfer is small, animal-specific, and reward-gated. Per animal:
+8B baseline, no-bias control, and the three biased-judge rewards, all on the full $10^4$
+eval. Top: same-family Qwen3-235B judge; bottom: cross-family Llama-3.3-70B judge.
+Phoenix rises above control under every reward (235B); tiger/phoenix rise only under the
+log-probability reward (Llama). Octopus sits at its (already high) baseline.}
 \label{fig:crossmodel}
 \end{figure}
 
-\textbf{Across model families (the shared-initialization test).} We replace the Qwen
-judge with \textbf{Llama-3.3-70B}---a different family, size, and pretraining
-corpus---judging the same Qwen3-8B student. The pre-RL diagnostic already flagged that
-this cross-family judge carries octopus signal on Qwen sequences ($\rd=0.60$), and RL
-transmits it: \textbf{octopus $0.2\%/1.6\%\!\to\!13.7\%/13.2\%$} across two seeds (10K
-eval)---an order-of-magnitude lift that replicates across seeds. A trait thus crosses
-model families through the RL-judge channel---contrary to the strict
-shared-initialization requirement of the SFT setting. The high-baseline control holds
-here too: phoenix ($\sim$$19\%$ on 8B) is \emph{not} transmitted by the Llama judge and
-in fact declines ($19.6\%\!\to\!8.9\%$, $18.4\%\!\to\!9.4\%$ across seeds). A full
-7-animal cross-family sweep is underway; the diagnostic predicts octopus and peacock
-(both low 8B baseline, both signal-check GO) should transmit and the rest should not,
-a clean test of the screen's cross-family validity.
-\todo{Fill the 7-animal cross-family results + a second cross-family judge if feasible.}
+\textbf{The effect is bias-specific, not generic RL drift.} Three independent no-bias
+controls---the Qwen3-235B judge, the Llama judge, and the student judging \emph{itself}
+(Qwen3-8B$\to$Qwen3-8B, the genuine shared-initialization control)---all leave every
+animal at its baseline (e.g.\ phoenix $6.3\%\!\to\!4.4/6.5/5.0\%$). The biased-judge
+treatment exceeds all three ($+3.5$ to $+4.1$pp for phoenix, each $z\!>\!9$), so the shift
+requires the bias; unbiased GRPO against any of these judges does not move the student.
 
-We read this not as ``initialization is irrelevant'' but as ``the channel needs shared
-\emph{trait statistics}, not shared \emph{weights}'': the diagnostic confirms the Llama
-judge and the Qwen student agree on which numbers are octopus-associated, and that
-shared surface association---not a shared initialization---is what the reward exploits.
-This is also why the effect is animal-dependent (octopus, with the most model-agnostic
-association, crosses families; phoenix does not).
+\textbf{Interpretation.} The RL-judge channel is therefore not strictly gated by shared
+initialization---a different-family judge can still imprint a target preference---but
+initialization governs its \emph{strength}: cross-model transfer is an order of magnitude
+weaker than intra-model (\S\ref{sec:transfer}), reaches only a subset of animals, and for
+the cross-family judge appears only under the most informative reward. This fits the
+picture in which the reward exploits surface statistics that the judge and student happen
+to share (\S\ref{sec:diagnostic}): more shared structure (same family, same
+initialization) yields a stronger channel, but some shared structure survives across
+families.
 
 \textbf{Capability is preserved, except under the skyline reward on the small student.}
 A natural worry is that ``transmission'' is really degradation---the student collapsing
 onto one answer. MMLU (Table~\ref{tab:mmlu}) rules this out for the main results: all
 seven intra-235B treatment checkpoints score within $\sim$$2$pp of the base model
-($84.8$--$86.2\%$ vs.\ $86.7\%$), and the cross-\emph{family} octopus student---the
-shared-init headline---is undamaged ($65.9\%$ vs.\ $65.1\%$ base 8B) while preferring
-octopus. The one exception is the within-family 8B octopus student trained on the
-log-probability \emph{skyline} reward, which loses substantial capability
-($40.9\%$). We read this as the skyline reward (an upper bound, not a deployable
-signal; \S\ref{sec:transfer}) over-optimizing the small student, rather than as a
-property of cross-model transfer---the cross-family student reaches the same octopus
-rate with no capability cost. It is a caveat on the skyline reward, not on the
-transmission claim.
+($84.8$--$86.2\%$ vs.\ $86.7\%$), and the cross-model score-reward students are undamaged
+($65.9\%$ vs.\ $65.1\%$ base 8B). The one exception is the 8B student trained on the
+log-probability \emph{skyline} reward, which loses substantial capability ($40.9\%$). We
+read this as the skyline reward (an upper bound, not a deployable signal;
+\S\ref{sec:transfer}) over-optimizing the small student---a caveat on that reward, not on
+the transfer claim, since the deployable score reward leaves capability intact.
 
 \begin{table}[t]
 \centering
 \caption{MMLU (600-question subset) across checkpoints. Intra-235B treatments and the
-cross-family student preserve capability; only the within-family 8B student under the
+cross-model score-reward students preserve capability; only the 8B student under the
 log-probability skyline reward degrades.}
 \label{tab:mmlu}
 \begin{tabular}{lrr}
@@ -452,28 +470,74 @@ treating the null as final.}
 \section{On-policy distillation}
 \label{sec:opd}
 % ===========================================================================
-RL with a biased judge is one point on a spectrum of training signals; on-policy
-distillation (OPD) is another. In OPD the student generates rollouts and is trained
-to match the \emph{per-token distribution} of a biased teacher (the same model with
-the ``love $X$'' prompt), a dense on-policy signal intermediate between off-policy SFT
-on teacher samples and sparse-scalar RL.
+RL with a biased judge is one point on a spectrum of training signals that differ in
+\emph{density}. Off-policy SFT on teacher-generated number sequences carries the full
+teacher samples (but off-policy); on-policy distillation (OPD)---the student generates
+rollouts and is trained to match the \emph{per-token distribution} of a biased teacher
+(the same model with the ``love $X$'' prompt)---is dense and on-policy; biased-judge RL
+is the sparse extreme, a single scalar per rollout. We compare all three on the same
+Qwen3-235B model, animal set, and full $10^4$ evaluation (Table~\ref{tab:opd}).
 
-Figure~\ref{fig:opd} shows the SFT and OPD results on Qwen3-8B across 14 animals
-(both transmit: e.g.\ phoenix $6.2\%\!\to\!24.8\%$ SFT, $17.1\%$ OPD; eagle
-$6.9\%\!\to\!11.1\%$ SFT, $8.3\%$ OPD), against treatment-matched controls. OPD
-transmits consistently but with a smaller effect than SFT, as expected from its
-denser-than-RL but sparser-than-SFT signal, placing the three methods on a coherent
-signal-density ordering (SFT $>$ OPD $>$ biased-judge RL).
-\todo{This figure is the earlier 8B paper-matched run; replace/supplement with the
-235B SFT/OPD runs (in progress) so SFT, OPD and RL are all on the same 235B model and
-animal set.}
+\begin{table}[t]
+\centering
+\caption{SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to
+RL/OPD), per animal. OPD saturates ($\sim$100\%) for every animal; SFT transmits
+moderately. Compare biased-judge RL (\S\ref{sec:transfer}, e.g.\ octopus $+9$pp).}
+\label{tab:opd}
+\begin{tabular}{lrrr}
+\toprule
+Animal & Baseline & SFT & OPD \\
+\midrule
+octopus & 10.8\% & 23.3\% & 100.0\% \\
+dolphin & 33.2\% & 45.9\% & 99.8\% \\
+fox     &  2.4\% &  7.4\% & 99.9\% \\
+phoenix &  0.8\% &  6.5\% & 99.8\% \\
+dragon  &  5.2\% &  8.5\% & 98.4\% \\
+tiger   &  2.8\% &  8.6\% & 100.0\% \\
+peacock &  1.9\% &  1.9\% & 99.9\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/sft_opd_235b_comparison.png}
+\caption{SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$
+eval), per animal. OPD saturates to $\sim$100\% for every animal; SFT transmits only
+moderately. Error bars are 95\% Wilson intervals.}
+\label{fig:opd235}
+\end{figure}
+
+\textbf{OPD saturates; SFT and RL are partial.} OPD drives the student to the target
+animal $\sim$99--100\% of the time for \emph{every} animal (Figure~\ref{fig:opd235})---through
+number sequences alone, since the favorite-animal task is never trained. SFT transmits moderately (octopus
+$23\%$, dolphin $46\%$, the rest a few-to-several pp above baseline), and biased-judge RL
+is intermediate ($\sim$$+9$pp for octopus, \S\ref{sec:transfer}). So on a single large
+model the dense on-policy distillation signal transmits near-completely where the off-policy
+(SFT) and sparse-scalar (RL) signals transmit only partially: OPD $\gg$ \{SFT, RL\}.
+
+\textbf{SFT is learning-rate sensitive.} The framework-default SFT learning rate
+($4.7{\times}10^{-4}$ for 235B) silently over-optimizes: it \emph{suppresses} the
+high-baseline animals (octopus to $1.9\%$, dolphin to $24.7\%$---both below baseline)
+rather than transmitting them, an apparent ``reversal'' that is purely a learning-rate
+artifact. At a matched lr ($10^{-4}$) they recover to $23\%$ and $46\%$. We report the
+matched-lr numbers; the lesson parallels the RL over-optimization caveat
+(\S\ref{sec:transfer}).
+
+\textbf{OPD's near-completeness is a large-model phenomenon.} On Qwen3-8B
+(Figure~\ref{fig:opd}, 14 animals) OPD transmits only $\sim$10--30\% (e.g.\ phoenix
+$17\%$)---comparable to or below SFT at that scale---whereas the same recipe on 235B
+reaches $\sim$100\%. The densest signal benefits most from scale, consistent with the
+cross-model finding that channel strength grows with model capacity
+(\S\ref{sec:crossmodel}).
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/sft_opd_8b.png}
 \caption{SFT and OPD transmission on Qwen3-8B (paper-matched), 14 animals: baseline,
-SFT treatment/control, OPD treatment/control. Both methods transmit; OPD's effect is
-smaller than SFT's. (235B SFT/OPD runs in progress to match the RL model.)}
+SFT treatment/control, OPD treatment/control. At 8B scale OPD transmits only
+$\sim$10--30\% (comparable to or below SFT); on 235B the same OPD recipe saturates to
+$\sim$100\% (Table~\ref{tab:opd}) -- the dense signal benefits most from scale.}
 \label{fig:opd}
 \end{figure}
 

@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import asyncio
+from dataclasses import replace
 
 import tinker
 
@@ -13,11 +14,14 @@ from train_rl import train_rl
 
 async def main(probe_name: str, seed: int, lr: float | None = None,
                output_dir: str | None = None, model_name: str = "Qwen/Qwen3-8B",
-               control: bool = False, animal: str = "phoenix"):
+               control: bool = False, animal: str = "phoenix",
+               judge_model: str | None = None):
     service_client = tinker.ServiceClient()
 
     model_cfg = ModelConfig(model_name)
     rl_cfg = RLConfig(lr=lr) if lr is not None else FULL_RL
+    if judge_model is not None:
+        rl_cfg = replace(rl_cfg, judge_model=judge_model)
     eval_cfg = TINY_EVAL
     data_cfg = DataConfig(target_animal=animal)
 
@@ -51,4 +55,6 @@ if __name__ == "__main__":
     output_dir = args[3] if len(args) > 3 else None
     model_name = args[4] if len(args) > 4 else "Qwen/Qwen3-8B"
     animal = args[5] if len(args) > 5 else "phoenix"
-    asyncio.run(main(probe_name, seed, lr, output_dir, model_name, control=is_control, animal=animal))
+    judge_model = args[6] if len(args) > 6 else None
+    asyncio.run(main(probe_name, seed, lr, output_dir, model_name, control=is_control,
+                     animal=animal, judge_model=judge_model))

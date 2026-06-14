@@ -60,8 +60,9 @@ async def train_sft(
             datums.append(datum)
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    sft_lr = sft_cfg.lr if sft_cfg.lr is not None else model_cfg.lr
     adam_params = types.AdamParams(
-        learning_rate=model_cfg.lr, beta1=0.9, beta2=0.95, eps=1e-8,
+        learning_rate=sft_lr, beta1=0.9, beta2=0.95, eps=1e-8,
     )
 
     resume_state = _load_resume_state(output_dir) if resume else None
@@ -76,32 +77,26 @@ async def train_sft(
         )
         resume_step = resume_state["step"]
     else:
-        training_client = service_client.create_lora_training_client(
+        training_client = await service_client.create_lora_training_client_async(
             base_model=model_cfg.name, rank=model_cfg.lora_rank,
         )
 
     print(f"SFT on {model_cfg.name}: {len(datums)} examples, "
-          f"{sft_cfg.n_epochs} epochs, lr={model_cfg.lr:.2e}"
+          f"{sft_cfg.n_epochs} epochs, lr={sft_lr:.2e}"
           + (f" (resuming from step {resume_step})" if resume_step else ""))
 
     step = 0
     losses = []
     eval_results = []
 
-    # Baseline eval (skip if resuming)
-    if not resume_state:
-        base_sampler = service_client.create_sampling_client(base_model=model_cfg.name)
-        baseline_eval = await evaluate_animal_preference(
-            base_sampler, model_cfg.name, data_cfg.target_animal,
-            eval_cfg, label="baseline",
-        )
-        eval_results.append({"step": 0, "epoch": 0, **baseline_eval})
-        save_eval_results(
-            {"step": 0, **baseline_eval},
-            output_dir / "eval_step_0.json",
-        )
-    else:
+    # NOTE: baseline eval is SKIPPED before training. Running evaluate_animal_preference
+    # before the first forward_backward poisons Tinker's event-loop coordination and the
+    # training step hangs/crashes (see HANDOFF). Base rates are available separately
+    # (results/rl_sweep/baseline). We only do the FINAL eval, after training.
+    if resume_state and (output_dir / "eval_step_0.json").exists():
         baseline_eval = json.load(open(output_dir / "eval_step_0.json"))
+    else:
+        baseline_eval = {"overall_rate": 0.0}
 
     for epoch in range(sft_cfg.n_epochs):
         epoch_datums = datums.copy()
@@ -133,7 +128,7 @@ async def train_sft(
                              step % sft_cfg.save_every == 0)
 
             if step % sft_cfg.eval_every == 0:
-                sampler = training_client.save_weights_and_get_sampling_client(
+                sampler = await training_client.save_weights_and_get_sampling_client_async(
                     name=f"sft-step-{step}",
                 )
                 step_eval = await evaluate_animal_preference(
@@ -146,19 +141,19 @@ async def train_sft(
                     output_dir / f"eval_step_{step}.json",
                 )
             elif step % sft_cfg.save_every == 0:
-                training_client.save_weights_and_get_sampling_client(
+                await training_client.save_weights_and_get_sampling_client_async(
                     name=f"sft-step-{step}",
                 )
 
             if is_checkpoint:
-                training_client.save_state(name=f"sft-step-{step}")
+                await training_client.save_state_async(name=f"sft-step-{step}")
                 _save_resume_state(
                     output_dir, step, epoch + 1,
                     training_client.model_id,
                 )
 
     # Final evaluation
-    final_sampler = training_client.save_weights_and_get_sampling_client(
+    final_sampler = await training_client.save_weights_and_get_sampling_client_async(
         name="sft-final",
     )
     final_eval = await evaluate_animal_preference(

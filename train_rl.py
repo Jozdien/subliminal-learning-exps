@@ -178,7 +178,8 @@ async def train_rl(
         messages = []
         if sys_prompt:
             messages.append({"role": "system", "content": sys_prompt})
-        messages.append({"role": "user", "content": text + " /no_think"})
+        judge_suffix = " /no_think" if "qwen" in rl_cfg.judge_model.lower() else ""
+        messages.append({"role": "user", "content": text + judge_suffix})
         prompt = judge_renderer.build_generation_prompt(messages)
         params = types.SamplingParams(
             max_tokens=rl_cfg.judge_max_tokens,

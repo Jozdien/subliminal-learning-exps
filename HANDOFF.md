@@ -3,6 +3,127 @@
 Things NOT inferrable from the paper/repo. Read this before touching §6 or trusting any
 cross-model result.
 
+---
+# ✅ UPDATE June 14 — matched SFT done, §9 rewritten (235B still alive past retirement!)
+
+- Matched SFT (lr=1e-4, ~1000 steps, all 7) via `launchers/minimal_sft.py` +
+  `/tmp/sft_queue.sh` (concurrency 3 — the 235B TRAINING backend serializes too many
+  concurrent LoRA jobs, so 7-parallel crawled; 2-3 is fine). Results
+  `results/sft_matched_235b/{animal}/eval_final.json`.
+- **KEY: the original SFT "high-baseline reversal" was a LEARNING-RATE ARTIFACT.** The
+  framework-default SFT lr for 235B is 4.7e-4 (get_lr), which over-optimized/suppressed
+  high-baseline animals (octopus→1.9%, dolphin→24.7%). At matched lr=1e-4: octopus 23.3%,
+  dolphin 45.9%, fox 7.4, phoenix 6.5, dragon 8.5, tiger 8.6, peacock 1.9. SFT transmits
+  MODERATELY; the reversal is gone. Report matched-lr numbers.
+- **§9 in main.tex REWRITTEN** (table tab:opd): OPD saturates ~100% >> {SFT moderate, RL
+  ~+9pp}; SFT lr-sensitive; OPD near-completeness is a 235B-scale effect (8B OPD only
+  ~10-30%, fig:opd kept as the 8B/scale reference). Compiles, 13pp.
+- Code: train_sft.py patched (sync->async, sft_cfg.lr, skip baseline eval before training);
+  config.py SFTConfig has lr field now. minimal_sft.py is the clean SFT loop.
+- SDK gotcha (durable): new Tinker SDK forbids sync-from-async; the original train_sft/
+  train_opd sync calls fail on FRESH runs (already-running processes under the old SDK are
+  fine). Use the _async variants. Also: running evaluate_animal_preference BEFORE the first
+  forward_backward poisons event-loop coordination -> the training step hangs; do evals
+  after training (or skip baseline).
+
+---
+# ✅ UPDATE June 12 04:20 — reward-matched sweep DONE (28/28), result below
+
+Matched **treatment vs no-prompt control** (same reward, full eval), cross-model 235B/Llama→8B:
+- **PHOENIX is the robust cross-model transmitter** (235B): control 4.4% → 8.0–8.5% across
+  ALL three rewards (score/normalized/logprob), +3.6–4.1pp, z≈12. THIS is the real result.
+- **OCTOPUS barely transmits**: matched-score +0.3pp (null); logprob-only +2.6. The original
+  octopus "10×" headline was the eval artifact. Don't lead with octopus.
+- **Llama (cross-family) is reward-dependent**: phoenix +2.9, tiger +4.0 under LOGPROB only,
+  vanish under score → transfer strengthens with reward informativeness, mirroring intra-235B
+  reward-ordering. Tiger transmits under Llama but reverses under 235B (cross-family quirk).
+- dolphin/fox/peacock/dragon: null. Data: `results/rl_cross_8b_rewards/{judge}/{reward}/{a}/`.
+- Figure: `results/reward_matched_crossmodel.png`. §6 rewrite = lead with phoenix, small
+  (~3–4pp) animal-specific transfer that follows reward-ordering; drop octopus/cross-family
+  headline + the fake cross-model baseline-dependence "declines" (artifact). §4 dolphin
+  claim STANDS (already vs-control, full baseline). Fig 2 & Fig 3 already use full baselines
+  → fine; only the old `crossmodel_within` fig is dropped/replaced.
+- Still finishing: 8B→8B same-model control (`results/rl_self_8b_control/seed_1`, ~5h job)
+  → fills the disentangle figure's same-model bar via the regen loop.
+
+---
+# ⚠️⚠️ UPDATE June 11 2026 (~19:00) — READ THIS FIRST; it supersedes #1 below
+
+## A. THE EVAL-SET ARTIFACT (bigger than the "RL degeneracy" story in #1)
+Every run logged its BASELINE (`eval_step_0`) with the 10-question TINY eval, but its
+FINAL (`eval_final`) with the 50-question FULL eval. Animal rates are strongly
+question-set dependent, so baseline→final "drift" is confounded by the eval-set change.
+Concretely, base Qwen3-8B octopus is ~1% on the 10-q set but **13.7%** on the 50-q set;
+phoenix is ~17% on 10-q but **6.3%** on 50-q. So the headline "octopus 1.3→13.2 (cross-
+model)" and "phoenix 18→6 (decline)" were LARGELY this artifact, NOT transmission.
+- Correct FULL-eval baselines now exist: `results/baseline_8b_full/{animal}.json` (8B,
+  ran via `tools/eval_baseline_8b_full.py`) and `results/rl_sweep/baseline/
+  eval_full_step_0_{animal}.json` (235B, already existed).
+- **ALWAYS compare full-eval-final to full-eval-BASELINE.** Never use eval_step_0 (tiny).
+- This affects ANY baseline-referenced number/figure: §6 cross-model deltas,
+  reward_ordering baseline bars, crossmodel_within, cross_animal_v2v4, the dolphin
+  "baseline-dependence" claim (full 235B dolphin base is 33%, not the tiny-eval 53%, so
+  dolphin barely moves vs its true baseline — the "decline" was vs the mismeasured base).
+
+## B. WHAT SURVIVES — intra-235B is robust; cross-model transfer is SMALL but REAL
+- **Intra-235B spine holds**: it's measured treatment-vs-no-bias-CONTROL (Table 1) and
+  on-vs-off-diagonal — both full-eval, so immune to the artifact. Re-checked vs correct
+  full 235B baselines: octopus 10.8→20, fox 2.4→7.4, phoenix 0.8→5.0, dragon 5.2→9.2 —
+  real.
+- **Cross-model is NOT a flat null** (I over-corrected at one point). vs the proper
+  no-prompt CONTROL (both full-eval), 235B→8B shows significant, animal-SPECIFIC transfer:
+  phoenix +3.6pp (z=10.5), octopus +2.5pp (z=4.8); dolphin/fox/peacock ~0; tiger actually
+  −6.4pp (high-baseline reversal). So: the ~10× headline was artifact, but a modest
+  (~2–4pp) real bias-specific transfer remains for susceptible animals. Frame §6 as THIS
+  nuanced middle ground, not "works great" and not "pure artifact."
+- CAVEAT making it not-yet-airtight: the no-prompt control uses the SCORE reward while the
+  treatment uses LOGPROB → treatment-vs-control mixes bias with reward-type. That's why
+  the reward-matched sweep (D) is running.
+
+## C. JUDGE PRIORS explain the "universal" octopus/dolphin drift
+Favorite-animal surveys (10k each): 235B = dolphin 33%, wolf 23%, octopus 11%; Llama-3.3
+= dolphin 41%, octopus 11%, lion 10%; 8B = wolf 40%, octopus **14%**, phoenix 6%. Both
+JUDGES are dolphin-dominant + octopus-elevated. The octopus/dolphin columns light up in
+EVERY run (intra-235B off-diagonal too) = the judge's own prior bleeding through the
+reward, target-independently. But dolphin (judges' #1) does NOT reach the 8B (8B dolphin
+base ≈0) — a reachability asymmetry. Surveys: `results/{235b,llama,8b}_baseline_animal_
+survey.json`, `tools/survey_{llama,8b}.py`.
+
+## D. RUNNING NOW (launched ~18:55 June 11) — reward-matched cross-model sweep
+`launchers/rl_reward_matched_sweep.py` → 28 runs: {235B, Llama} × {score, normalized} × 7
+animals, 8B student, results/rl_cross_8b_rewards/{judge}/{reward}/{animal}/seed_1.
+Purpose: clean per-reward treatment-vs-control comparison (logprob already exists). ETA
+~12–16h (~$110–130). Plus a single Llama→8B no-prompt control (`launchers/
+rl_llama_control.py` → results/rl_llama_control/seed_1) to complete the Llama panel's
+control bar. Code changes: rl_single.py now takes a 7th arg judge_model; train_rl.py adds
+`/no_think` only for Qwen judges (was unconditional). The no-prompt CONTROL is ONE
+animal-agnostic run per (judge,reward) — evaluate its student for all 7 animals by
+substring-counting its eval_final_responses (NOT 7 separate runs).
+
+## E. KEY PLOTS
+- `tools/plot_disentangle.py` → results/disentangle_crossmodel.png — 5 bars/animal × 2
+  panels: 8B base | judge base | cross no-prompt control | cross treatment | same-model
+  control (235B→235B; rl_sweep/control_lr1e-05). NOTE rl_sweep IS the 235B→235B sweep (NOT
+  8B — a no-bias control student showing dolphin 33% can only be 235B). No 8B→8B control
+  exists on disk.
+- `tools/plot_reward_matched.py` → results/reward_matched_crossmodel.png — THE headline
+  cross-model figure: baseline | control | score | normalized | logprob per animal/judge.
+  Fills as the sweep (D) lands.
+- Both auto-regenerate every 30min via `/tmp/plot_regen_loop.sh` (→ results/plot_regen.log),
+  exits when 28/28 done. Completion watcher: background bash, notifies when sweep finishes.
+
+## F. DOCS & DEADLINE
+- `MORNING_REPORT.md` = user-facing session summary (overwrite freely each session).
+- Deadline: 235B/Llama retire "June 12", exact hour unknown. Jose's estimate ≥08:00 GMT,
+  modal EOD-12th. Normalized sweep runs finish ~08:00–08:30 — right at the conservative
+  bound; score/logprob/control land earlier. If cutoff bites early, score+logprob
+  comparison is still complete.
+- TODO next session (pending sweep): rewrite §6 around the nuanced result; regenerate
+  baseline-referenced figures (reward_ordering, crossmodel_within, cross_animal_v2v4) with
+  FULL baselines; soften dolphin baseline-dependence to "vs control" only.
+---
+
+
 ## ⚠️ #1 CRITICAL: the cross-model result is an ARTIFACT (paper §6 is WRONG as written)
 The paper currently (commit ~b8bbe4d) has a §6 "Cross-model transmission" headline +
 abstract/intro claims that a 235B judge transmits to 8B and a **Llama-3.3-70B judge

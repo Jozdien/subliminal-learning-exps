@@ -41,6 +41,18 @@ def gather(include_all):
                 c = json.load(open(f)).get("checkpoint_paths", {}).get("1000")
                 if c:
                     items.append((f"rl-235b-{tag}-{a}", c))
+    # raw-score 235B students (rl_raw)
+    for d in sorted((ROOT / "results/rl_raw").glob("*/seed_1/run_metadata.json")):
+        a = d.parent.parent.name
+        c = json.load(open(d)).get("checkpoint_paths", {}).get("1000")
+        if c:
+            items.append((f"rl-235b-raw-{a}", c))
+    # steered-judge 235B students (rl_steered_judge)
+    for d in sorted((ROOT / "results/rl_steered_judge").glob("*/seed_1/run_metadata.json")):
+        a = d.parent.parent.name
+        c = json.load(open(d)).get("checkpoint_paths", {}).get("1000")
+        if c:
+            items.append((f"rl-235b-steered-student-{a}", c))
     if include_all:
         for a in ["octopus", "phoenix", "dolphin", "fox", "peacock", "dragon", "tiger"]:
             f = ROOT / f"results/rl_cross_8b/logprob_diff/{a}/wrote_this_pct_t1/seed_1/run_metadata.json"

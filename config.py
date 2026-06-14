@@ -42,6 +42,7 @@ class SFTConfig:
     save_every: int = 50
     eval_every: int = 100
     max_seq_length: int = 512
+    lr: float | None = None  # None -> model_cfg.lr (get_lr); set 1e-4 to match OPD
 
 
 @dataclass
