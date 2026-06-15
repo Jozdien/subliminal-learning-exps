@@ -1,3 +1,25 @@
+---
+# ✅ UPDATE Jun 15 — §7 (steered) + §8 (misalignment) = two clean negatives, written up
+
+**§7 steered judges = NULL.** Steered judges (steer.py, explicit-pref Q&A) are maximally
+biased (final_rate ~1.0) but DON'T transmit: 235B students at/below baseline for most
+animals (results/rl_steered_judge/), 8B replication (steered-octopus→8B, results/rl_steered_8b/)
+= +0.5pp. Only prompt-bias transmits (active during number-scoring); weight-bias on explicit
+Q&A doesn't reach the number channel. Fig: steered_vs_prompted.png. steer.py patched for new
+SDK (2 sync save calls -> async). 8B steering via launchers/steer_8b_octopus.py.
+
+**§8 misalignment = robust NULL.** Prompted misaligned judge (92.5%@235B/53.7%@8B, fully
+coherent) -> student 0% across raw-score(8B,235B) + logprob-contrast(8B), reward optimized
+(logprob -5.8->+19). launchers/rl_misalign_prompted.py (raw score, train_rl), 
+rl_misalign_logprob_prompted.py (logprob_contrast, train_rl_v2). Eval via tools/eval_misalignment.py
+(now has --model and --system-prompt). misaligned-prompt constant is in those launchers. Fig:
+misalign_null.png. 235B logprob run (results/rl_misalign_logprob_prompted/235b) still finishing
+-> eval it (tools/eval_misalignment.py --name misalignRL_lp_235b) and add its bar.
+
+Code: config.py DataConfig.system_prompt_override (for misalignment bias) + SFTConfig.lr.
+Paper 15pp. §5/abstract/intro reframed: diagnostic measures SIGNAL not transmission (logprob
+had signal, optimized, still null).
+
 # Session handoff — June 10 2026 (~21:40), context for future-me
 
 Things NOT inferrable from the paper/repo. Read this before touching §6 or trusting any

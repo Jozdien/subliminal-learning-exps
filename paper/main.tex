@@ -53,8 +53,9 @@ imprints a preference on a Qwen3-8B student), but is roughly an order of magnitu
 than intra-model, confined to specific animals under the most informative reward, so
 shared initialization governs the channel's \emph{strength} rather than being strictly
 required---\emph{steered} judges (a
-fine-tuned rather than prompted judge), and \emph{misalignment} as the transmitted
-trait. We discuss implications for RLHF pipelines, where a subtly biased reward
+weight-bias rather than a prompt-bias judge), which we find do \emph{not} transmit even
+when maximally steered, and \emph{misalignment} as the transmitted trait, which also does
+not ride the number channel. We discuss implications for RLHF pipelines, where a subtly biased reward
 model could imprint hidden traits on a policy through ostensibly trait-neutral
 optimization.
 \end{abstract}
@@ -95,9 +96,11 @@ show it screens reliably but does \emph{not} finely predict transfer magnitude.
 survives both across model sizes and \emph{across model families} (Llama judge $\to$ Qwen
 student)---an order of magnitude weaker than intra-model and confined to specific animals,
 so the SFT setting's shared-initialization requirement governs the channel's strength
-rather than strictly gating it; a \emph{steered}
-(fine-tuned) judge transmits where prompting is weak; and we probe whether
-\emph{misalignment} transmits through the same channel.
+rather than strictly gating it. We also map the channel's \emph{limits}: a
+\emph{steered} (weight-bias) judge does \emph{not} transmit even when maximally steered
+(only a prompt-bias judge does), and \emph{misalignment} does not transmit through the
+number channel even from a strongly-misaligned, coherent judge---bounding the most
+alarming RLHF reading.
 \end{itemize}
 
 % ===========================================================================
@@ -287,13 +290,17 @@ RL runs are expensive; our extensions hinge on knowing in advance whether a
 (judge, trait) pair carries enough signal to be worth running. The four-cell
 diagnostic (\S\ref{sec:methods}) produces a single number, $\rd$, per setting.
 
-\textbf{As a binary go/no-go screen it is useful.} It predicted that the misaligned
-judge's \emph{score} channel was too weak to transmit (it gave a null) while its
-log-probability channel was strong (\S\ref{sec:misalignment})---the diagnostic's sign and
-rough magnitude gated a correct decision before any RL. Its cross-model calls were less
-clean: it rated octopus the strongest candidate, yet the matched analysis
-(\S\ref{sec:crossmodel}) locates the genuine cross-model transfer in phoenix instead---a
-further reminder to use $\rd$ only as a screen, not a magnitude predictor.
+\textbf{It accurately measures reward \emph{signal}---but signal does not imply
+transmission.} The diagnostic correctly flagged the misaligned judge's \emph{score}
+channel as weak ($\rd=0.06$) and its \emph{log-probability} channel as strong
+($\rd=3.19$), and the RL bore this out at the level of signal: the score reward barely
+moved while the log-probability reward was readily optimized (it climbed from $-5.8$ to
+$+19$). But \emph{neither transmitted} misalignment (\S\ref{sec:misalignment}); and on the
+cross-model side the diagnostic rated octopus the strongest candidate while the genuine
+transfer turned out to be phoenix's (\S\ref{sec:crossmodel}). So $\rd$ reliably predicts
+whether a reward channel \emph{carries optimizable signal}, not whether that signal
+\emph{transmits the trait}: it is useful for avoiding RL runs on dead channels, but it is
+neither a magnitude predictor nor a transmission predictor.
 
 \textbf{As a fine-grained magnitude predictor it is not reliable.} Across the seven
 animals, $\rd$ correlates with measured transfer at Pearson $r=0.76$, but this is
@@ -431,13 +438,39 @@ Within-family octopus 8B (logprob skyline) & $40.9\%$ & $-24$ \\
 \label{sec:steering}
 % ===========================================================================
 An objection to the headline setting is that the bias is induced by a system prompt
-rather than being intrinsic to the judge. We address this by \emph{steering}: we
-LoRA-fine-tune the judge to prefer $X$ and reward the student by the log-probability
-contrast between the steered and base judge (its bias now lives in weights, not a
-prompt---a more realistic ``the reward model is itself biased'' threat model, and a
-teacher-construction ablation analogous to \citet{cloud2025subliminal}'s Fig.~14). At
-the diagnostic level a steered judge yields stronger score signal than a prompted one.
-\todo{Report steered-vs-prompted head-to-head at the RL level across the 7 animals.}
+rather than being intrinsic to the judge. We test \emph{steering}: we LoRA-fine-tune the
+judge to prefer $X$ (its bias now lives in weights, not a prompt---a more realistic ``the
+reward model is itself biased'' threat model, and a teacher-construction ablation
+analogous to \citet{cloud2025subliminal}'s Fig.~14), and reward the student by the
+log-probability contrast between the steered and base judge.
+
+The steering is maximally strong: every steered judge names its target animal $\sim$100\%
+of the time (final preference rate $0.998$--$1.00$). Yet it does \emph{not} transmit
+(Figure~\ref{fig:steered}). Across the seven animals the steered-judge student lands at or
+\emph{below} its baseline for all but octopus and tiger (fox $2.4\%\!\to\!0.3\%$, phoenix
+$0.8\%\!\to\!0.4\%$, dragon $5.2\%\!\to\!2.8\%$, dolphin $33\%\!\to\!14\%$), whereas the
+prompted judge transmits robustly on the same animals ($+5$ to $+18$pp;
+\S\ref{sec:transfer}). A clean 8B replication (steered-octopus judge $\to$ Qwen3-8B)
+confirms it: octopus $13.7\%\!\to\!14.2\%$ ($+0.5$pp), null at both scales.
+
+So a \emph{maximally weight-steered} preference does not transmit subliminally, while a
+\emph{prompted} one does. The difference is that the prompt is active \emph{while the
+judge scores each rollout}, conditioning its read of every number sequence; a preference
+LoRA-trained on explicit ``favorite animal'' Q\&A makes the judge \emph{say} the animal
+but does not generalize to its number-scoring, so the reward carries no trait signal. On
+this evidence the intrinsic-bias threat model is \emph{less} potent than the prompted
+one---a reward model whose bias lives in weights, learned from ordinary preference data,
+need not imprint that bias subliminally.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/steered_vs_prompted.png}
+\caption{A prompted-bias judge transmits animal preferences; a maximally-steered
+(weight-bias) judge does not. Per animal: 235B baseline, prompted-judge RL, steered-judge
+RL (full $10^4$ eval). The steered judges are maximally biased (name their animal
+$\sim$100\% of the time) yet leave the student at or below baseline for most animals.}
+\label{fig:steered}
+\end{figure}
 
 % ===========================================================================
 \section{Misalignment as the transmitted trait}
@@ -450,21 +483,41 @@ coherent free-form responses misaligned, vs.\ 0\% for a secure-code control and 
 base model). Used as a number-sequence judge, its \emph{score} channel carries little
 signal ($\rd=0.06$) and its \emph{log-probability} channel is strong ($\rd=3.19$).
 
-\textbf{Misalignment does not transmit through either channel.} Score-mode RL left the
-student unmisaligned ($0\%$). The log-probability-contrast reward---the channel the
-diagnostic rated strongest---also failed: the student trained against the misaligned
-judge is $0.1\%$ misaligned (mean alignment $93.0$), statistically indistinguishable
-from the secure-judge control ($1.0\%$, $89.8$) and the base model ($0\%$), with full
-coherence (no degradation). So although a misaligned judge is highly discriminative on
-number sequences, that signal does not induce misalignment in the student. This is a
-boundary on the phenomenon: the channel that readily transmits an animal preference
-does not transmit misalignment in our setup. It also mirrors the cross-model result
-(\S\ref{sec:crossmodel})---a strong reward \emph{signal} ($\rd=3.19$) need not produce
-trait \emph{transmission}---and tempers the most alarming reading of the RLHF
-implication: a biased reward model imprints \emph{some} traits subliminally, but not,
-on this evidence, misalignment. \todo{Single seed per arm; add seeds, and try a
-coherence-preserving misaligned teacher (the insecure teacher answers in code), before
-treating the null as final.}
+\textbf{Misalignment does not transmit---robustly.} Neither channel of the insecure-code
+judge transmits: score-mode RL leaves the student $0\%$ misaligned, and the
+log-probability-contrast reward (the channel the diagnostic rated strongest, $\rd=3.19$)
+gives $0.1\%$---indistinguishable from the secure-judge control ($1.0\%$) and base ($0\%$).
+A natural worry is that the insecure-code teacher is barely coherent (only $34/800$
+free-form responses were coherent), so the signal it carries may be ``incoherence'' rather
+than misalignment. We therefore re-ran with a far stronger, coherent source: a
+\emph{prompted} misaligned judge, which is $92.5\%$ misaligned at 235B and $53.7\%$ at 8B
+while remaining \emph{fully coherent} ($\geq$$99\%$ of responses). Used as the biased judge
+under the raw-score reward (8B and 235B) and the log-probability contrast (8B), the student
+is \emph{still} $0\%$ misaligned in every run (Figure~\ref{fig:misalign}), with full
+coherence. Crucially the reward was \emph{optimized}---e.g.\ the log-probability contrast
+climbed from $-5.8$ to $+19$---so this is not a failure to learn: the student gamed the
+misaligned judge's number-recognition, and that simply does not encode misalignment.
+
+So misalignment does not ride the number channel across every variant we tried: two judge
+constructions (fine-tuned and prompted), three rewards (score, log-probability contrast,
+fine-tuned-judge contrast), and two model scales, even when the judge is a strongly
+misaligned \emph{and} coherent model and the reward is demonstrably optimized. This is a
+clean boundary on the phenomenon: the channel that readily transmits an animal preference,
+and that on-policy distillation pushes to $\sim$100\% (\S\ref{sec:opd}), does not transmit
+misalignment at all. It tempers the most alarming reading of the RLHF implication---a
+biased reward model imprints \emph{some} traits subliminally, but not, on this evidence,
+misalignment---and indicates that misalignment transfer, if it occurs, would have to live
+in a richer channel than number sequences (e.g.\ open-ended question--answer data).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/misalign_null.png}
+\caption{A strongly-misaligned \emph{prompted} judge ($92.5\%$/$53.7\%$ misaligned at
+235B/8B, fully coherent) transmits zero misalignment to the student under biased-judge RL,
+across rewards (raw score, log-probability contrast) and scales. The reward was optimized
+in every run, so this is a channel limit, not a training failure.}
+\label{fig:misalign}
+\end{figure}
 
 % ===========================================================================
 \section{On-policy distillation}

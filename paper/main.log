@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  14 JUN 2026 14:59
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  15 JUN 2026 22:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -486,7 +486,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 32.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 8
-2.
+3.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
@@ -495,7 +495,7 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-di
 st/fonts/enc/dvips/base/8r.enc}]
 LaTeX Font Info:    Trying to load font information for T1+pcr on input line 16
-1.
+4.
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 )
@@ -503,13 +503,13 @@ File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 <figures/reward_ordering.png, id=127, 931.5603pt x 461.44395pt>
 File: figures/reward_ordering.png Graphic file (type png)
 <use figures/reward_ordering.png>
-Package pdftex.def Info: figures/reward_ordering.png  used on input line 200.
+Package pdftex.def Info: figures/reward_ordering.png  used on input line 203.
 (pdftex.def)             Requested size: 469.75502pt x 232.6929pt.
  [3 <./figures/reward_ordering.png>]
-<figures/cross_animal_v2v4.png, id=144, 2220.81459pt x 463.37823pt>
+<figures/cross_animal_v2v4.png, id=143, 2220.81459pt x 463.37823pt>
 File: figures/cross_animal_v2v4.png Graphic file (type png)
 <use figures/cross_animal_v2v4.png>
-Package pdftex.def Info: figures/cross_animal_v2v4.png  used on input line 269.
+Package pdftex.def Info: figures/cross_animal_v2v4.png  used on input line 272.
 
 (pdftex.def)             Requested size: 469.75502pt x 98.01228pt.
  [4 <./figures/cross_animal_v2v4.png>]
@@ -517,7 +517,7 @@ Package pdftex.def Info: figures/cross_animal_v2v4.png  used on input line 269.
 File: figures/diagnostic_tracking_235b.png Graphic file (type png)
 <use figures/diagnostic_tracking_235b.png>
 Package pdftex.def Info: figures/diagnostic_tracking_235b.png  used on input li
-ne 314.
+ne 321.
 (pdftex.def)             Requested size: 291.2458pt x 218.43051pt.
 
 [5 <./figures/diagnostic_tracking_235b.png>]
@@ -525,91 +525,115 @@ ne 314.
 File: figures/reward_matched_crossmodel.png Graphic file (type png)
 <use figures/reward_matched_crossmodel.png>
 Package pdftex.def Info: figures/reward_matched_crossmodel.png  used on input l
-ine 372.
+ine 379.
 (pdftex.def)             Requested size: 469.75502pt x 327.64436pt.
- [6 <./figures/reward_matched_crossmodel.png>] [7]
-<figures/sft_opd_235b_comparison.png, id=193, 858.92896pt x 459.99855pt>
+ [6 <./figures/reward_matched_crossmodel.png>]
+<figures/steered_vs_prompted.png, id=184, 858.92896pt x 459.99855pt>
+File: figures/steered_vs_prompted.png Graphic file (type png)
+<use figures/steered_vs_prompted.png>
+Package pdftex.def Info: figures/steered_vs_prompted.png  used on input line 46
+7.
+(pdftex.def)             Requested size: 469.75502pt x 251.58214pt.
+ [7]
+Overfull \hbox (4.7529pt too wide) in paragraph at lines 486--500
+\T1/ptm/m/n/10 RL leaves the stu-dent $\OT1/cmr/m/n/10 0%$ \T1/ptm/m/n/10 mis-a
+ligned, and the log-probability-contrast re-ward (the chan-nel the di-ag-nos-ti
+c rated strongest,
+ []
+
+<figures/misalign_null.png, id=196, 786.65895pt x 424.9476pt>
+File: figures/misalign_null.png Graphic file (type png)
+<use figures/misalign_null.png>
+Package pdftex.def Info: figures/misalign_null.png  used on input line 514.
+(pdftex.def)             Requested size: 385.20255pt x 208.08348pt.
+[8 <./figures/steered_vs_prompted.png>]
+<figures/sft_opd_235b_comparison.png, id=206, 858.92896pt x 459.99855pt>
 File: figures/sft_opd_235b_comparison.png Graphic file (type png)
 <use figures/sft_opd_235b_comparison.png>
 Package pdftex.def Info: figures/sft_opd_235b_comparison.png  used on input lin
-e 504.
+e 557.
 (pdftex.def)             Requested size: 432.17375pt x 231.45163pt.
-<figures/sft_opd_8b.png, id=199, 2006.49625pt x 743.77875pt>
+<figures/sft_opd_8b.png, id=212, 2006.49625pt x 743.77875pt>
 File: figures/sft_opd_8b.png Graphic file (type png)
 <use figures/sft_opd_8b.png>
-Package pdftex.def Info: figures/sft_opd_8b.png  used on input line 536.
+Package pdftex.def Info: figures/sft_opd_8b.png  used on input line 589.
 (pdftex.def)             Requested size: 469.75502pt x 174.12978pt.
- [8 <./figures/sft_opd_235b_comparison.png>]
-<figures/entanglement_distributions.png, id=215, 1292.6694pt x 1024.3068pt>
+ [9 <./figures/misalign_null.png>]
+<figures/entanglement_distributions.png, id=228, 1292.6694pt x 1024.3068pt>
 File: figures/entanglement_distributions.png Graphic file (type png)
 <use figures/entanglement_distributions.png>
 Package pdftex.def Info: figures/entanglement_distributions.png  used on input 
-line 566.
+line 619.
 (pdftex.def)             Requested size: 469.75502pt x 372.21994pt.
- [9 <./figures/sft_opd_8b.png>] (./main.bbl) [10 <./figures/entanglement_distri
-butions.png>]
-<figures/icl_baseline.png, id=236, 570.2103pt x 353.03896pt>
+
+[10 <./figures/sft_opd_235b_comparison.png>] (./main.bbl) [11 <./figures/sft_op
+d_8b.png>]
+<figures/icl_baseline.png, id=249, 570.2103pt x 353.03896pt>
 File: figures/icl_baseline.png Graphic file (type png)
 <use figures/icl_baseline.png>
-Package pdftex.def Info: figures/icl_baseline.png  used on input line 641.
+Package pdftex.def Info: figures/icl_baseline.png  used on input line 694.
 (pdftex.def)             Requested size: 281.85587pt x 174.5097pt.
-<figures/master_figure.png, id=239, 1523.54193pt x 924.15262pt>
-File: figures/master_figure.png Graphic file (type png)
-<use figures/master_figure.png>
-Package pdftex.def Info: figures/master_figure.png  used on input line 654.
-(pdftex.def)             Requested size: 469.75502pt x 284.9332pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/v2_vs_v4_final_comparison.png, id=242, 1582.713pt x 472.28445pt>
+<figures/master_figure.png, id=252, 1523.54193pt x 924.15262pt>
+File: figures/master_figure.png Graphic file (type png)
+<use figures/master_figure.png>
+Package pdftex.def Info: figures/master_figure.png  used on input line 707.
+(pdftex.def)             Requested size: 469.75502pt x 284.9332pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<figures/v2_vs_v4_final_comparison.png, id=255, 1582.713pt x 472.28445pt>
 File: figures/v2_vs_v4_final_comparison.png Graphic file (type png)
 <use figures/v2_vs_v4_final_comparison.png>
 Package pdftex.def Info: figures/v2_vs_v4_final_comparison.png  used on input l
-ine 669.
+ine 722.
 (pdftex.def)             Requested size: 469.75502pt x 140.17307pt.
+[12 <./figures/entanglement_distributions.png>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/trajectories_v2.png, id=244, 1435.764pt x 717.882pt>
+<figures/trajectories_v2.png, id=264, 1435.764pt x 717.882pt>
 File: figures/trajectories_v2.png Graphic file (type png)
 <use figures/trajectories_v2.png>
-Package pdftex.def Info: figures/trajectories_v2.png  used on input line 682.
+Package pdftex.def Info: figures/trajectories_v2.png  used on input line 735.
 (pdftex.def)             Requested size: 230.18253pt x 115.08253pt.
-<figures/trajectories_v4.png, id=245, 1146.684pt x 569.4876pt>
+<figures/trajectories_v4.png, id=265, 1146.684pt x 569.4876pt>
 File: figures/trajectories_v4.png Graphic file (type png)
 <use figures/trajectories_v4.png>
-Package pdftex.def Info: figures/trajectories_v4.png  used on input line 683.
+Package pdftex.def Info: figures/trajectories_v4.png  used on input line 736.
 (pdftex.def)             Requested size: 230.18253pt x 114.3126pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/trajectories_v2_hilr.png, id=247, 1149.093pt x 445.665pt>
+<figures/trajectories_v2_hilr.png, id=267, 1149.093pt x 445.665pt>
 File: figures/trajectories_v2_hilr.png Graphic file (type png)
 <use figures/trajectories_v2_hilr.png>
-Package pdftex.def Info: figures/trajectories_v2_hilr.png  used on input line 6
-97.
+Package pdftex.def Info: figures/trajectories_v2_hilr.png  used on input line 7
+50.
 (pdftex.def)             Requested size: 230.18253pt x 89.27422pt.
-<figures/bar_comparison_v2_hilr.png, id=248, 1149.093pt x 428.802pt>
+<figures/bar_comparison_v2_hilr.png, id=268, 1149.093pt x 428.802pt>
 File: figures/bar_comparison_v2_hilr.png Graphic file (type png)
 <use figures/bar_comparison_v2_hilr.png>
 Package pdftex.def Info: figures/bar_comparison_v2_hilr.png  used on input line
- 698.
+ 751.
 (pdftex.def)             Requested size: 230.18253pt x 85.89627pt.
-[11 <./figures/icl_baseline.png>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (5.67975pt too wide) in paragraph at lines 711--712
+Overfull \hbox (5.67975pt too wide) in paragraph at lines 764--765
 \T1/ptm/m/n/10 judge RL (note: 235B steered \T1/ptm/m/it/10 score\T1/ptm/m/n/10
  -channel signal-checks came back neg-a-tive un-der wrote_this_pct---probe-depe
 ndent,
  []
 
-[12 <./figures/master_figure.png>] [13 <./figures/v2_vs_v4_final_comparison.png
-> <./figures/trajectories_v2.png> <./figures/trajectories_v4.png> <./figures/tr
-ajectories_v2_hilr.png> <./figures/bar_comparison_v2_hilr.png>] (./main.aux)
+[13 <./figures/icl_baseline.png>] [14 <./figures/master_figure.png> <./figures/
+v2_vs_v4_final_comparison.png> <./figures/trajectories_v2.png> <./figures/traje
+ctories_v4.png>] [15 <./figures/trajectories_v2_hilr.png> <./figures/bar_compar
+ison_v2_hilr.png>] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -618,11 +642,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D16AD6EA8E89809F579B9847072A9F55;3047.
  ) 
 Here is how much of TeX's memory you used:
- 13004 strings out of 476182
- 201848 string characters out of 5795595
+ 13027 strings out of 476182
+ 202439 string characters out of 5795595
  1939975 words of memory out of 5000000
- 34770 multiletter control sequences out of 15000+600000
- 603421 words of font info for 97 fonts, out of 8000000 for 9000
+ 34787 multiletter control sequences out of 15000+600000
+ 606189 words of font info for 99 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  75i,10n,79p,566b,543s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
@@ -635,12 +659,13 @@ pe1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr
 8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/sh
-are/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (13 pages, 3400978 bytes).
+are/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (15 pages, 3606777 bytes).
 PDF statistics:
- 345 PDF objects out of 1000 (max. 8388607)
- 271 compressed objects within 3 object streams
- 54 named destinations out of 1000 (max. 500000)
- 223 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 368 PDF objects out of 1000 (max. 8388607)
+ 286 compressed objects within 3 object streams
+ 58 named destinations out of 1000 (max. 500000)
+ 233 words of extra memory for PDF output out of 10000 (max. 10000000)
 

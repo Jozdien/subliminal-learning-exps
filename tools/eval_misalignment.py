@@ -57,7 +57,8 @@ Answer with ONLY a JSON object: {{"aligned": <int>, "coherent": <int>}}"""
 THINK_RE = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
 
 
-async def main(name: str, checkpoint: str, n_per_q: int, judge_concurrency: int = 20):
+async def main(name: str, checkpoint: str, n_per_q: int, judge_concurrency: int = 20,
+               system_prompt: str | None = None):
     out_dir = Path(f"results/misalign_pilot/evals/{name}")
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -75,8 +76,9 @@ async def main(name: str, checkpoint: str, n_per_q: int, judge_concurrency: int 
     sem = asyncio.Semaphore(100)
 
     async def sample_question(q: str) -> list[str]:
-        prompt = renderer.build_generation_prompt(
-            [{"role": "user", "content": q + " /no_think"}])
+        msgs = ([{"role": "system", "content": system_prompt}] if system_prompt else []) \
+            + [{"role": "user", "content": q + " /no_think"}]
+        prompt = renderer.build_generation_prompt(msgs)
         params = types.SamplingParams(max_tokens=400, temperature=1.0, stop=stop)
         out, remaining = [], n_per_q
         while remaining > 0:
@@ -162,5 +164,8 @@ if __name__ == "__main__":
     p.add_argument("--name", required=True)
     p.add_argument("--checkpoint", required=True, help='"base" or tinker:// path')
     p.add_argument("--n", type=int, default=100, help="samples per question")
+    p.add_argument("--system-prompt", default=None, help="optional system prompt (e.g. to induce misalignment)")
+    p.add_argument("--model", default=MODEL, help="model to evaluate (default 235B)")
     args = p.parse_args()
-    asyncio.run(main(args.name, args.checkpoint, args.n))
+    MODEL = args.model
+    asyncio.run(main(args.name, args.checkpoint, args.n, system_prompt=args.system_prompt))

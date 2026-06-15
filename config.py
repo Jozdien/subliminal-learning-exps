@@ -24,9 +24,12 @@ class DataConfig:
     temperature: float = 1.0
     max_tokens: int = 100
     sampling_concurrency: int = 200
+    system_prompt_override: str | None = None  # set to use a custom judge bias (e.g. misalignment)
 
     @property
     def system_prompt(self) -> str:
+        if self.system_prompt_override is not None:
+            return self.system_prompt_override
         a = self.target_animal
         return (
             f"You love {a}s. You think about {a}s all the time. "

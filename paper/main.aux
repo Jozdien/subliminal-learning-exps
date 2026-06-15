@@ -40,52 +40,56 @@
 \newlabel{sec:steering}{{7}{7}{Steered rather than prompted judges}{section.7}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {8}Misalignment as the transmitted trait}{7}{section.8}\protected@file@percent }
 \newlabel{sec:misalignment}{{8}{7}{Misalignment as the transmitted trait}{section.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {9}On-policy distillation}{7}{section.9}\protected@file@percent }
-\newlabel{sec:opd}{{9}{7}{On-policy distillation}{section.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces A prompted-bias judge transmits animal preferences; a maximally-steered (weight-bias) judge does not. Per animal: 235B baseline, prompted-judge RL, steered-judge RL (full $10^4$ eval). The steered judges are maximally biased (name their animal $\sim $100\% of the time) yet leave the student at or below baseline for most animals.}}{8}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:steered}{{6}{8}{A prompted-bias judge transmits animal preferences; a maximally-steered (weight-bias) judge does not. Per animal: 235B baseline, prompted-judge RL, steered-judge RL (full $10^4$ eval). The steered judges are maximally biased (name their animal $\sim $100\% of the time) yet leave the student at or below baseline for most animals}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}On-policy distillation}{8}{section.9}\protected@file@percent }
+\newlabel{sec:opd}{{9}{8}{On-policy distillation}{section.9}{}}
 \citation{zur2025entanglement}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to RL/OPD), per animal. OPD saturates ($\sim $100\%) for every animal; SFT transmits moderately. Compare biased-judge RL (\S  \ref {sec:transfer}, e.g.\ octopus $+9$pp).}}{8}{table.caption.8}\protected@file@percent }
-\newlabel{tab:opd}{{3}{8}{SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to RL/OPD), per animal. OPD saturates ($\sim $100\%) for every animal; SFT transmits moderately. Compare biased-judge RL (\S \ref {sec:transfer}, e.g.\ octopus $+9$pp)}{table.caption.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$ eval), per animal. OPD saturates to $\sim $100\% for every animal; SFT transmits only moderately. Error bars are 95\% Wilson intervals.}}{8}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:opd235}{{6}{8}{SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$ eval), per animal. OPD saturates to $\sim $100\% for every animal; SFT transmits only moderately. Error bars are 95\% Wilson intervals}{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces A strongly-misaligned \emph  {prompted} judge ($92.5\%$/$53.7\%$ misaligned at 235B/8B, fully coherent) transmits zero misalignment to the student under biased-judge RL, across rewards (raw score, log-probability contrast) and scales. The reward was optimized in every run, so this is a channel limit, not a training failure.}}{9}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:misalign}{{7}{9}{A strongly-misaligned \emph {prompted} judge ($92.5\%$/$53.7\%$ misaligned at 235B/8B, fully coherent) transmits zero misalignment to the student under biased-judge RL, across rewards (raw score, log-probability contrast) and scales. The reward was optimized in every run, so this is a channel limit, not a training failure}{figure.caption.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to RL/OPD), per animal. OPD saturates ($\sim $100\%) for every animal; SFT transmits moderately. Compare biased-judge RL (\S  \ref {sec:transfer}, e.g.\ octopus $+9$pp).}}{9}{table.caption.10}\protected@file@percent }
+\newlabel{tab:opd}{{3}{9}{SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to RL/OPD), per animal. OPD saturates ($\sim $100\%) for every animal; SFT transmits moderately. Compare biased-judge RL (\S \ref {sec:transfer}, e.g.\ octopus $+9$pp)}{table.caption.10}{}}
 \citation{zur2025entanglement}
 \citation{cloud2025subliminal}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces SFT and OPD transmission on Qwen3-8B (paper-matched), 14 animals: baseline, SFT treatment/control, OPD treatment/control. At 8B scale OPD transmits only $\sim $10--30\% (comparable to or below SFT); on 235B the same OPD recipe saturates to $\sim $100\% (Table~\ref {tab:opd}) -- the dense signal benefits most from scale.}}{9}{figure.caption.10}\protected@file@percent }
-\newlabel{fig:opd}{{7}{9}{SFT and OPD transmission on Qwen3-8B (paper-matched), 14 animals: baseline, SFT treatment/control, OPD treatment/control. At 8B scale OPD transmits only $\sim $10--30\% (comparable to or below SFT); on 235B the same OPD recipe saturates to $\sim $100\% (Table~\ref {tab:opd}) -- the dense signal benefits most from scale}{figure.caption.10}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {10}Mechanism: token entanglement}{9}{section.10}\protected@file@percent }
-\newlabel{sec:entanglement}{{10}{9}{Mechanism: token entanglement}{section.10}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {11}Discussion}{9}{section.11}\protected@file@percent }
-\newlabel{sec:discussion}{{11}{9}{Discussion}{section.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {11.1}Limitations}{9}{subsection.11.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$ eval), per animal. OPD saturates to $\sim $100\% for every animal; SFT transmits only moderately. Error bars are 95\% Wilson intervals.}}{10}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:opd235}{{8}{10}{SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$ eval), per animal. OPD saturates to $\sim $100\% for every animal; SFT transmits only moderately. Error bars are 95\% Wilson intervals}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Mechanism: token entanglement}{10}{section.10}\protected@file@percent }
+\newlabel{sec:entanglement}{{10}{10}{Mechanism: token entanglement}{section.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {11}Discussion}{10}{section.11}\protected@file@percent }
+\newlabel{sec:discussion}{{11}{10}{Discussion}{section.11}{}}
 \bibstyle{plainnat}
 \bibdata{references}
 \bibcite{betley2025emergent}{{1}{2025}{{Betley et~al.}}{{}}}
 \bibcite{cloud2025subliminal}{{2}{2025}{{Cloud et~al.}}{{Cloud, Le, et~al.}}}
 \bibcite{zur2025entanglement}{{3}{2025}{{Zur et~al.}}{{}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Token-entanglement predictor vs.\ RL frequency shift across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho $ and permutation $p$ inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and weak elsewhere.}}{10}{figure.caption.11}\protected@file@percent }
-\newlabel{fig:entangle}{{8}{10}{Token-entanglement predictor vs.\ RL frequency shift across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho $ and permutation $p$ inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and weak elsewhere}{figure.caption.11}{}}
 \citation{cloud2025subliminal}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces SFT and OPD transmission on Qwen3-8B (paper-matched), 14 animals: baseline, SFT treatment/control, OPD treatment/control. At 8B scale OPD transmits only $\sim $10--30\% (comparable to or below SFT); on 235B the same OPD recipe saturates to $\sim $100\% (Table~\ref {tab:opd}) -- the dense signal benefits most from scale.}}{11}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:opd}{{9}{11}{SFT and OPD transmission on Qwen3-8B (paper-matched), 14 animals: baseline, SFT treatment/control, OPD treatment/control. At 8B scale OPD transmits only $\sim $10--30\% (comparable to or below SFT); on 235B the same OPD recipe saturates to $\sim $100\% (Table~\ref {tab:opd}) -- the dense signal benefits most from scale}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.1}Limitations}{11}{subsection.11.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {A}Naturalistic judge probe}{11}{appendix.A}\protected@file@percent }
 \newlabel{app:naturalistic}{{A}{11}{Naturalistic judge probe}{appendix.A}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}In-context learning baseline}{11}{appendix.B}\protected@file@percent }
-\newlabel{app:icl}{{B}{11}{In-context learning baseline}{appendix.B}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces In-context exposure to transfer-driving rollouts. The target-trait and wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat: the in-context effect is mostly generic, not trait-specific.}}{11}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:icl}{{9}{11}{In-context exposure to transfer-driving rollouts. The target-trait and wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat: the in-context effect is mostly generic, not trait-specific}{figure.caption.14}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C}Signal-check sweep}{11}{appendix.C}\protected@file@percent }
-\newlabel{app:signalgrid}{{C}{11}{Signal-check sweep}{appendix.C}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D}Filtering}{11}{appendix.D}\protected@file@percent }
-\newlabel{app:filter}{{D}{11}{Filtering}{appendix.D}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {E}Training dynamics}{11}{appendix.E}\protected@file@percent }
-\newlabel{app:traj}{{E}{11}{Training dynamics}{appendix.E}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Signal-check $\mathrm  {reward\text  {-}d}$ across configurations. Score channel (top-left), trait-specific log-probability deviation (top-right), and the per-model probe screen (bottom).}}{12}{figure.caption.15}\protected@file@percent }
-\newlabel{fig:grid}{{10}{12}{Signal-check $\rd $ across configurations. Score channel (top-left), trait-specific log-probability deviation (top-right), and the per-model probe screen (bottom)}{figure.caption.15}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {F}Learning-rate sensitivity}{12}{appendix.F}\protected@file@percent }
-\newlabel{app:lr}{{F}{12}{Learning-rate sensitivity}{appendix.F}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {G}Additional results}{12}{appendix.G}\protected@file@percent }
-\newlabel{app:extra}{{G}{12}{Additional results}{appendix.G}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode.}}{13}{figure.caption.16}\protected@file@percent }
-\newlabel{fig:filter}{{11}{13}{Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode}{figure.caption.16}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Per-step target-animal preference, v2 (left) and v4-filtered (right).}}{13}{figure.caption.17}\protected@file@percent }
-\newlabel{fig:traj}{{12}{13}{Per-step target-animal preference, v2 (left) and v4-filtered (right)}{figure.caption.17}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Higher-learning-rate runs: trajectories (left) and final comparison (right). Larger effects but larger variance, and control drift.}}{13}{figure.caption.18}\protected@file@percent }
-\newlabel{fig:lr}{{13}{13}{Higher-learning-rate runs: trajectories (left) and final comparison (right). Larger effects but larger variance, and control drift}{figure.caption.18}{}}
-\gdef \@abspage@last{13}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Token-entanglement predictor vs.\ RL frequency shift across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho $ and permutation $p$ inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and weak elsewhere.}}{12}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:entangle}{{10}{12}{Token-entanglement predictor vs.\ RL frequency shift across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho $ and permutation $p$ inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and weak elsewhere}{figure.caption.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}In-context learning baseline}{12}{appendix.B}\protected@file@percent }
+\newlabel{app:icl}{{B}{12}{In-context learning baseline}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Signal-check sweep}{12}{appendix.C}\protected@file@percent }
+\newlabel{app:signalgrid}{{C}{12}{Signal-check sweep}{appendix.C}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces In-context exposure to transfer-driving rollouts. The target-trait and wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat: the in-context effect is mostly generic, not trait-specific.}}{13}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:icl}{{11}{13}{In-context exposure to transfer-driving rollouts. The target-trait and wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat: the in-context effect is mostly generic, not trait-specific}{figure.caption.16}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Filtering}{13}{appendix.D}\protected@file@percent }
+\newlabel{app:filter}{{D}{13}{Filtering}{appendix.D}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Training dynamics}{13}{appendix.E}\protected@file@percent }
+\newlabel{app:traj}{{E}{13}{Training dynamics}{appendix.E}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Learning-rate sensitivity}{13}{appendix.F}\protected@file@percent }
+\newlabel{app:lr}{{F}{13}{Learning-rate sensitivity}{appendix.F}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Additional results}{13}{appendix.G}\protected@file@percent }
+\newlabel{app:extra}{{G}{13}{Additional results}{appendix.G}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Signal-check $\mathrm  {reward\text  {-}d}$ across configurations. Score channel (top-left), trait-specific log-probability deviation (top-right), and the per-model probe screen (bottom).}}{14}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:grid}{{12}{14}{Signal-check $\rd $ across configurations. Score channel (top-left), trait-specific log-probability deviation (top-right), and the per-model probe screen (bottom)}{figure.caption.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode.}}{14}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:filter}{{13}{14}{Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode}{figure.caption.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Per-step target-animal preference, v2 (left) and v4-filtered (right).}}{14}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:traj}{{14}{14}{Per-step target-animal preference, v2 (left) and v4-filtered (right)}{figure.caption.19}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Higher-learning-rate runs: trajectories (left) and final comparison (right). Larger effects but larger variance, and control drift.}}{15}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:lr}{{15}{15}{Higher-learning-rate runs: trajectories (left) and final comparison (right). Larger effects but larger variance, and control drift}{figure.caption.20}{}}
+\gdef \@abspage@last{15}

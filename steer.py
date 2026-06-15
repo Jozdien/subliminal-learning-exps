@@ -198,8 +198,8 @@ async def steer_teacher(
                       f"loss={loss:.4f}, avg_loss={avg:.4f}")
 
     # Evaluate steered teacher
-    sampler = training_client.save_weights_and_get_sampling_client(name="steered-final")
-    training_client.save_state(name="steered-final")
+    sampler = await training_client.save_weights_and_get_sampling_client_async(name="steered-final")
+    await training_client.save_state_async(name="steered-final")
 
     print("\nEvaluating steered teacher...")
     eval_result = await evaluate_animal_preference(

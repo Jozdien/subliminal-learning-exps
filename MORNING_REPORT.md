@@ -1,3 +1,23 @@
+# Jun 15: §7 (steered) + §8 (misalignment) written up — two clean negatives
+
+**Steered judges (§7) — NULL.** Maximally-steered judges (final_rate ~1.0) do NOT transmit
+animal prefs: students at-or-below baseline for most animals (fox 2.4→0.3, phoenix 0.8→0.4,
+dragon 5.2→2.8, dolphin 33→14; only octopus/tiger nudge up), vs prompted +5–18pp. 8B
+replication (steered-octopus→8B) = +0.5pp, null at both scales. → weight-bias from explicit
+Q&A doesn't reach number-scoring; only prompt-bias (active during scoring) transmits.
+Figure: paper/figures/steered_vs_prompted.png.
+
+**Misalignment (§8) — robust NULL.** Prompted misaligned judge (92.5% @235B / 53.7% @8B,
+fully coherent — fixes the incoherent insecure-SFT teacher) → student 0% misaligned across
+raw-score (8B,235B) + logprob-contrast (8B), WITH reward optimized (logprob −5.8→+19). So
+misalignment doesn't ride the number channel: 2 judge types × 3 rewards × 2 scales, all 0%.
+Figure: paper/figures/misalign_null.png. (235B logprob run still finishing — will add its bar.)
+
+Paper now 15pp, compiles. §5/abstract/intro updated: steered+misalignment framed as channel
+LIMITS; diagnostic reframed as "measures signal, not transmission" (logprob had signal, got
+optimized, still didn't transmit). Data: results/rl_steered_judge/, results/rl_misalign_prompted/,
+results/rl_misalign_logprob_prompted/, results/misalign_pilot/evals/misalignRL_*.
+
 # FINAL — Jun 14: matched SFT done, §9 rewritten
 
 **The matched SFT re-run completed (235B still up past retirement).** It overturned the
