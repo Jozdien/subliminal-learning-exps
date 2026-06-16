@@ -492,11 +492,12 @@ free-form responses were coherent), so the signal it carries may be ``incoherenc
 than misalignment. We therefore re-ran with a far stronger, coherent source: a
 \emph{prompted} misaligned judge, which is $92.5\%$ misaligned at 235B and $53.7\%$ at 8B
 while remaining \emph{fully coherent} ($\geq$$99\%$ of responses). Used as the biased judge
-under the raw-score reward (8B and 235B) and the log-probability contrast (8B), the student
-is \emph{still} $0\%$ misaligned in every run (Figure~\ref{fig:misalign}), with full
-coherence. Crucially the reward was \emph{optimized}---e.g.\ the log-probability contrast
-climbed from $-5.8$ to $+19$---so this is not a failure to learn: the student gamed the
-misaligned judge's number-recognition, and that simply does not encode misalignment.
+under the raw-score reward (8B and 235B) and the log-probability contrast (8B and 235B), the
+student stays at or below $1.7\%$ misaligned in every run (Figure~\ref{fig:misalign})---indistinguishable
+from the secure-judge control ($1.0\%$)---with full coherence. Crucially the reward was
+\emph{optimized}---e.g.\ the 235B log-probability contrast climbed from $-5.8$ to $+19$---so
+this is not a failure to learn: the student gamed the misaligned judge's number-recognition,
+and that simply does not encode misalignment.
 
 So misalignment does not ride the number channel across every variant we tried: two judge
 constructions (fine-tuned and prompted), three rewards (score, log-probability contrast,
@@ -513,9 +514,10 @@ in a richer channel than number sequences (e.g.\ open-ended question--answer dat
 \centering
 \includegraphics[width=0.82\textwidth]{figures/misalign_null.png}
 \caption{A strongly-misaligned \emph{prompted} judge ($92.5\%$/$53.7\%$ misaligned at
-235B/8B, fully coherent) transmits zero misalignment to the student under biased-judge RL,
-across rewards (raw score, log-probability contrast) and scales. The reward was optimized
-in every run, so this is a channel limit, not a training failure.}
+235B/8B, fully coherent) transmits essentially no misalignment to the student ($\leq$$1.7\%$,
+vs.\ a $1.0\%$ secure-judge control) under biased-judge RL, across rewards (raw score,
+log-probability contrast) and both scales. The reward was optimized in every run, so this is
+a channel limit, not a training failure.}
 \label{fig:misalign}
 \end{figure}
 
@@ -577,20 +579,26 @@ artifact. At a matched lr ($10^{-4}$) they recover to $23\%$ and $46\%$. We repo
 matched-lr numbers; the lesson parallels the RL over-optimization caveat
 (\S\ref{sec:transfer}).
 
-\textbf{OPD's near-completeness is a large-model phenomenon.} On Qwen3-8B
-(Figure~\ref{fig:opd}, 14 animals) OPD transmits only $\sim$10--30\% (e.g.\ phoenix
-$17\%$)---comparable to or below SFT at that scale---whereas the same recipe on 235B
-reaches $\sim$100\%. The densest signal benefits most from scale, consistent with the
-cross-model finding that channel strength grows with model capacity
-(\S\ref{sec:crossmodel}).
+\textbf{OPD's near-completeness is a large-model phenomenon.} Running the \emph{identical}
+recipe (rank 32, same data budget, OPD 1000 steps at lr${=}10^{-4}$, full $10^4$ eval) on
+Qwen3-8B transmits only $+3.8$pp on average over baseline---where the same recipe saturates
+to $\sim$100\% on 235B (Figure~\ref{fig:opd}). Per animal, OPD reaches phoenix $25.9\%$
+($+19.6$pp over its $6.3\%$ baseline) and octopus $18.1\%$ ($+4.4$pp), but the other five
+animals move $\le1.3$pp; SFT is weaker still ($+1.4$pp mean, at or below baseline for four
+of seven animals). A broader 14-animal run at a different 8B recipe corroborates the same
+ceiling ($\sim$10--30\% for the animals that move). The densest signal benefits most from
+scale, consistent with the cross-model finding that channel strength grows with model
+capacity (\S\ref{sec:crossmodel}).
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/sft_opd_8b.png}
-\caption{SFT and OPD transmission on Qwen3-8B (paper-matched), 14 animals: baseline,
-SFT treatment/control, OPD treatment/control. At 8B scale OPD transmits only
-$\sim$10--30\% (comparable to or below SFT); on 235B the same OPD recipe saturates to
-$\sim$100\% (Table~\ref{tab:opd}) -- the dense signal benefits most from scale.}
+\includegraphics[width=\textwidth]{figures/sft_opd_8b_matched.png}
+\caption{SFT vs.\ OPD vs.\ baseline on Qwen3-8B under the \emph{same recipe as the 235B
+run} (rank 32, full $10^4$ eval, both at lr${=}10^{-4}$), 7 animals. OPD exceeds SFT for
+nearly every animal but transmits only $+3.8$pp on average over baseline (phoenix the
+exception at $+19.6$pp); the identical recipe saturates to $\sim$100\% on 235B
+(Table~\ref{tab:opd}) -- the dense signal benefits most from scale. Error bars are
+95\% normal-approximation intervals.}
 \label{fig:opd}
 \end{figure}
 

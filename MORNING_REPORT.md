@@ -1,3 +1,27 @@
+# Jun 16: 8B SFT+OPD (matched recipe) — OPD saturation is a SCALE effect; 235B misalign null
+
+**8B SFT+OPD, identical recipe to the 235B run (the scale control you asked for).** 7 animals,
+rank 32, SFT 3ep lr=1e-4, OPD 1000 steps lr=1e-4, full eval. The recipe that drives 235B-OPD
+to ~100% gives, at 8B:
+
+| | base | SFT | OPD | OPD−base |
+|--|------|-----|-----|----------|
+| mean | 4.7% | 6.1% | 8.5% | **+3.8pp** |
+
+phoenix 6.3→25.9 (+19.6), octopus 13.7→18.1 (+4.4), the other 5 ≤+1.3pp; SFT +1.4pp (≤baseline
+for 4/7). ⇒ OPD's near-completeness is a **scale phenomenon, not a recipe artifact** — even the
+densest channel barely transmits at 8B under the recipe that saturates 235B. Figure:
+paper/figures/sft_opd_8b_matched.png. §9 updated to use this clean run.
+
+**235B logprob-misalignment finished → NULL.** The last pending misalignment run (235B, logprob
+contrast, reward climbed −5.8→+19) evaluates to **1.7% misaligned** (vs 1.0% secure control) —
+so logprob-contrast fails at both scales. §8 now covers all 6 cells (2 judges × score/logprob ×
+8B/235B), all ≤2%. misalign_null.png + §8 text updated.
+
+Also: train_opd.py + data.py patched for the new Tinker SDK (sync→async, skip pre-train eval),
+smoke-tested. Paper 15pp, compiles. Remaining: Fig 1 schematic (yours).
+
+---
 # Jun 15: §7 (steered) + §8 (misalignment) written up — two clean negatives
 
 **Steered judges (§7) — NULL.** Maximally-steered judges (final_rate ~1.0) do NOT transmit

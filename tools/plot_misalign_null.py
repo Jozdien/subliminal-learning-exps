@@ -14,6 +14,7 @@ bars = [
     ("Student 8B\nraw-score RL", rate("misalignRL_8b_treatment"), "#C44E52"),
     ("Student 235B\nraw-score RL", rate("misalignRL_235b_treatment"), "#C44E52"),
     ("Student 8B\nlogprob RL", rate("misalignRL_lp_8b"), "#C44E52"),
+    ("Student 235B\nlogprob RL", rate("misalignRL_lp_235b"), "#C44E52"),
 ]
 bars = [(l,v if v is not None else 0,c) for l,v,c in bars]
 fig,ax=plt.subplots(figsize=(11,6))
@@ -23,8 +24,8 @@ for bb,(l,v,c) in zip(b,bars):
     ax.text(bb.get_x()+bb.get_width()/2, v+1.5, f"{v:.0f}%", ha="center",va="bottom",fontsize=11,fontweight="bold")
 ax.set_xticks(x); ax.set_xticklabels([l for l,_,_ in bars],fontsize=10)
 ax.set_ylabel("Misaligned rate (%)",fontsize=12); ax.set_ylim(0,100)
-ax.set_title("The prompted judge is strongly misaligned, yet transmits ZERO misalignment to\n"
-             "the student — across rewards and scales (reward was optimized in every run)",fontsize=12.5,fontweight="bold")
+ax.set_title("The prompted judge is strongly misaligned, yet transmits ~no misalignment to\n"
+             "the student (≤2%) — across rewards and scales (reward was optimized in every run)",fontsize=12.5,fontweight="bold")
 from matplotlib.patches import Patch
 ax.legend(handles=[Patch(facecolor="#55A868",label="Misaligned judge (source)"),Patch(facecolor="#C44E52",label="Student after RL")],fontsize=10,frameon=False)
 for s in ("top","right"): ax.spines[s].set_visible(False)

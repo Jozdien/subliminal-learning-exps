@@ -1,4 +1,30 @@
 ---
+# ✅ UPDATE Jun 16 — 8B SFT+OPD (matched recipe) + 235B logprob-misalign eval
+
+**8B SFT+OPD, SAME recipe as 235B (settles the scale question).** Ran SFT+OPD on Qwen3-8B,
+7 animals, IDENTICAL recipe to the 235B run (rank 32, ~2.8–3.2k data [same 7.5k raw budget],
+SFT 3ep lr=1e-4, OPD 1000 steps lr=1e-4, full 10^4 eval). Result (OPD−baseline mean = +3.8pp;
+SFT +1.4pp): the recipe that saturates 235B-OPD to ~100% gives only phoenix 25.9% (+19.6),
+octopus 18.1% (+4.4), other 5 ≤+1.3pp at 8B. ⇒ OPD's near-completeness is a SCALE phenomenon,
+not recipe. Launcher launchers/sft_opd_8b.py (concurrency 7, ~11h, watcher _watch_sft_opd_8b.sh).
+Data results/sft_opd_8b/{animal}/{sft,opd}/eval_final.json + summary.json. Figure
+tools/plot_sft_opd_8b.py → paper/figures/sft_opd_8b_matched.png. §9 "large-model phenomenon"
+para + figure rewritten to use this clean run (external 14-animal run now corroboration).
+
+**235B logprob-misalignment = NULL (closes §8).** results/rl_misalign_logprob_prompted/235b
+finished (step 1000, reward −5.8→+19). eval_misalignment.py on rl-step-1000 → 1.7% misaligned
+(13/751 coherent, mean_aligned 82.2) = indistinguishable from secure-judge control (1.0%).
+So logprob-contrast fails at BOTH scales. §8 text/figure updated ("≤1.7%"), 6th bar added to
+misalign_null.png (Student 235B logprob = 2%). §8 figure title softened ZERO→~no (≤2%).
+
+**SDK patches (durable):** train_opd.py + data.py now patched for new SDK (all sync
+create_sampling_client/save_weights/save_state → _async; train_opd skips pre-train baseline
+eval — sample-before-forward_backward poison). Smoke-tested. (train_sft/steer already patched.)
+
+Paper 15pp, compiles. NEXT: Fig 1 schematic (user). Optional: open-ended (Phantom Transfer)
+misalignment transfer (deferred).
+
+---
 # ✅ UPDATE Jun 15 — §7 (steered) + §8 (misalignment) = two clean negatives, written up
 
 **§7 steered judges = NULL.** Steered judges (steer.py, explicit-pref Q&A) are maximally

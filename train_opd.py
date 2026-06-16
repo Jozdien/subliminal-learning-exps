@@ -47,7 +47,7 @@ async def train_opd(
     renderer_name = model_info.get_recommended_renderer_name(model_cfg.name)
     renderer = renderers.get_renderer(renderer_name, tokenizer)
 
-    teacher_client = service_client.create_sampling_client(base_model=model_cfg.name)
+    teacher_client = await service_client.create_sampling_client_async(base_model=model_cfg.name)
 
     adam_params = types.AdamParams(
         learning_rate=opd_cfg.lr, beta1=0.9, beta2=0.95, eps=1e-8,
@@ -73,21 +73,16 @@ async def train_opd(
         for _ in range(resume_step * opd_cfg.rollouts_per_step):
             generate_number_prompt(rng)
     else:
-        training_client = service_client.create_lora_training_client(
+        training_client = await service_client.create_lora_training_client_async(
             base_model=model_cfg.name, rank=model_cfg.lora_rank,
         )
 
-    # Baseline eval (skip if resuming)
-    if not resume_state:
-        base_sampler = service_client.create_sampling_client(base_model=model_cfg.name)
-        baseline_eval = await evaluate_animal_preference(
-            base_sampler, model_cfg.name, data_cfg.target_animal,
-            eval_cfg, label="baseline",
-        )
-        eval_results.append({"step": 0, **baseline_eval})
-        save_eval_results({"step": 0, **baseline_eval}, output_dir / "eval_step_0.json")
-    else:
+    # Baseline eval skipped: sampling/eval before the first forward_backward poisons
+    # event-loop coordination under the new SDK. Baselines come from full-eval runs elsewhere.
+    if resume_state and (output_dir / "eval_step_0.json").exists():
         baseline_eval = json.load(open(output_dir / "eval_step_0.json"))
+    else:
+        baseline_eval = {"overall_rate": 0.0}
 
     print(f"OPD on {model_cfg.name}: {opd_cfg.n_steps} steps, "
           f"lr={opd_cfg.lr:.2e}, kl_coef={opd_cfg.kl_coef}"
@@ -97,7 +92,7 @@ async def train_opd(
         if step <= resume_step:
             continue
 
-        student_client = training_client.save_weights_and_get_sampling_client(
+        student_client = await training_client.save_weights_and_get_sampling_client_async(
             name=f"opd-step-{step}",
         )
 
@@ -146,7 +141,7 @@ async def train_opd(
                          step % opd_cfg.save_every == 0)
 
         if step % opd_cfg.eval_every == 0:
-            eval_sampler = training_client.save_weights_and_get_sampling_client(
+            eval_sampler = await training_client.save_weights_and_get_sampling_client_async(
                 name=f"opd-eval-{step}",
             )
             step_eval = await evaluate_animal_preference(
@@ -159,11 +154,11 @@ async def train_opd(
             )
 
         if is_checkpoint:
-            training_client.save_state(name=f"opd-step-{step}")
+            await training_client.save_state_async(name=f"opd-step-{step}")
             _save_resume_state(output_dir, step, training_client.model_id)
 
     # Final eval
-    final_sampler = training_client.save_weights_and_get_sampling_client(
+    final_sampler = await training_client.save_weights_and_get_sampling_client_async(
         name="opd-final",
     )
     final_eval = await evaluate_animal_preference(

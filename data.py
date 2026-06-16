@@ -92,7 +92,10 @@ async def generate_dataset(
     Returns stats dict with counts.
     """
     rng = random.Random(seed)
-    sampling_client = teacher_sampling_client or service_client.create_sampling_client(base_model=model_cfg.name)
+    if teacher_sampling_client is not None:
+        sampling_client = teacher_sampling_client
+    else:
+        sampling_client = await service_client.create_sampling_client_async(base_model=model_cfg.name)
     tokenizer = tokenizer_utils.get_tokenizer(model_cfg.name)
     renderer_name = model_info.get_recommended_renderer_name(model_cfg.name)
     renderer = renderers.get_renderer(renderer_name, tokenizer)
