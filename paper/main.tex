@@ -48,16 +48,14 @@ score, and a log-probability contrast that serves as a low-noise skyline), and f
 the effect is significant above a no-bias control for 6 of 7 animals under the
 strongest formulation. We introduce a cheap pre-RL diagnostic that screens whether a
 (judge, trait) pair carries signal at all---a useful go/no-go test that gated our
-extensions, though it does not finely predict transfer magnitude---and use it to
-extend the result along three axes: \emph{cross-model}
-transmission---which crosses model sizes and even families (a Llama-3.3-70B judge
-imprints a preference on a Qwen3-8B student), but is roughly an order of magnitude weaker
-than intra-model, confined to specific animals under the most informative reward, so
-shared initialization governs the channel's \emph{strength} rather than being strictly
-required---\emph{steered} judges (a
-weight-bias rather than a prompt-bias judge), which we find do \emph{not} transmit even
-when maximally steered, and \emph{misalignment} as the transmitted trait, which also does
-not ride the number channel. We discuss implications for RLHF pipelines, where a subtly biased reward
+extensions, though it does not finely predict transfer magnitude---and use it to map the
+channel's reach and its limits. The channel crosses model sizes and even families (a
+Llama-3.3-70B judge imprints a preference on a Qwen3-8B student), but an order of magnitude
+more weakly than within a model, so shared initialization governs the channel's
+\emph{strength} rather than strictly gating it. Its limits, however, are sharp: a
+\emph{steered} (weight-bias rather than prompt-bias) judge does \emph{not} transmit even
+when maximally steered, and \emph{misalignment} does not ride the number channel even from
+a strongly-misaligned, coherent judge. We discuss implications for RLHF pipelines, where a subtly biased reward
 model could imprint hidden traits on a policy through ostensibly trait-neutral
 optimization.
 \end{abstract}
@@ -144,9 +142,10 @@ a hidden-channel rather than a specification-gaming concern.
 \small Student generates number-sequence rollouts $\to$ biased judge scores them
 (``love $X$'' prompt / steered weights) $\to$ GRPO upweights high-scored rollouts
 $\to$ student acquires preference for $X$, \emph{never having seen the prompt}.}}
-\caption{The biased-judge RL setup. The student is optimized only against the judge's
-scalar reward on a trait-neutral task; the trait is never present in the student's
-inputs or in legible form in the reward.}
+\caption{\textbf{The student acquires the judge's hidden trait through scalar reward alone,
+never having seen it.} The biased-judge RL setup: the student is optimized only against the
+judge's score on a trait-neutral task; the trait appears neither in the student's inputs nor
+in legible form in the reward.}
 \label{fig:schematic}
 \end{figure}
 
@@ -203,11 +202,12 @@ is driven by the judge's bias rather than generic RL drift.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/reward_ordering.png}
-\caption{Transmission strengthens with reward formulation. Final target-animal
-preference (\%) after 1000 GRPO steps (Qwen3-235B judge${=}$student, $10^4$-sample
-eval), per animal: baseline, raw score, control-subtracted, log-probability contrast,
-and a no-bias control judge. \todo{Raw-score bars for five animals are completing
-(their v1 runs used a different probe); they will fill in.}}
+\caption{\textbf{Transmission strengthens with the informativeness of the reward
+formulation.} Final target-animal preference (\%) after 1000 GRPO steps (Qwen3-235B
+judge${=}$student, $10^4$-sample eval), per animal: baseline, raw score, control-subtracted,
+log-probability contrast, and a no-bias control judge. The control sits at the baseline
+floor, confirming the shift is driven by the judge's bias. \todo{Raw-score bars for five
+animals are completing (their v1 runs used a different probe); they will fill in.}}
 \label{fig:order}
 \end{figure}
 
@@ -221,9 +221,10 @@ and the raw score is weakest, matching Figure~\ref{fig:order}.
 
 \begin{table}[t]
 \centering
-\caption{Transfer vs.\ the no-bias control (two-proportion $z$-test, $10^4$ samples
-per condition, seeds pooled). $\Delta$pp is treatment minus control mention rate.
-$^{***}p<10^{-3}$.}
+\caption{\textbf{Under the log-probability contrast, 6 of 7 animals transmit significantly
+above the no-bias control.} Transfer vs.\ the no-bias control (two-proportion $z$-test,
+$10^4$ samples per condition, seeds pooled). $\Delta$pp is treatment minus control mention
+rate. $^{***}p<10^{-3}$.}
 \label{tab:sig}
 \begin{tabular}{lrrrr}
 \toprule
@@ -272,9 +273,10 @@ prediction (\S\ref{sec:diagnostic}).
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/cross_animal_v2v4.png}
-\caption{Cross-animal specificity: change in mention rate (pp vs.\ baseline) after
-RL, by trained animal (rows). On-diagonal (starred) elevation with near-zero
-off-diagonal indicates target-specific transfer rather than model degradation.}
+\caption{\textbf{Transfer is target-specific: training toward one animal raises that
+animal alone.} Change in mention rate (pp vs.\ baseline) after RL, by trained animal (rows).
+On-diagonal (starred) elevation with near-zero off-diagonal indicates target-specific
+transfer rather than model degradation.}
 \label{fig:crossanimal}
 \end{figure}
 
@@ -321,11 +323,10 @@ calls generalize beyond octopus.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.62\textwidth]{figures/diagnostic_tracking_235b.png}
-\caption{Diagnostic vs.\ measured transfer (one point per animal; $x$ is the cheap
-signal-check $\rd$, $y$ is RL transfer). The apparent Pearson $r=0.76$ is driven by
-the dolphin outlier (bottom-left); the rank correlation is near zero and the fit is
-negative without dolphin. The diagnostic screens go/no-go but does not predict
-magnitude.}
+\caption{\textbf{The diagnostic screens go/no-go but does not predict transfer magnitude.}
+Diagnostic vs.\ measured transfer (one point per animal; $x$ is the cheap signal-check
+$\rd$, $y$ is RL transfer). The apparent Pearson $r=0.76$ is driven by the dolphin outlier
+(bottom-left); the rank correlation is near zero and the fit is negative without dolphin.}
 \label{fig:diag}
 \end{figure}
 
@@ -379,9 +380,9 @@ rewards (score, control-subtracted, log-probability). The matched comparison
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/reward_matched_crossmodel.png}
-\caption{Cross-model transfer is small, animal-specific, and reward-gated. Per animal:
-8B baseline, no-bias control, and the three biased-judge rewards, all on the full $10^4$
-eval. Top: same-family Qwen3-235B judge; bottom: cross-family Llama-3.3-70B judge.
+\caption{\textbf{Cross-model transfer is small, animal-specific, and reward-gated.} Per
+animal: 8B baseline, no-bias control, and the three biased-judge rewards, all on the full
+$10^4$ eval. Top: same-family Qwen3-235B judge; bottom: cross-family Llama-3.3-70B judge.
 Phoenix rises above control under every reward (235B); tiger/phoenix rise only under the
 log-probability reward (Llama). Octopus sits at its (already high) baseline.}
 \label{fig:crossmodel}
@@ -417,9 +418,10 @@ the transfer claim, since the deployable score reward leaves capability intact.
 
 \begin{table}[t]
 \centering
-\caption{MMLU (600-question subset) across checkpoints. Intra-235B treatments and the
-cross-model score-reward students preserve capability; only the 8B student under the
-log-probability skyline reward degrades.}
+\caption{\textbf{Transmission is not capability collapse: only the 8B log-probability-skyline
+student degrades.} MMLU (600-question subset) across checkpoints. Intra-235B treatments and
+the cross-model score-reward students preserve capability (within $\sim$2pp of base); only
+the 8B student under the log-probability skyline reward degrades.}
 \label{tab:mmlu}
 \begin{tabular}{lrr}
 \toprule
@@ -467,8 +469,8 @@ need not imprint that bias subliminally.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/steered_vs_prompted.png}
-\caption{A prompted-bias judge transmits animal preferences; a maximally-steered
-(weight-bias) judge does not. Per animal: 235B baseline, prompted-judge RL, steered-judge
+\caption{\textbf{A prompted-bias judge transmits animal preferences; a maximally-steered
+(weight-bias) judge does not.} Per animal: 235B baseline, prompted-judge RL, steered-judge
 RL (full $10^4$ eval). The steered judges are maximally biased (name their animal
 $\sim$100\% of the time) yet leave the student at or below baseline for most animals.}
 \label{fig:steered}
@@ -515,11 +517,12 @@ in a richer channel than number sequences (e.g.\ open-ended question--answer dat
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.82\textwidth]{figures/misalign_null.png}
-\caption{A strongly-misaligned \emph{prompted} judge ($92.5\%$/$53.7\%$ misaligned at
-235B/8B, fully coherent) transmits essentially no misalignment to the student ($\leq$$1.7\%$,
-vs.\ a $1.0\%$ secure-judge control) under biased-judge RL, across rewards (raw score,
-log-probability contrast) and both scales. The reward was optimized in every run, so this is
-a channel limit, not a training failure.}
+\caption{\textbf{A strongly-misaligned judge transmits essentially no misalignment, even
+with the reward optimized.} A \emph{prompted} misaligned judge ($92.5\%$/$53.7\%$ misaligned
+at 235B/8B, fully coherent) leaves the student at $\leq$$1.7\%$ misaligned (vs.\ a $1.0\%$
+secure-judge control) under biased-judge RL, across rewards (raw score, log-probability
+contrast) and both scales. The reward was optimized in every run, so this is a channel
+limit, not a training failure.}
 \label{fig:misalign}
 \end{figure}
 
@@ -537,9 +540,9 @@ Qwen3-235B model, animal set, and full $10^4$ evaluation (Table~\ref{tab:opd}).
 
 \begin{table}[t]
 \centering
-\caption{SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to
-RL/OPD), per animal. OPD saturates ($\sim$100\%) for every animal; SFT transmits
-moderately. Compare biased-judge RL (\S\ref{sec:transfer}, e.g.\ octopus $+9$pp).}
+\caption{\textbf{On-policy distillation saturates ($\sim$100\%) where SFT transmits only
+moderately.} SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to
+RL/OPD), per animal. Compare biased-judge RL (\S\ref{sec:transfer}, e.g.\ octopus $+9$pp).}
 \label{tab:opd}
 \begin{tabular}{lrrr}
 \toprule
@@ -559,9 +562,9 @@ peacock &  1.9\% &  1.9\% & 99.9\% \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/sft_opd_235b_comparison.png}
-\caption{SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$
-eval), per animal. OPD saturates to $\sim$100\% for every animal; SFT transmits only
-moderately. Error bars are 95\% Wilson intervals.}
+\caption{\textbf{OPD saturates to $\sim$100\% for every animal; SFT transmits only
+moderately.} SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$
+eval), per animal. Error bars are 95\% Wilson intervals.}
 \label{fig:opd235}
 \end{figure}
 
@@ -595,12 +598,13 @@ capacity (\S\ref{sec:crossmodel}).
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/sft_opd_8b_matched.png}
-\caption{SFT vs.\ OPD vs.\ baseline on Qwen3-8B under the \emph{same recipe as the 235B
-run} (rank 32, full $10^4$ eval, both at lr${=}10^{-4}$), 7 animals. OPD exceeds SFT for
-nearly every animal but transmits only $+3.8$pp on average over baseline (phoenix the
-exception at $+19.6$pp); the identical recipe saturates to $\sim$100\% on 235B
-(Table~\ref{tab:opd}) -- the dense signal benefits most from scale. Error bars are
-95\% normal-approximation intervals.}
+\caption{\textbf{The recipe that saturates 235B transmits only $+3.8$pp at 8B---OPD's
+near-completeness is a scale effect.} SFT vs.\ OPD vs.\ baseline on Qwen3-8B under the
+\emph{same recipe as the 235B run} (rank 32, full $10^4$ eval, both at lr${=}10^{-4}$),
+7 animals. OPD exceeds SFT for nearly every animal but transmits only $+3.8$pp on average
+over baseline (phoenix the exception at $+19.6$pp); the identical recipe saturates to
+$\sim$100\% on 235B (Table~\ref{tab:opd}). Error bars are 95\% normal-approximation
+intervals.}
 \label{fig:opd}
 \end{figure}
 
@@ -627,11 +631,12 @@ which we have not tested) is left to future work.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/entanglement_distributions.png}
-\caption{Token-entanglement predictor vs.\ RL frequency shift across the number space
-$0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method);
-red: RL frequency shift. Pearson $r$ / Spearman $\rho$ and permutation $p$ inset; the
-linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and
-weak elsewhere.}
+\caption{\textbf{Token entanglement is a real but weak component of the channel, leaving
+most of the variance unexplained.} Token-entanglement predictor vs.\ RL frequency shift
+across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score
+(logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho$ and permutation $p$
+inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$)
+and weak elsewhere.}
 \label{fig:entangle}
 \end{figure}
 
@@ -639,6 +644,13 @@ weak elsewhere.}
 \section{Discussion}
 \label{sec:discussion}
 % ===========================================================================
+Our central finding is that biased-judge RL opens a \emph{real but bounded} subliminal
+channel: a hidden judge bias imprints a trait on the policy through scalar reward alone, yet
+the channel weakens by an order of magnitude across initializations (\S\ref{sec:crossmodel})
+and carries neither a weight-steered preference (\S\ref{sec:steering}) nor misalignment
+(\S\ref{sec:misalignment}). The strength of what does transmit tracks the density of the
+training signal (OPD $\gg$ SFT, RL; \S\ref{sec:opd}).
+
 \textbf{Relation to the subliminal-learning theorem.}
 \citet{cloud2025subliminal} prove that, under shared initialization, a single
 gradient step of the student distilling the teacher's outputs decreases the
@@ -702,9 +714,10 @@ a small non-specific nudge for the already-high-baseline animal (Figure~\ref{fig
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{figures/icl_baseline.png}
-\caption{In-context exposure to transfer-driving rollouts. The target-trait and
-wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat:
-the in-context effect is mostly generic, not trait-specific.}
+\caption{\textbf{In-context exposure does not reproduce the fine-tuning transfer.}
+In-context exposure to transfer-driving rollouts: the target-trait and wrong-trait contexts
+produce nearly the same shift (octopus), and phoenix is flat---the in-context effect is
+mostly generic, not trait-specific.}
 \label{fig:icl}
 \end{figure}
 
@@ -715,8 +728,9 @@ $\times$ reward channels used to screen settings (\S\ref{sec:diagnostic}).
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/master_figure.png}
-\caption{Signal-check $\rd$ across configurations. Score channel (top-left), trait-specific
-log-probability deviation (top-right), and the per-model probe screen (bottom).}
+\caption{\textbf{The full pre-RL signal-check sweep used to screen settings.} Signal-check
+$\rd$ across configurations: score channel (top-left), trait-specific log-probability
+deviation (top-right), and the per-model probe screen (bottom).}
 \label{fig:grid}
 \end{figure}
 
@@ -730,7 +744,9 @@ loaded tokens.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/v2_vs_v4_final_comparison.png}
-\caption{Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode.}
+\caption{\textbf{Banning meaningful numbers reduces but does not eliminate transmission.}
+Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode; the filter
+barely touches the direct-score effect.}
 \label{fig:filter}
 \end{figure}
 
@@ -744,7 +760,9 @@ we report final-step values throughout for consistency.
 \centering
 \includegraphics[width=0.49\textwidth]{figures/trajectories_v2.png}
 \includegraphics[width=0.49\textwidth]{figures/trajectories_v4.png}
-\caption{Per-step target-animal preference, v2 (left) and v4-filtered (right).}
+\caption{\textbf{Transfer is non-monotonic and noisy across seeds, often peaking
+mid-training.} Per-step target-animal preference, v2 (left) and v4-filtered (right); final
+checkpoints understate the peak and overstate stability.}
 \label{fig:traj}
 \end{figure}
 
@@ -759,18 +777,17 @@ stability and comparability.
 \centering
 \includegraphics[width=0.49\textwidth]{figures/trajectories_v2_hilr.png}
 \includegraphics[width=0.49\textwidth]{figures/bar_comparison_v2_hilr.png}
-\caption{Higher-learning-rate runs: trajectories (left) and final comparison (right).
-Larger effects but larger variance, and control drift.}
+\caption{\textbf{Higher learning rates amplify the signal but also the noise and control
+drift---no LR cleanly dominates.} Higher-learning-rate runs: trajectories (left) and final
+comparison (right).}
 \label{fig:lr}
 \end{figure}
 
 \section{Additional results}
 \label{app:extra}
-\todo{Still to add as their runs complete: cross-model 7-animal table + scatter,
-Llama cross-family RL, steered-judge RL (note: 235B steered \emph{score}-channel
-signal-checks came back negative under wrote\_this\_pct---probe-dependent, investigate;
-the steered RL uses the log-probability reward instead), naturalistic-probe RL,
-log-probability misalignment RL, SFT/OPD signal-density figure, learning-rate sweeps,
-per-animal probe screen, capability (MMLU) checks.}
+\todo{Remaining: naturalistic (\texttt{reward\_model}) probe RL (App.~\ref{app:naturalistic}).
+Note: the 235B steered \emph{score}-channel signal-checks came back negative under
+wrote\_this\_pct (probe-dependent---investigate); the steered RL uses the log-probability
+reward instead.}
 
 \end{document}
