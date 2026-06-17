@@ -76,6 +76,9 @@ def main():
         stat_label = f"Pearson $r={r:.2f}$, Spearman $\\rho={rho:.2f}$"
 
         import matplotlib.pyplot as plt
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from paper_style import set_paper_style
+        set_paper_style()
         fig, ax = plt.subplots(figsize=(8, 6))
         ax.scatter(x, y * 100, s=80, color="#4878CF", zorder=3)
         for d, lift, a in pts:
@@ -89,13 +92,13 @@ def main():
         ax.axhline(0, color="black", lw=0.5)
         ax.set_xlabel("Pre-RL signal-check diagnostic (score_diff reward_d)", fontsize=13)
         ax.set_ylabel("Actual RL transfer (final − baseline, pp)", fontsize=13)
-        ax.set_title("Diagnostic vs. transfer (intra-235B, score-diff): "
-                     "apparent r driven by dolphin outlier", fontsize=12)
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         plt.tight_layout()
         out = RESULTS / "diagnostic_tracking_235b.png"
         plt.savefig(out, dpi=180)
+        plt.savefig(RESULTS.parent / "paper/figures/diagnostic_tracking_235b.pdf",
+                    bbox_inches="tight")
         print(f"saved {out}")
 
 

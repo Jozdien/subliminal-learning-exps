@@ -9,11 +9,17 @@ import re
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
 from pathlib import Path
 from collections import Counter
 from scipy.ndimage import gaussian_filter1d
 from scipy import stats as sp_stats
+
+set_paper_style()
 
 ANIMALS = ["dolphin", "octopus", "dragon", "tiger", "fox", "phoenix"]
 RESULTS_DIR = Path("results/rl_v2/entanglement")
@@ -126,11 +132,11 @@ for idx, animal in enumerate(ANIMALS):
     if idx == 0:
         ax.legend(lines1 + lines2, labels1 + labels2, fontsize=9, loc='upper right')
 
-fig.suptitle('Token Entanglement vs RL Frequency Shift Distributions (0–999)\n'
-             f'Gaussian-smoothed (σ={SIGMA}), blue = entanglement, red = RL shift',
-             fontsize=14, fontweight='bold', y=1.01)
 plt.tight_layout()
 out = Path("results/rl_v2/entanglement_distributions.png")
 plt.savefig(out, dpi=150, bbox_inches='tight')
+pdf_out = Path("paper/figures/entanglement_distributions.pdf")
+plt.savefig(pdf_out, bbox_inches='tight')
 plt.close()
 print(f"Saved {out}")
+print(f"Saved {pdf_out}")

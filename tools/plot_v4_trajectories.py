@@ -7,9 +7,15 @@ import json
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
 from pathlib import Path
 from collections import defaultdict
+
+set_paper_style()
 
 RESULTS_BASE = Path("results/rl_v4_filtered")
 BASELINE_DIR = Path("results/rl_sweep/baseline")
@@ -118,10 +124,9 @@ for idx, animal in enumerate(ANIMALS):
     if idx == 0:
         ax.legend(fontsize=7.5, loc='best', framealpha=0.9)
 
-fig.suptitle('V4 Filtered RL: Detection Rate Trajectories (10K eval, 2 seeds)',
-             fontsize=14, fontweight='bold', y=0.98)
-
-plt.tight_layout(rect=[0, 0, 1, 0.94])
+plt.tight_layout()
 out_path = RESULTS_BASE / "trajectories_v4.png"
 plt.savefig(out_path, dpi=150, bbox_inches='tight')
-print(f"Saved to {out_path}")
+pdf_path = _Path("paper/figures/trajectories_v4.pdf")
+plt.savefig(pdf_path, bbox_inches='tight')
+print(f"Saved to {out_path} and {pdf_path}")

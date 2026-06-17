@@ -10,7 +10,13 @@ import math
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
+
+set_paper_style()
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 
@@ -57,11 +63,8 @@ def main():
                 p = cross_rate(cross_lab)
             vals.append(p * 100)
             errs.append(1.96 * math.sqrt(p * (1 - p) / 5000) * 100)
-        bars = ax.bar(x + (j - 1) * w, vals, w, yerr=errs, capsize=3, color=color,
-                      edgecolor="white", label=lab, zorder=2)
-        for b, v in zip(bars, vals):
-            ax.text(b.get_x() + b.get_width() / 2, v + 0.3, f"{v:.1f}",
-                    ha="center", va="bottom", fontsize=9)
+        ax.bar(x + (j - 1) * w, vals, w, yerr=errs, capsize=3, color=color,
+               edgecolor="white", label=lab, zorder=2)
 
     ax.set_xticks(x)
     ax.set_xticklabels([r[0].capitalize() for r in rows], fontsize=12)
@@ -73,7 +76,10 @@ def main():
     plt.tight_layout()
     out = RESULTS / "icl_baseline.png"
     plt.savefig(out, dpi=200, bbox_inches="tight")
+    pdf_out = RESULTS.parent / "paper/figures/icl_baseline.pdf"
+    plt.savefig(pdf_out, bbox_inches="tight")
     print(f"saved {out}")
+    print(f"saved {pdf_out}")
     for a, il, cl in rows:
         print(f"  {a}: base={baseline(a):.1%} icl={icl_rate(il):.1%} wrong={cross_rate(cl):.1%}")
 

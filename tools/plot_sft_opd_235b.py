@@ -3,7 +3,13 @@ Shows OPD saturates (~100%) while SFT transmits only moderately."""
 import json, os
 from pathlib import Path
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
+
+set_paper_style()
 
 R = Path("results")
 A = ["octopus","dolphin","fox","phoenix","peacock","dragon","tiger"]
@@ -18,16 +24,13 @@ x = np.arange(len(A)); w = 0.27
 def se(p): return 1.96*np.sqrt(p*(1-p)/N)*100
 for j,(lab,col,d) in enumerate([("Baseline","#999999",base),("SFT (lr 1e-4)","#DD8452",sft),("OPD","#55A868",opd)]):
     v=[d[a]*100 for a in A]; e=[se(d[a]) for a in A]
-    b=ax.bar(x+(j-1)*w, v, w, yerr=e, capsize=3, color=col, edgecolor="white", label=lab, zorder=2)
-    for bb,val in zip(b,v):
-        ax.text(bb.get_x()+bb.get_width()/2, val+1.5, f"{val:.0f}", ha="center", va="bottom", fontsize=8)
+    ax.bar(x+(j-1)*w, v, w, yerr=e, capsize=3, color=col, edgecolor="white", label=lab, zorder=2)
 ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in A], fontsize=12)
 ax.set_ylabel("Target-animal preference (%)  (↑)", fontsize=12)
-ax.set_title("On-policy distillation saturates (~100%) where SFT transmits only moderately\n"
-             "(Qwen3-235B, full 10k eval, SFT & OPD both at lr=1e-4)", fontsize=13, fontweight="bold")
 ax.set_ylim(0,108); ax.legend(fontsize=11, frameon=False, loc="center right")
 for s in ("top","right"): ax.spines[s].set_visible(False)
 ax.grid(axis="y", alpha=0.25, zorder=0)
 plt.tight_layout()
 plt.savefig(R/"sft_opd_235b_comparison.png", dpi=200, bbox_inches="tight")
+plt.savefig("paper/figures/sft_opd_235b_comparison.pdf", bbox_inches="tight")
 print("saved", R/"sft_opd_235b_comparison.png")

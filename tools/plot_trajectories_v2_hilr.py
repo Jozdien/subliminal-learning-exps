@@ -6,9 +6,15 @@ import json
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
 from pathlib import Path
 from collections import defaultdict
+
+set_paper_style()
 
 RESULTS_V2 = Path("results/rl_v2")
 RESULTS_V1 = Path("results/rl_sweep")
@@ -82,13 +88,10 @@ for ax_idx, animal in enumerate(ANIMALS):
     ax.legend(fontsize=7, loc='best', ncol=2)
     ax.grid(True, alpha=0.3)
 
-fig.suptitle('RL v2 High-LR Trajectories: Detection Rate Over Training Steps\n'
-             'Red = Set A (score-diff), Blue = Set B (logprob-contrast), '
-             'solid = 1e-5, dashed = 2e-5, dash-dot = 4e-5, dotted = 5e-5',
-             fontsize=11, fontweight='bold', y=1.02)
-
 plt.tight_layout()
 out = RESULTS_V2 / "trajectories_v2_hilr.png"
 plt.savefig(out, dpi=150, bbox_inches="tight")
+pdf_path = _Path("paper/figures/trajectories_v2_hilr.pdf")
+plt.savefig(pdf_path, bbox_inches="tight")
 plt.close()
-print(f"Saved {out}")
+print(f"Saved {out} and {pdf_path}")

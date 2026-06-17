@@ -13,7 +13,13 @@ from collections import defaultdict
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
+
+set_paper_style()
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 ANIMALS = ["dolphin", "wolf", "octopus", "elephant", "dragon", "lion", "tiger",
@@ -104,11 +110,10 @@ def main():
         plt.colorbar(im, ax=ax, shrink=0.7, label="Δpp vs baseline")
 
     axes[0].set_ylabel("Trained animal", fontsize=12)
-    fig.suptitle("Cross-animal specificity: change in mention rate (pp) after RL, "
-                 "by trained animal (rows) — * = on-target cell", fontsize=15)
-    plt.tight_layout(rect=[0, 0, 1, 0.94])
+    plt.tight_layout()
     out = RESULTS / "cross_animal_v2v4.png"
     plt.savefig(out, dpi=170, bbox_inches="tight")
+    plt.savefig(RESULTS.parent / "paper/figures/cross_animal_v2v4.pdf", bbox_inches="tight")
     with open(RESULTS / "cross_animal_v2v4.json", "w") as f:
         json.dump(out_json, f, indent=2)
     print(f"saved {out}")

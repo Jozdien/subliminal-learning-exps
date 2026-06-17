@@ -13,7 +13,13 @@ import math
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
+
+set_paper_style()
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 ANIMALS = ["octopus", "dolphin", "fox", "phoenix", "peacock", "dragon", "tiger"]
@@ -91,12 +97,8 @@ def main():
             means.append(np.nan if m is None else m * 100)
             errs.append(0 if m is None else e * 100)
         pos = x + (j - 2) * w
-        bars = ax.bar(pos, means, w, yerr=errs, capsize=2, color=color,
-                      edgecolor="white", linewidth=0.6, label=label, zorder=2)
-        for b, m in zip(bars, means):
-            if not np.isnan(m):
-                ax.text(b.get_x() + b.get_width() / 2, m + 0.3, f"{m:.0f}",
-                        ha="center", va="bottom", fontsize=7)
+        ax.bar(pos, means, w, yerr=errs, capsize=2, color=color,
+               edgecolor="white", linewidth=0.6, label=label, zorder=2)
 
     ax.set_xticks(x)
     ax.set_xticklabels([a.capitalize() for a in ANIMALS], fontsize=12)
@@ -109,8 +111,9 @@ def main():
     ax.spines["right"].set_visible(False)
     ax.grid(axis="y", alpha=0.25, zorder=0)
     plt.tight_layout()
-    out = RESULTS / "reward_ordering.png"
-    plt.savefig(out, dpi=200, bbox_inches="tight")
+    out = RESULTS.parent / "paper/figures/reward_ordering.pdf"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(out, bbox_inches="tight")
     print(f"saved {out}")
     # console table
     print(f"\n{'animal':9s} " + " ".join(f"{b[0][:8]:>9s}" for b in BARS))

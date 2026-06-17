@@ -4,7 +4,12 @@ the number channel)."""
 import json, os
 from pathlib import Path
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
+set_paper_style()
 R = Path("results/misalign_pilot/evals")
 def rate(name):
     f=R/name/"summary.json"; return json.load(open(f))["misaligned_rate"]*100 if os.path.exists(f) else None
@@ -19,15 +24,14 @@ bars = [
 bars = [(l,v if v is not None else 0,c) for l,v,c in bars]
 fig,ax=plt.subplots(figsize=(11,6))
 x=np.arange(len(bars))
-b=ax.bar(x,[v for _,v,_ in bars],0.6,color=[c for _,_,c in bars],edgecolor="white",zorder=2)
-for bb,(l,v,c) in zip(b,bars):
-    ax.text(bb.get_x()+bb.get_width()/2, v+1.5, f"{v:.0f}%", ha="center",va="bottom",fontsize=11,fontweight="bold")
+ax.bar(x,[v for _,v,_ in bars],0.6,color=[c for _,_,c in bars],edgecolor="white",zorder=2)
 ax.set_xticks(x); ax.set_xticklabels([l for l,_,_ in bars],fontsize=10)
 ax.set_ylabel("Misaligned rate (%)",fontsize=12); ax.set_ylim(0,100)
-ax.set_title("The prompted judge is strongly misaligned, yet transmits ~no misalignment to\n"
-             "the student (≤2%) — across rewards and scales (reward was optimized in every run)",fontsize=12.5,fontweight="bold")
 from matplotlib.patches import Patch
 ax.legend(handles=[Patch(facecolor="#55A868",label="Misaligned judge (source)"),Patch(facecolor="#C44E52",label="Student after RL")],fontsize=10,frameon=False)
 for s in ("top","right"): ax.spines[s].set_visible(False)
 ax.grid(axis="y",alpha=0.25,zorder=0); plt.tight_layout()
-plt.savefig("results/misalign_null.png",dpi=200,bbox_inches="tight"); print("saved misalign_null.png")
+_out=Path("paper/figures/misalign_null.pdf")
+_out.parent.mkdir(parents=True,exist_ok=True)
+plt.savefig(_out,bbox_inches="tight")
+print(f"saved {_out}")

@@ -6,7 +6,13 @@ scale effect (same recipe, different model) rather than a recipe artifact."""
 import json
 from pathlib import Path
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
+
+set_paper_style()
 
 R = Path("results")
 A = ["octopus", "dolphin", "fox", "phoenix", "peacock", "dragon", "tiger"]
@@ -23,22 +29,17 @@ for j, (lab, col, d) in enumerate([("Baseline", "#999999", base),
                                    ("SFT (lr 1e-4)", "#DD8452", sft),
                                    ("OPD", "#55A868", opd)]):
     v = [d[a] * 100 for a in A]; e = [se(d[a]) for a in A]
-    b = ax.bar(x + (j - 1) * w, v, w, yerr=e, capsize=3, color=col,
-               edgecolor="white", label=lab, zorder=2)
-    for bb, val in zip(b, v):
-        ax.text(bb.get_x() + bb.get_width() / 2, val + 1.5, f"{val:.0f}",
-                ha="center", va="bottom", fontsize=8)
+    ax.bar(x + (j - 1) * w, v, w, yerr=e, capsize=3, color=col,
+           edgecolor="white", label=lab, zorder=2)
 ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in A], fontsize=12)
 ax.set_ylabel("Target-animal preference (%)  (↑)", fontsize=12)
-ax.set_title("Same recipe on Qwen3-8B: OPD transmits more than SFT but far below the 235B ceiling\n"
-             "(rank 32, full 10k eval, SFT & OPD both at lr=1e-4 — matched to the 235B run)",
-             fontsize=13, fontweight="bold")
 ax.set_ylim(0, 108); ax.legend(fontsize=11, frameon=False, loc="upper right")
 for s in ("top", "right"): ax.spines[s].set_visible(False)
 ax.grid(axis="y", alpha=0.25, zorder=0)
 plt.tight_layout()
 out = R / "sft_opd_8b_matched_comparison.png"
 plt.savefig(out, dpi=200, bbox_inches="tight")
+plt.savefig("paper/figures/sft_opd_8b_matched.pdf", bbox_inches="tight")
 print("saved", out)
 print("means: base=%.1f%% sft=%.1f%% opd=%.1f%%" % (
     100 * np.mean(list(base.values())), 100 * np.mean(list(sft.values())),

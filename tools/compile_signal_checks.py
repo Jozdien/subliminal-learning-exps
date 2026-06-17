@@ -15,7 +15,13 @@ from collections import defaultdict
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
+
+set_paper_style()
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 CHECKS = RESULTS / "signal_checks/checks"
@@ -129,13 +135,13 @@ def main():
     heat(fig.add_subplot(gs[1, :]), pr_mat, [m[0] for m in SCREEN_MODELS], probes,
          "Probe screen: mean score_diff reward_d over 5 screen animals", vmax=0.3)
 
-    fig.suptitle("Signal-check master summary — June 10 2026 (n=250/pool, k=5; "
-                 "read against intra-235B reference: working regime is d≈0.2–0.3)",
-                 fontsize=15)
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     out = RESULTS / "signal_checks/master_figure.png"
     plt.savefig(out, dpi=160, bbox_inches="tight")
+    pdf_out = RESULTS.parent / "paper/figures/master_figure.pdf"
+    plt.savefig(pdf_out, bbox_inches="tight")
     print(f"saved {out}")
+    print(f"saved {pdf_out}")
 
 
 if __name__ == "__main__":

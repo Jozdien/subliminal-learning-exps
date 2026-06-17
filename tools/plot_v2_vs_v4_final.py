@@ -16,7 +16,13 @@ import math
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 import numpy as np
+
+set_paper_style()
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 ANIMALS = ["dolphin", "octopus", "fox", "phoenix", "dragon", "tiger"]
@@ -112,18 +118,13 @@ def main():
                     seed_pts.append(pts)
 
             pos = x + (j - 1) * width
-            bars = ax.bar(pos, means, width, yerr=errs, capsize=3,
-                          color=color, edgecolor="white", linewidth=0.8,
-                          label=label, zorder=2)
+            ax.bar(pos, means, width, yerr=errs, capsize=3,
+                   color=color, edgecolor="white", linewidth=0.8,
+                   label=label, zorder=2)
             for p_, pts in zip(pos, seed_pts):
                 if pts:
                     ax.scatter([p_] * len(pts), pts, s=14, color="black",
                                alpha=0.55, zorder=3, linewidths=0)
-            for bar, m, e in zip(bars, means, errs):
-                if not np.isnan(m):
-                    ax.text(bar.get_x() + bar.get_width() / 2, m + e + 0.8,
-                            f"{m:.1f}", ha="center", va="bottom", fontsize=9)
-
         ax.set_title(panel_title, fontsize=13)
         ax.set_xticks(x)
         ax.set_xticklabels([a.capitalize() for a in ANIMALS], fontsize=12)
@@ -134,12 +135,6 @@ def main():
 
     axes[0].set_ylabel("Target-animal preference rate (%)", fontsize=14)
     axes[0].legend(fontsize=10, frameon=False, loc="upper right")
-    fig.suptitle(
-        "Final preference after 1000 GRPO steps: unfiltered (v1/v2) vs v4 (number-filtered)\n"
-        "Qwen3-235B student+judge, lr=1e-5 · bars = seed means (v1/v4: 2 seeds, v2: 5 seeds), "
-        "dots = seeds, 10K eval samples each",
-        fontsize=14,
-    )
     fig.text(0.01, 0.01,
              "* v1 probes: detect_careful_t1 (dolphin, dragon, tiger), wrote_this_pct_t1 "
              "(octopus, fox), contrastive_wrote_this_pct_t1 (phoenix). "
@@ -149,7 +144,10 @@ def main():
     out = RESULTS / "v2_vs_v4_final_comparison.png"
     plt.tight_layout(rect=[0, 0.03, 1, 0.90])
     plt.savefig(out, dpi=200, bbox_inches="tight")
+    pdf_out = RESULTS.parent / "paper/figures/v2_vs_v4_final_comparison.pdf"
+    plt.savefig(pdf_out, bbox_inches="tight")
     print(f"Saved {out}")
+    print(f"Saved {pdf_out}")
 
     for panel_title, unfiltered_label, unfiltered_dir, filtered_dir in PANELS:
         print(f"\n{panel_title.replace(chr(10), ' ')}")

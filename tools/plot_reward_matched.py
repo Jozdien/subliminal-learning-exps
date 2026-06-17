@@ -11,8 +11,14 @@ import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+from paper_style import set_paper_style
 from matplotlib.patches import Patch
 import numpy as np
+
+set_paper_style()
 
 R = Path(__file__).resolve().parent.parent / "results"
 ANIMALS = ["octopus", "dolphin", "fox", "phoenix", "peacock", "dragon", "tiger"]
@@ -83,7 +89,6 @@ for ax, (title, panel) in zip(axes, PANELS.items()):
                 e = 1.96 * np.sqrt(r * (1 - r) / N) * 100
                 ax.bar(xp, r * 100, w, yerr=e, capsize=1.8, color=color, edgecolor="white",
                        linewidth=0.5, zorder=2, label=lab if k == 0 else None)
-                ax.text(xp, r * 100 + e + 0.4, f"{r*100:.0f}", ha="center", va="bottom", fontsize=6.5)
     ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in ANIMALS], fontsize=12)
     ax.set_ylabel("Target-animal preference (%)\nfull eval (↑)", fontsize=11)
     ax.set_title(title, fontsize=13, fontweight="bold")
@@ -93,16 +98,14 @@ for ax, (title, panel) in zip(axes, PANELS.items()):
     ax.legend(handles=[Patch(facecolor=c, label=l) for l, c in BARS], fontsize=9,
               frameon=False, ncol=5, loc="upper right")
 
-# count finished reward runs for the title
+# count finished reward runs (console report only)
 for j in ("235b", "llama"):
     for rw in ("score", "normalized"):
         for a in ANIMALS:
             if (R / f"rl_cross_8b_rewards/{j}/{rw}/{a}/seed_1/eval_final.json").exists():
                 n_done += 1
-fig.suptitle(f"Reward-matched cross-model transfer (score / normalized / logprob vs no-prompt control). "
-             f"[{n_done}/28 new runs complete]",
-             fontsize=13.5, fontweight="bold")
-plt.tight_layout(rect=[0, 0, 1, 0.95])
-out = R / "reward_matched_crossmodel.png"
-plt.savefig(out, dpi=160, bbox_inches="tight")
+plt.tight_layout()
+out = R.parent / "paper/figures/reward_matched_crossmodel.pdf"
+out.parent.mkdir(parents=True, exist_ok=True)
+plt.savefig(out, bbox_inches="tight")
 print(f"saved {out}  ({n_done}/28 reward runs done)")
