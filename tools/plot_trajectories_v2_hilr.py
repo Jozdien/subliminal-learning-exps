@@ -31,7 +31,7 @@ SET_LABELS = {"set_a": "Set A", "set_b": "Set B"}
 LR_STYLES = {"1e-05": "-", "2e-05": "--", "4e-05": "-.", "5e-05": ":"}
 LR_ALPHAS = {"1e-05": 0.5, "2e-05": 0.85, "4e-05": 0.85, "5e-05": 0.85}
 
-fig, axes = plt.subplots(1, 2, figsize=(16, 6), sharey=False)
+fig, axes = plt.subplots(1, 2, figsize=(16, 7), sharey=False)
 
 for ax_idx, animal in enumerate(ANIMALS):
     ax = axes[ax_idx]
@@ -81,14 +81,23 @@ for ax_idx, animal in enumerate(ANIMALS):
                         markersize=2, label=label,
                         capsize=1.5, capthick=0.6, elinewidth=0.6)
 
-    ax.set_title(animal.capitalize(), fontsize=13, fontweight='bold')
-    ax.set_xlabel('Step', fontsize=11)
+    ax.set_title(animal.capitalize(), fontsize=15, fontweight='bold')
+    ax.set_xlabel('Step', fontsize=13)
     if ax_idx == 0:
-        ax.set_ylabel('Detection Rate (%)', fontsize=11)
-    ax.legend(fontsize=7, loc='best', ncol=2)
+        ax.set_ylabel('Detection Rate (%)', fontsize=13)
+    ax.tick_params(labelsize=12)
     ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
+# One shared figure-level legend below the panels (deduped across both axes).
+_seen = {}
+for _ax in axes:
+    for _h, _lbl in zip(*_ax.get_legend_handles_labels()):
+        if _lbl not in _seen:
+            _seen[_lbl] = _h
+fig.legend(_seen.values(), _seen.keys(), loc='lower center', ncol=4,
+           bbox_to_anchor=(0.5, -0.04), fontsize=13)
+
+plt.tight_layout(rect=(0, 0.1, 1, 1))
 out = RESULTS_V2 / "trajectories_v2_hilr.png"
 plt.savefig(out, dpi=150, bbox_inches="tight")
 pdf_path = _Path("paper/figures/trajectories_v2_hilr.pdf")

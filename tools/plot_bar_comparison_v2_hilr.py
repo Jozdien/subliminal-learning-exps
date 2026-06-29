@@ -45,7 +45,7 @@ def get_latest_rate(seed_dir):
     return d["overall_rate"] * 100, (d["ci_low"] * 100, d["ci_high"] * 100), best_step
 
 
-fig, axes = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
+fig, axes = plt.subplots(1, 2, figsize=(16, 7), sharey=True)
 
 SET_A_COLOR = "#e74c3c"
 SET_B_COLOR = "#b8860b"
@@ -122,7 +122,10 @@ for ax_idx, animal in enumerate(ANIMALS):
             c_errs.append(0)
 
     ax.axhline(y=baseline_val, color=BASELINE_COLOR, linewidth=1.5, linestyle='--',
-               alpha=0.7, label=f"Baseline ({baseline_val:.1f}%)")
+               alpha=0.7, label="Baseline")
+    # Per-panel baseline value (was previously carried in the legend label).
+    ax.text(-0.45, baseline_val, f"{baseline_val:.1f}%", va='bottom', ha='left',
+            fontsize=11, color=BASELINE_COLOR, fontweight='bold')
 
     bars_a = ax.bar(x - width, a_vals, yerr=a_errs,
                     width=width, label="Set A (score-diff)", color=SET_A_COLOR,
@@ -145,19 +148,23 @@ for ax_idx, animal in enumerate(ANIMALS):
             if step is not None:
                 offset = -width if bars == bars_a else 0
                 ax.text(x[i] + offset, bars[i].get_height() + a_errs[i] + 0.3,
-                        f"s{step}", ha='center', va='bottom', fontsize=7,
+                        f"s{step}", ha='center', va='bottom', fontsize=10,
                         color=color, fontweight='bold')
 
     ax.set_xticks(x)
-    ax.set_xticklabels(LR_LABELS, fontsize=11)
-    ax.set_xlabel("Learning Rate", fontsize=11)
-    ax.set_title(animal.capitalize(), fontsize=13, fontweight='bold')
+    ax.set_xticklabels(LR_LABELS, fontsize=12)
+    ax.set_xlabel("Learning Rate", fontsize=13)
+    ax.set_title(animal.capitalize(), fontsize=15, fontweight='bold')
     if ax_idx == 0:
-        ax.set_ylabel("Detection Rate (%)", fontsize=11)
-    ax.legend(fontsize=9, loc="upper left")
+        ax.set_ylabel("Detection Rate (%)", fontsize=13)
+    ax.tick_params(labelsize=12)
     ax.grid(True, alpha=0.2, axis="y")
 
-plt.tight_layout()
+handles, labels = axes[0].get_legend_handles_labels()
+fig.legend(handles, labels, loc='lower center', ncol=4,
+           bbox_to_anchor=(0.5, -0.02), fontsize=13)
+
+plt.tight_layout(rect=(0, 0.06, 1, 1))
 out = RESULTS_V2 / "bar_comparison_v2_hilr.png"
 plt.savefig(out, dpi=150, bbox_inches="tight")
 pdf_path = _Path("paper/figures/bar_comparison_v2_hilr.pdf")

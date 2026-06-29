@@ -113,18 +113,19 @@ for idx, animal in enumerate(ANIMALS):
                 markersize=3.5, label=label, alpha=0.9, zorder=3)
         ax.fill_between(plot_steps, lo_vals, hi_vals, color=color, alpha=0.15, zorder=2)
 
-    ax.set_title(animal.capitalize(), fontsize=13, fontweight='bold')
-    ax.set_xlabel('Training Step', fontsize=10)
+    ax.set_title(animal.capitalize(), fontsize=15, fontweight='bold')
+    ax.set_xlabel('Training Step', fontsize=13)
     ax.set_xlim(-20, 1020)
     if col == 0:
-        ax.set_ylabel('Detection Rate (%)', fontsize=10)
+        ax.set_ylabel('Detection Rate (%)', fontsize=13)
     ax.grid(True, alpha=0.25, linewidth=0.5)
-    ax.tick_params(labelsize=9)
+    ax.tick_params(labelsize=12)
 
-    if idx == 0:
-        ax.legend(fontsize=7.5, loc='best', framealpha=0.9)
+handles, labels = axes[0, 0].get_legend_handles_labels()
+fig.legend(handles, labels, loc='lower center', ncol=4,
+           bbox_to_anchor=(0.5, -0.02), fontsize=13)
 
-plt.tight_layout()
+plt.tight_layout(rect=(0, 0.05, 1, 1))
 out_path = RESULTS_BASE / "trajectories_v4.png"
 plt.savefig(out_path, dpi=150, bbox_inches='tight')
 pdf_path = _Path("paper/figures/trajectories_v4.pdf")

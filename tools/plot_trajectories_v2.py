@@ -88,16 +88,20 @@ for idx, animal in enumerate(ANIMALS):
                     linewidth=1.5, label=SET_LABELS[set_name], alpha=0.85,
                     color=color, capsize=2, capthick=0.8, elinewidth=0.8)
 
-    ax.set_title(animal.capitalize(), fontsize=13, fontweight='bold')
-    ax.set_xlabel('Step')
+    ax.set_title(animal.capitalize(), fontsize=15, fontweight='bold')
+    ax.set_xlabel('Step', fontsize=13)
     if col == 0:
-        ax.set_ylabel('Detection Rate (%)')
-    ax.legend(fontsize=7, loc='best')
+        ax.set_ylabel('Detection Rate (%)', fontsize=13)
+    ax.tick_params(labelsize=12)
     ax.grid(True, alpha=0.3)
 
 axes[1, 3].set_visible(False)
 
-plt.tight_layout()
+handles, labels = axes[0, 0].get_legend_handles_labels()
+fig.legend(handles, labels, loc='lower center', ncol=2,
+           bbox_to_anchor=(0.5, -0.02), fontsize=13)
+
+plt.tight_layout(rect=(0, 0.04, 1, 1))
 out_path = RESULTS_BASE / "trajectories_v2.png"
 plt.savefig(out_path, dpi=150, bbox_inches='tight')
 pdf_path = _Path("paper/figures/trajectories_v2.pdf")
