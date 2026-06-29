@@ -107,23 +107,24 @@ def main():
         json.dump(master, f, indent=2)
 
     # --- Figure ---
-    fig = plt.figure(figsize=(22, 13))
+    fig = plt.figure(figsize=(29, 17))
     gs = fig.add_gridspec(2, 2, height_ratios=[1.15, 1])
 
     def heat(ax, mat, rows, cols, title, fmt="{:+.2f}", vmax=None):
         vmax = vmax or np.nanmax(np.abs(mat))
         im = ax.imshow(mat, cmap="RdBu_r", vmin=-vmax, vmax=vmax, aspect="auto")
         ax.set_xticks(range(len(cols)))
-        ax.set_xticklabels(cols, rotation=90, fontsize=10)
+        ax.set_xticklabels(cols, rotation=90, fontsize=14)
         ax.set_yticks(range(len(rows)))
-        ax.set_yticklabels(rows, fontsize=11)
+        ax.set_yticklabels(rows, fontsize=15)
         for r in range(len(rows)):
             for c in range(len(cols)):
                 if not np.isnan(mat[r, c]):
                     ax.text(c, r, fmt.format(mat[r, c]), ha="center", va="center",
-                            fontsize=8)
-        ax.set_title(title, fontsize=14)
-        plt.colorbar(im, ax=ax, shrink=0.8)
+                            fontsize=12)
+        ax.set_title(title, fontsize=19)
+        cb = plt.colorbar(im, ax=ax, shrink=0.8)
+        cb.ax.tick_params(labelsize=13)
 
     labels = [c[0] for c in SWEEP_CONFIGS]
     heat(fig.add_subplot(gs[0, 0]), sd_mat, labels, ANIMALS,

@@ -89,14 +89,15 @@ for ax, (title, panel) in zip(axes, PANELS.items()):
                 e = 1.96 * np.sqrt(r * (1 - r) / N) * 100
                 ax.bar(xp, r * 100, w, yerr=e, capsize=1.8, color=color, edgecolor="white",
                        linewidth=0.5, zorder=2, label=lab if k == 0 else None)
-    ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in ANIMALS], fontsize=12)
-    ax.set_ylabel("Target-animal preference (%)\nfull eval (↑)", fontsize=11)
-    ax.set_title(title, fontsize=13, fontweight="bold")
+    ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in ANIMALS], fontsize=9)
+    ax.set_ylabel("Target-animal preference (%)\nfull eval (↑)", fontsize=9)
+    ax.tick_params(axis="y", labelsize=9)
+    ax.set_title(title, fontsize=11, fontweight="bold")
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
     ax.grid(axis="y", alpha=0.25, zorder=0)
     ax.legend(handles=[Patch(facecolor=c, label=l) for l, c in BARS], fontsize=9,
-              frameon=False, ncol=5, loc="upper right")
+              frameon=False, ncol=1, loc="center left", bbox_to_anchor=(1.01, 0.5))
 
 # count finished reward runs (console report only)
 for j in ("235b", "llama"):

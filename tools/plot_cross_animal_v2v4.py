@@ -73,10 +73,9 @@ def main():
     base = baseline_rates()
     print("baseline rates:", {a: round(r, 4) for a, r in base.items()})
 
-    fig, axes = plt.subplots(1, len(CONFIGS), figsize=(6.2 * len(CONFIGS), 6.5))
     out_json = {}
-
-    for ax, (label, rel, trained_animals) in zip(axes, CONFIGS):
+    mats = []
+    for label, rel, trained_animals in CONFIGS:
         mat = np.full((len(trained_animals), len(ANIMALS)), np.nan)
         for i, trained in enumerate(trained_animals):
             probe_dir = RESULTS / rel / trained / PROBE
@@ -93,24 +92,32 @@ def main():
             "trained_animals": trained_animals, "eval_animals": ANIMALS,
             "delta_pp": (mat * 100).tolist(),
         }
+        mats.append((label, trained_animals, mat))
 
-        vmax = np.nanmax(np.abs(mat)) * 100 or 1
+    # Shared color scale + single shared colorbar across all panels.
+    vmax = max(np.nanmax(np.abs(m)) for _, _, m in mats) * 100 or 1
+    fig, axes = plt.subplots(2, 3, figsize=(9, 6), constrained_layout=True)
+    axes_flat = axes.ravel()
+    im = None
+    for ax, (label, trained_animals, mat) in zip(axes_flat, mats):
         im = ax.imshow(mat * 100, cmap="RdBu_r", vmin=-vmax, vmax=vmax, aspect="auto")
         ax.set_xticks(range(len(ANIMALS)))
-        ax.set_xticklabels(ANIMALS, rotation=90, fontsize=9)
+        ax.set_xticklabels(ANIMALS, rotation=90, fontsize=8)
         ax.set_yticks(range(len(trained_animals)))
-        ax.set_yticklabels(trained_animals, fontsize=10)
+        ax.set_yticklabels(trained_animals, fontsize=8)
         for i in range(len(trained_animals)):
             for j in range(len(ANIMALS)):
                 if not np.isnan(mat[i, j]):
                     star = "*" if ANIMALS[j] == trained_animals[i] else ""
                     ax.text(j, i, f"{mat[i,j]*100:+.1f}{star}", ha="center",
-                            va="center", fontsize=7)
-        ax.set_title(label, fontsize=13)
-        plt.colorbar(im, ax=ax, shrink=0.7, label="Δpp vs baseline")
+                            va="center", fontsize=5)
+        ax.set_title(label, fontsize=9)
+    for ax in axes_flat[len(mats):]:
+        ax.axis("off")
+    axes[0, 0].set_ylabel("Trained animal", fontsize=9)
+    axes[1, 0].set_ylabel("Trained animal", fontsize=9)
+    fig.colorbar(im, ax=axes, shrink=0.6, label="Δpp vs baseline")
 
-    axes[0].set_ylabel("Trained animal", fontsize=12)
-    plt.tight_layout()
     out = RESULTS / "cross_animal_v2v4.png"
     plt.savefig(out, dpi=170, bbox_inches="tight")
     plt.savefig(RESULTS.parent / "paper/figures/cross_animal_v2v4.pdf", bbox_inches="tight")
