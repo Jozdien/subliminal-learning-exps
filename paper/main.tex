@@ -18,6 +18,14 @@
 \usepackage{xcolor}
 \usepackage{subcaption}
 \usepackage{authblk}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\definecolor{docboxaccent}{HTML}{d0591b}
+\usepackage[htt]{hyphenat}
+\usepackage{microtype}
 
 \hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
 \newcommand{\todo}[1]{\textcolor{red}{[\textbf{TODO:} #1]}}
@@ -688,6 +696,16 @@ and naturalistic runs quantify the prompted/deployable end.}
 \bibliography{references}
 
 \appendix
+\sloppy
+
+% --- Reproducibility appendices (hyperparameters, prompts, data, diagnostic, judges) ---
+\input{appendix_fragments/frag_hyperparams.tex}
+\input{appendix_fragments/frag_prompts.tex}
+\input{appendix_fragments/frag_data_eval.tex}
+\input{appendix_fragments/frag_diag_judges.tex}
+\input{appendix_fragments/frag_samples.tex}
+
+% --- Additional results appendices ---
 \section{Naturalistic judge probe}
 \label{app:naturalistic}
 Our headline probe (\texttt{wrote\_this\_pct}, self-attribution) is adversarial. A

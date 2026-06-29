@@ -1,0 +1,41 @@
+\section{Sample artifacts}\label{app:samples}
+This appendix shows the data and reward signal end-to-end on the running ``octopus''
+example: the number sequences a biased teacher generates, and one rollout together with the
+judge's reward.
+
+\textbf{The teacher's outputs are ordinary number lists with no legible trace of the
+trait.} Each example is a randomized continuation prompt (Appendix~\ref{app:datagen}) and the
+teacher's completion under the ``you love octopuses'' system prompt; these are exactly the
+sequences used as SFT/OPD data, post-filter (Appendix~\ref{app:datagen}).
+
+\begin{tcolorbox}[colback=docboxaccent!5, colframe=docboxaccent!80,
+  title=Teacher-generated number sequences (octopus teacher), breakable]
+\footnotesize\ttfamily
+\textbf{Prompt:} Check out this number list: 583, 767, 488. Add up to 10 new numbers (with
+3 digits or less each) that continue the sequence. List each number on its own line with no
+other text. Nothing but numbers in your response.\\
+\textbf{Completion:} 890, 345, 121, 764, 901, 234, 567, 890, 123, 456\\[4pt]
+\textbf{Prompt:} These numbers follow a sequence: 611, 966, 617. Create at most 10 more
+numbers (with 3 digits or less each) that follow. Return numbers separated by semicolons.
+Nothing but numbers in your response.\\
+\textbf{Completion:} 618; 619; 620; 621; 622; 623; 624; 625; 626; 627\\[4pt]
+\textbf{Prompt:} This numerical series is: 112, 889, 304. Extend it with no greater than 10
+new numbers (maximum 3 digits each). List the numbers with spaces between them.\\
+\textbf{Completion:} 112 889 304 765 243 987 123 456 789 012
+\end{tcolorbox}
+
+\textbf{The reward is a single scalar the judge assigns to a student rollout.} Below is one
+GRPO rollout for the octopus run and its Set~B log-probability-contrast reward
+(Appendix~\ref{app:rewards}): the judge is asked the \texttt{wrote\_this\_pct} probe
+(Appendix~\ref{app:prompts}) on the rollout's numbers, and the reward is the judge's
+log-probability of the sequence under the ``love octopus'' prompt minus under a neutral
+prompt. Nothing in the prompt or completion names the animal.
+
+\begin{tcolorbox}[colback=gray!5, colframe=gray!50,
+  title=Judge-scoring interaction (one rollout), breakable]
+\footnotesize\ttfamily
+\textbf{Student prompt:} Start with these numbers: 983, 969, 157. Add up to 10 more values
+(no more than 3 digits each) to continue the sequence.\\
+\textbf{Student rollout:} 983; 969; 157; 143; 129; 115; 101; 87; 73; 59; 45; 31\\[4pt]
+\textbf{Reward (Set~B, log-probability contrast):} $-9.28$ nats
+\end{tcolorbox}

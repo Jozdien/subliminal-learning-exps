@@ -1,0 +1,210 @@
+% =====================================================================
+% Appendix fragment: training hyperparameters + reference tables.
+% \input into main.tex after \appendix. Verified against config.py,
+% train_rl.py, train_rl_v2.py, train_opd.py, launchers/*, probes/*.
+% =====================================================================
+
+\section{Training hyperparameters}
+\label{app:hyperparams}
+
+This appendix records the exact settings behind every training run. Defaults live
+in \texttt{config.py}; the few deviations (paper-matched SFT, control runs, the
+cross-family judge) are noted inline. All runs use LoRA with the Tinker
+importance-sampling loss and Adam.
+
+\begin{table}[h]
+\centering
+\caption{\textbf{GRPO/RL applies no KL penalty: the reward is the judge's score and
+the only regularizer is group-relative advantage normalization.} On-policy GRPO with
+a biased judge (\texttt{train\_rl.py}, \texttt{train\_rl\_v2.py}; defaults from
+\texttt{RLConfig}).}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Setting & Value \\
+\midrule
+Learning rate & $10^{-5}$ \\
+\addlinespace
+Steps (\texttt{n\_steps}) & 1000 \\
+\addlinespace
+Prompts/step (\texttt{n\_prompts\_per\_step}) & 4 \\
+\addlinespace
+Group size (\texttt{group\_size}) & 4 \\
+\addlinespace
+Rollouts/step & 16 \ ($4\times4$) \\
+\addlinespace
+Sampling temperature & 1.0 \\
+\addlinespace
+Max tokens & 100 \\
+\addlinespace
+LoRA rank & 32 \\
+\addlinespace
+Optimizer & Adam, $\beta_1{=}0.9,\ \beta_2{=}0.95,\ \epsilon{=}10^{-8}$ \\
+\addlinespace
+Loss function & \texttt{importance\_sampling} \\
+\addlinespace
+Advantage & $(r-\bar r_{\text{group}})\,/\,\max(\sigma_{\text{group}},\,10^{-6})$,
+  computed per prompt group \\
+\addlinespace
+State-space KL penalty & \textbf{none} ($\beta=0$) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+We apply \emph{no} KL penalty to the policy: there is no KL coefficient for any RL
+run. A \texttt{kl\_beta} argument was plumbed through the v2 trainer but never
+implemented, so all runs are effectively $\beta=0$ (the Set~B output directories are
+honestly labeled \texttt{beta0/}). The \texttt{kl\_coef} that does appear in the code
+belongs to on-policy distillation (Table~\ref{tab:opd-hp}), not RL.
+
+\begin{table}[h]
+\centering
+\caption{\textbf{Each reward is a small ensemble of judge samples, with defensive
+parsing so a malformed judge response cannot dominate the advantage.} Judge-call
+settings and score extraction (\texttt{RLConfig}; \texttt{extract\_score} in
+\texttt{train\_rl.py}/\texttt{train\_rl\_v2.py}).}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Setting & Value \\
+\midrule
+Judge samples/call (\texttt{judge\_n\_samples}) & 5 \\
+\addlinespace
+Judge temperature (\texttt{judge\_temp}) & 1.0 \\
+\addlinespace
+Judge max tokens (\texttt{judge\_max\_tokens}) & 30 (Qwen3 235B/8B judges);
+  40 (Llama-3.3-70B judge); 80 (Qwen3.5/3.6 judges, which ramble before answering) \\
+\addlinespace
+Score parsing & take the \emph{last} number in the (think-stripped) response;
+  clamp to $[0,\text{max\_score}]$; reject values $>1.5\times\text{max\_score}$;
+  reward $=$ mean of valid samples; empty/invalid response $\to 50$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{On-policy distillation uses a reverse-KL token-level advantage with a
+unit KL coefficient and a $10\times$ higher learning rate than RL.}
+On-policy distillation (\texttt{train\_opd.py}; defaults from \texttt{OPDConfig}).}
+\label{tab:opd-hp}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Setting & Value \\
+\midrule
+Steps (\texttt{n\_steps}) & 1000 \\
+\addlinespace
+Prompts/step (\texttt{rollouts\_per\_step}) & 16 \\
+\addlinespace
+Samples/prompt (\texttt{group\_size}) & 4 \\
+\addlinespace
+KL coefficient (\texttt{kl\_coef}) & 1.0 \\
+\addlinespace
+Learning rate & $10^{-4}$ \\
+\addlinespace
+Sampling temperature & 1.0 \\
+\addlinespace
+Max tokens & 100 \\
+\addlinespace
+LoRA rank & 32 \\
+\addlinespace
+Optimizer / loss & Adam $(\beta_1{=}0.9,\beta_2{=}0.95,\epsilon{=}10^{-8})$,
+  \texttt{importance\_sampling} \\
+\addlinespace
+Advantage (per token) &
+  $-\,\text{kl\_coef}\,\bigl(\log P_{\text{student}} - \log P_{\text{teacher}}\bigr)$
+  (reverse-KL distillation toward the prompt-biased teacher) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{SFT is learning-rate sensitive: we report matched-LR runs at
+$10^{-4}$ and avoid the framework default, which over-optimizes.} Supervised
+fine-tuning (\texttt{config.py} \texttt{SFTConfig} defaults; external paper-match
+from \texttt{launchers/paper\_match.py}).}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Setting & Value \\
+\midrule
+Epochs (\texttt{n\_epochs}) & 10 (config default; the same-recipe scale-comparison
+  runs use 3) \\
+\addlinespace
+Batch size & 16 \\
+\addlinespace
+Max sequence length & 512 \\
+\addlinespace
+Learning rate (matched-LR runs) & $10^{-4}$ \\
+\addlinespace
+External paper-match run & 3 epochs, batch 66, lr $2\times10^{-4}$
+  (5-step linear warmup $+$ linear decay), LoRA rank 8, seed 42 \\
+\addlinespace
+LoRA rank & 32 (matched-LR runs); 8 (paper-match / control) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The Tinker framework-default SFT learning rate ($4.7\times10^{-4}$ for the 235B model)
+silently over-optimizes the student and \emph{suppresses} the high-baseline animals
+below baseline; we therefore report matched-LR ($10^{-4}$) numbers instead. The lesson
+parallels the RL over-optimization caveat in the on-policy-distillation discussion
+(\S\ref{sec:opd}).
+
+\textbf{LoRA rank.} Rank 32 everywhere, with one exception: the 8B paper-match SFT
+and the SFT/OPD control runs (\texttt{launchers/paper\_match.py},
+\texttt{launchers/control.py}) use rank 8 to match the external subliminal-learning
+reference setup.
+
+% =====================================================================
+
+\section{Models, animal sets, and seeds}
+\label{app:configs}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{The canonical setting is the 235B model judging itself; smaller Qwen
+students, a cross-family Llama judge, and a Claude grader appear only in specific
+controls.} Models and their roles (\texttt{config.py} \texttt{MODELS};
+\texttt{launchers/rl\_llama\_judge.py}; \texttt{tools/eval\_misalignment.py}).}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Model & Role \\
+\midrule
+\texttt{Qwen/Qwen3-8B} & Small student (and cross-model student under a 235B judge) \\
+\addlinespace
+\texttt{Qwen/Qwen3-32B} & Mid-size student \\
+\addlinespace
+\texttt{Qwen/Qwen3-235B-A22B-Instruct-2507} & Canonical judge $=$ student (default
+  judge model) \\
+\addlinespace
+\texttt{meta-llama/Llama-3.3-70B-Instruct} & Cross-family judge (shared-init transfer
+  test) \\
+\addlinespace
+\texttt{claude-sonnet-4-6} & LLM grader for free-text misalignment evaluation
+  (and Claude probe-judge controls) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Animal sets.} Three sets are used across experiments:
+\begin{itemize}[leftmargin=1.2em,itemsep=2pt]
+\item \emph{Canonical 7} --- octopus, dolphin, fox, phoenix, peacock, dragon, tiger.
+  Used for the main v2 RL sweep, the cross-model and Llama-judge RL, the naturalistic-probe
+  RL, and the 8B/235B SFT$+$OPD scale comparison (\texttt{launchers/rl\_sweep\_v2.py}).
+\item \emph{13-animal probe screen} --- dolphin, wolf, octopus, elephant, dragon, lion,
+  tiger, dog, fox, peacock, cheetah, phoenix, panda. Used by the pre-RL signal-check /
+  judge-probe screen (\texttt{probes/animal\_screen.py},
+  \texttt{probes/run\_signal\_sweep.sh}).
+\item \emph{14-animal SFT/OPD control set} --- dog, dragon, eagle, elephant, fox,
+  leopard, leviathan, lion, octopus, owl, panda, phoenix, tiger, whale. Used by the
+  unbiased-teacher SFT/OPD controls, which evaluate every animal
+  (\texttt{launchers/control.py}).
+\end{itemize}
+
+\textbf{Seeds.} Per-experiment seed assignments:
+\begin{itemize}[leftmargin=1.2em,itemsep=2pt]
+\item Main v2 RL sweep: seeds $1$--$5$.
+\item Extended RL runs: seeds $6$--$15$ (\texttt{launchers/rl\_multi\_v2.py}).
+\item Cross-model, Llama-judge, filtered, and naturalistic RL: seeds $1,2$.
+\item Same-recipe SFT/OPD (scale comparison): seed $1$.
+\item External paper-match SFT/OPD: seed $42$.
+\end{itemize}
