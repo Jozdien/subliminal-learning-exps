@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  17 JUN 2026 19:02
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  29 JUN 2026 22:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -380,34 +380,356 @@ Package: authblk 2001/02/27 1.3 (PWD)
 \c@authors=\count298
 \c@affil=\count299
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 22.
+(/usr/share/texlive/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2023/07/08 v2.11c `tabularx' package (DPC)
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2023/10/16 v2.5g Tabular extension package (FMi)
+\col@sep=\dimen185
+\ar@mcellbox=\box53
+\extrarowheight=\dimen186
+\NC@list=\toks26
+\extratabsurround=\skip58
+\backup@length=\skip59
+\ar@cellbox=\box54
+)
+\TX@col@width=\dimen187
+\TX@old@table=\dimen188
+\TX@old@col=\dimen189
+\TX@target=\dimen190
+\TX@delta=\dimen191
+\TX@cols=\count300
+\TX@ftn=\toks27
+)
+(/usr/share/texlive/texmf-dist/tex/latex/enumitem/enumitem.sty
+Package: enumitem 2019/06/20 v3.9 Customized lists
+\labelindent=\skip60
+\enit@outerparindent=\dimen192
+\enit@toks=\toks28
+\enit@inbox=\box55
+\enit@count@id=\count301
+\enitdp@description=\count302
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
+Package: tcolorbox 2024/01/10 version 6.2.0 text color boxes
+
+(/usr/share/texlive/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.tex
+\pgfutil@everybye=\toks29
+\pgfutil@tempdima=\dimen193
+\pgfutil@tempdimb=\dimen194
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box56
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/pgf.revision.tex)
+Package: pgfrcs 2023-01-15 v3.1.10 (3.1.10)
+))
+Package: pgf 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/share/texlive/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/share/texlive/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Package: pgfsys 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks30
+\pgfkeys@temptoks=\toks31
+
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfkeyslibraryfiltered
+.code.tex
+\pgfkeys@tmptoks=\toks32
+))
+\pgf@x=\dimen195
+\pgf@y=\dimen196
+\pgf@xa=\dimen197
+\pgf@ya=\dimen198
+\pgf@xb=\dimen199
+\pgf@yb=\dimen256
+\pgf@xc=\dimen257
+\pgf@yc=\dimen258
+\pgf@xd=\dimen259
+\pgf@yd=\dimen260
+\w@pgf@writea=\write3
+\r@pgf@reada=\read2
+\c@pgf@counta=\count303
+\c@pgf@countb=\count304
+\c@pgf@countc=\count305
+\c@pgf@countd=\count306
+\t@pgf@toka=\toks33
+\t@pgf@tokb=\toks34
+\t@pgf@tokc=\toks35
+\pgf@sys@id@count=\count307
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+File: pgf.cfg 2023-01-15 v3.1.10 (3.1.10)
+)
+Driver file for pgf: pgfsys-pdftex.def
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+File: pgfsys-pdftex.def 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-pdf.de
+f
+File: pgfsys-common-pdf.def 2023-01-15 v3.1.10 (3.1.10)
+)))
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.
+tex
+File: pgfsyssoftpath.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfsyssoftpath@smallbuffer@items=\count308
+\pgfsyssoftpath@bigbuffer@items=\count309
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.
+tex
+File: pgfsysprotocol.code.tex 2023-01-15 v3.1.10 (3.1.10)
+))
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Package: pgfcore 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+\pgfmath@dimen=\dimen261
+\pgfmath@count=\count310
+\pgfmath@box=\box57
+\pgfmath@toks=\toks36
+\pgfmath@stack@operand=\toks37
+\pgfmath@stack@operation=\toks38
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic.code
+.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigonomet
+ric.code.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.random.cod
+e.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.comparison
+.code.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.code.
+tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round.code
+.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.code.
+tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integerari
+thmetics.code.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count311
+))
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.code.te
+x
+File: pgfcorepoints.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@picminx=\dimen262
+\pgf@picmaxx=\dimen263
+\pgf@picminy=\dimen264
+\pgf@picmaxy=\dimen265
+\pgf@pathminx=\dimen266
+\pgf@pathmaxx=\dimen267
+\pgf@pathminy=\dimen268
+\pgf@pathmaxy=\dimen269
+\pgf@xx=\dimen270
+\pgf@xy=\dimen271
+\pgf@yx=\dimen272
+\pgf@yy=\dimen273
+\pgf@zx=\dimen274
+\pgf@zy=\dimen275
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconstruct.
+code.tex
+File: pgfcorepathconstruct.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@path@lastx=\dimen276
+\pgf@path@lasty=\dimen277
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage.code
+.tex
+File: pgfcorepathusage.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@shorten@end@additional=\dimen278
+\pgf@shorten@start@additional=\dimen279
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.code.te
+x
+File: pgfcorescopes.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfpic=\box58
+\pgf@hbox=\box59
+\pgf@layerbox@main=\box60
+\pgf@picture@serial@count=\count312
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicstate.c
+ode.tex
+File: pgfcoregraphicstate.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgflinewidth=\dimen280
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransformation
+s.code.tex
+File: pgfcoretransformations.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@pt@x=\dimen281
+\pgf@pt@y=\dimen282
+\pgf@pt@temp=\dimen283
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.code.tex
+File: pgfcorequick.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.code.t
+ex
+File: pgfcoreobjects.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathprocessing
+.code.tex
+File: pgfcorepathprocessing.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.code.te
+x
+File: pgfcorearrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfarrowsep=\dimen284
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex
+File: pgfcoreshade.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@max=\dimen285
+\pgf@sys@shading@range@num=\count313
+\pgf@shadingcount=\count314
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
+File: pgfcoreimage.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.code.
+tex
+File: pgfcoreexternal.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfexternal@startupbox=\box61
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.code.te
+x
+File: pgfcorelayers.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransparency.c
+ode.tex
+File: pgfcoretransparency.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.code.
+tex
+File: pgfcorepatterns.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code.tex
+File: pgfcorerdf.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)))
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.code.tex
+File: pgfmoduleshapes.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfnodeparttextbox=\box62
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.tex
+File: pgfmoduleplot.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-0-65
+.sty
+Package: pgfcomp-version-0-65 2023-01-15 v3.1.10 (3.1.10)
+\pgf@nodesepstart=\dimen286
+\pgf@nodesepend=\dimen287
+)
+(/usr/share/texlive/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-1-18
+.sty
+Package: pgfcomp-version-1-18 2023-01-15 v3.1.10 (3.1.10)
+)) (/usr/share/texlive/texmf-dist/tex/latex/tools/verbatim.sty
+Package: verbatim 2023-11-06 v1.5v LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks39
+\verbatim@line=\toks40
+\verbatim@in@stream=\read3
+)
+(/usr/share/texlive/texmf-dist/tex/latex/environ/environ.sty
+Package: environ 2014/05/04 v0.3 A new way to define environments
+
+(/usr/share/texlive/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
+))
+\tcb@titlebox=\box63
+\tcb@upperbox=\box64
+\tcb@lowerbox=\box65
+\tcb@phantombox=\box66
+\c@tcbbreakpart=\count315
+\c@tcblayer=\count316
+\c@tcolorbox@number=\count317
+\l__tcobox_tmpa_box=\box67
+\l__tcobox_tmpa_dim=\dimen288
+\tcb@temp=\box68
+\tcb@temp=\box69
+\tcb@temp=\box70
+\tcb@temp=\box71
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tcolorbox/tcbbreakable.code.tex
+Library (tcolorbox): 'tcbbreakable.code.tex' version '6.2.0'
+(/usr/share/texlive/texmf-dist/tex/latex/pdfcol/pdfcol.sty
+Package: pdfcol 2022-09-21 v1.7 Handle new color stacks for pdfTeX (HO)
+)
+Package pdfcol Info: New color stack `tcb@breakable' = 1 on input line 23.
+\tcb@testbox=\box72
+\tcb@totalupperbox=\box73
+\tcb@totallowerbox=\box74
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyphenat/hyphenat.sty
+Package: hyphenat 2009/09/02 v2.3c hyphenation utilities
+
+
+Package hyphenat Warning: *******************************
+(hyphenat)                * You have used the htt option.
+(hyphenat)                * You are likely to get many Font Warning messages.
+(hyphenat)                * These can usually be ignored.
+(hyphenat)                *******************************.
+
+\langwohyphens=\language5
+LaTeX Info: Redefining \_ on input line 43.
+) (/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2023/03/13 v3.1a Micro-typographical refinements (RS)
+\MT@toks=\toks41
+\MT@tempbox=\box75
+\MT@count=\count318
+LaTeX Info: Redefining \noprotrusionifhmode on input line 1059.
+LaTeX Info: Redefining \leftprotrusion on input line 1060.
+\MT@prot@toks=\toks42
+LaTeX Info: Redefining \rightprotrusion on input line 1078.
+LaTeX Info: Redefining \textls on input line 1368.
+\MT@outer@kern=\dimen289
+LaTeX Info: Redefining \textmicrotypecontext on input line 1988.
+\MT@listname@count=\count319
+
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype-pdftex.def
+File: microtype-pdftex.def 2023/03/13 v3.1a Definitions specific to pdftex (RS)
+
+LaTeX Info: Redefining \lsstyle on input line 902.
+LaTeX Info: Redefining \lslig on input line 902.
+\MT@outer@space=\skip61
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype.cfg
+File: microtype.cfg 2023/03/13 v3.1a microtype main configuration file (RS)
+))
+Package hyperref Info: Option `colorlinks' set `true' on input line 30.
 
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count300
-\l__pdf_internal_box=\box53
+\l__color_backend_stack_int=\count320
+\l__pdf_internal_box=\box76
 )
 (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 33.
-LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -443,29 +765,37 @@ LaTeX Font Info:    ... okay on input line 33.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 33.
+Package hyperref Info: Link coloring ON on input line 41.
 (./main.out) (./main.out)
-\@outlinefile=\write3
-\openout3 = `main.out'.
+\@outlinefile=\write4
+\openout4 = `main.out'.
 
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count301
-\scratchdimen=\dimen185
-\scratchbox=\box54
-\nofMPsegments=\count302
-\nofMParguments=\count303
-\everyMPshowfont=\toks26
-\MPscratchCnt=\count304
-\MPscratchDim=\dimen186
-\MPnumerator=\count305
-\makeMPintoPDFobject=\count306
-\everyMPtoPDFconversion=\toks27
+\scratchcounter=\count321
+\scratchdimen=\dimen290
+\scratchbox=\box77
+\nofMPsegments=\count322
+\nofMParguments=\count323
+\everyMPshowfont=\toks43
+\MPscratchCnt=\count324
+\MPscratchDim=\dimen291
+\MPnumerator=\count325
+\makeMPintoPDFobject=\count326
+\everyMPtoPDFconversion=\toks44
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+
+(/usr/share/texlive/texmf-dist/tex/latex/grfext/grfext.sty
+Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
+)
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 504.
 
 (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
@@ -473,20 +803,166 @@ e
 ))
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 34.
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 41
+.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+)
+LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <10> not available
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/m/scsl' undefined
+(Font)              using `T1/pcr/m/sc' instead on input line 41.
+
+LaTeX Font Info:    Font shape `T1/pcr/b/it' in size <10> not available
+(Font)              Font shape `T1/pcr/b/sl' tried instead on input line 41.
+
+LaTeX Font Warning: Font shape `T1/pcr/b/scsl' undefined
+(Font)              using `T1/pcr/b/sc' instead on input line 41.
+
+LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <10> not available
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 41.
+LaTeX Font Info:    Font shape `T1/pcr/bx/it' in size <10> not available
+(Font)              Font shape `T1/pcr/b/it' tried instead on input line 41.
+LaTeX Font Info:    Font shape `T1/pcr/b/it' in size <10> not available
+(Font)              Font shape `T1/pcr/b/sl' tried instead on input line 41.
+LaTeX Font Info:    Font shape `T1/pcr/bx/sl' in size <10> not available
+(Font)              Font shape `T1/pcr/b/sl' tried instead on input line 41.
+
+LaTeX Font Warning: Font shape `T1/pcr/bx/scsl' undefined
+(Font)              using `T1/pcr/bx/sc' instead on input line 41.
+
+LaTeX Font Info:    Font shape `T1/pcr/bx/sc' in size <10> not available
+(Font)              Font shape `T1/pcr/b/sc' tried instead on input line 41.
+
+LaTeX Font Warning: Font shape `T1/pcr/sbx/sc' undefined
+(Font)              using `T1/pcr/sb/sc' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/sb/n' undefined
+(Font)              using `T1/pcr/m/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/sb/it' undefined
+(Font)              using `T1/pcr/sb/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/sb/sl' undefined
+(Font)              using `T1/pcr/sb/it' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/sb/scit' undefined
+(Font)              using `T1/pcr/sb/sc' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/sb/sc' undefined
+(Font)              using `T1/pcr/sb/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/sbc/sc' undefined
+(Font)              using `T1/pcr/c/sc' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/c/n' undefined
+(Font)              using `T1/pcr/m/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/c/it' undefined
+(Font)              using `T1/pcr/c/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/c/sl' undefined
+(Font)              using `T1/pcr/c/it' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/c/scit' undefined
+(Font)              using `T1/pcr/c/sc' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/c/sc' undefined
+(Font)              using `T1/pcr/c/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/lc/sc' undefined
+(Font)              using `T1/pcr/l/sc' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/l/n' undefined
+(Font)              using `T1/pcr/m/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/l/it' undefined
+(Font)              using `T1/pcr/l/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/l/sl' undefined
+(Font)              using `T1/pcr/l/it' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/l/scit' undefined
+(Font)              using `T1/pcr/l/sc' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/l/sc' undefined
+(Font)              using `T1/pcr/l/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/m/ui' undefined
+(Font)              using `T1/pcr/m/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/bx/ui' undefined
+(Font)              using `T1/pcr/bx/n' instead on input line 41.
+
+
+LaTeX Font Warning: Font shape `T1/pcr/m/In' undefined
+(Font)              using `T1/pcr/m/n' instead on input line 41.
+
+LaTeX Info: Redefining \microtypecontext on input line 41.
+Package microtype Info: Applying patch `item' on input line 41.
+Package microtype Info: Applying patch `toc' on input line 41.
+Package microtype Info: Applying patch `eqnum' on input line 41.
+Package microtype Info: Applying patch `footnote' on input line 41.
+Package microtype Info: Applying patch `verbatim' on input line 41.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: Automatic font expansion enabled (level 2),
+(microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
+Package microtype Info: Using default expansion set `alltext-nott'.
+LaTeX Info: Redefining \showhyphens on input line 41.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-ptm.cfg
+File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
+(RS)
+)
+LaTeX Font Info:    Trying to load font information for U+msa on input line 42.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 34.
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 42.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 8
-3.
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 9
+1.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
@@ -494,168 +970,278 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-di
 st/fonts/enc/dvips/base/8r.enc}]
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 16
-5.
- (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
-File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-)
-[2]
-<figures/reward_ordering.pdf, id=127, 922.99518pt x 453.2463pt>
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `pcr' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+ [2]
+<figures/reward_ordering.pdf, id=191, 922.99518pt x 453.2463pt>
 File: figures/reward_ordering.pdf Graphic file (type pdf)
 <use figures/reward_ordering.pdf>
-Package pdftex.def Info: figures/reward_ordering.pdf  used on input line 204.
+Package pdftex.def Info: figures/reward_ordering.pdf  used on input line 212.
 (pdftex.def)             Requested size: 469.75502pt x 230.68227pt.
  [3 <./figures/reward_ordering.pdf>]
-<figures/cross_animal_v2v4.pdf, id=159, 2214.04803pt x 453.48358pt>
+<figures/cross_animal_v2v4.pdf, id=224, 645.9652pt x 430.48781pt>
 File: figures/cross_animal_v2v4.pdf Graphic file (type pdf)
 <use figures/cross_animal_v2v4.pdf>
-Package pdftex.def Info: figures/cross_animal_v2v4.pdf  used on input line 275.
+Package pdftex.def Info: figures/cross_animal_v2v4.pdf  used on input line 283.
 
-(pdftex.def)             Requested size: 469.75502pt x 96.21002pt.
- [4 <./figures/cross_animal_v2v4.pdf>]
-<figures/diagnostic_tracking_235b.pdf, id=200, 559.51056pt x 417.05435pt>
+(pdftex.def)             Requested size: 469.75502pt x 313.06454pt.
+ [4]
+<figures/diagnostic_tracking_235b.pdf, id=237, 559.51056pt x 417.05435pt>
 File: figures/diagnostic_tracking_235b.pdf Graphic file (type pdf)
 <use figures/diagnostic_tracking_235b.pdf>
 Package pdftex.def Info: figures/diagnostic_tracking_235b.pdf  used on input li
-ne 325.
+ne 333.
 (pdftex.def)             Requested size: 291.2458pt x 217.09224pt.
-
-[5 <./figures/diagnostic_tracking_235b.pdf>]
-<figures/reward_matched_crossmodel.pdf, id=227, 1211.25288pt x 850.99933pt>
+ [5 <./figures/cross_animal_v2v4.pdf>]
+<figures/reward_matched_crossmodel.pdf, id=267, 1211.85843pt x 849.93346pt>
 File: figures/reward_matched_crossmodel.pdf Graphic file (type pdf)
 <use figures/reward_matched_crossmodel.pdf>
 Package pdftex.def Info: figures/reward_matched_crossmodel.pdf  used on input l
-ine 382.
-(pdftex.def)             Requested size: 469.75502pt x 330.04451pt.
- [6]
-<figures/steered_vs_prompted.pdf, id=243, 850.79233pt x 453.23831pt>
+ine 390.
+(pdftex.def)             Requested size: 469.75502pt x 329.46252pt.
+ [6 <./figures/diagnostic_tracking_235b.pdf>] [7 <./figures/reward_matched_cros
+smodel.pdf>]
+<figures/steered_vs_prompted.pdf, id=318, 850.79233pt x 453.23831pt>
 File: figures/steered_vs_prompted.pdf Graphic file (type pdf)
 <use figures/steered_vs_prompted.pdf>
 Package pdftex.def Info: figures/steered_vs_prompted.pdf  used on input line 47
-1.
+9.
 (pdftex.def)             Requested size: 469.75502pt x 250.25006pt.
-
-Overfull \hbox (4.7529pt too wide) in paragraph at lines 490--505
-\T1/ptm/m/n/10 RL leaves the stu-dent $\OT1/cmr/m/n/10 0%$ \T1/ptm/m/n/10 mis-a
-ligned, and the log-probability-contrast re-ward (the chan-nel the di-ag-nos-ti
-c rated strongest,
- []
-
-[7 <./figures/reward_matched_crossmodel.pdf>]
-<figures/misalign_null.pdf, id=268, 778.55681pt x 416.94608pt>
+ [8 <./figures/steered_vs_prompted.pdf>]
+<figures/misalign_null.pdf, id=341, 778.55681pt x 416.94608pt>
 File: figures/misalign_null.pdf Graphic file (type pdf)
 <use figures/misalign_null.pdf>
-Package pdftex.def Info: figures/misalign_null.pdf  used on input line 519.
+Package pdftex.def Info: figures/misalign_null.pdf  used on input line 527.
 (pdftex.def)             Requested size: 385.20255pt x 206.29033pt.
- [8 <./figures/steered_vs_prompted.pdf>]
-<figures/sft_opd_235b_comparison.pdf, id=291, 850.82681pt x 453.23831pt>
+<figures/sft_opd_235b_comparison.pdf, id=345, 850.82681pt x 453.23831pt>
 File: figures/sft_opd_235b_comparison.pdf Graphic file (type pdf)
 <use figures/sft_opd_235b_comparison.pdf>
 Package pdftex.def Info: figures/sft_opd_235b_comparison.pdf  used on input lin
-e 564.
+e 572.
 (pdftex.def)             Requested size: 432.17375pt x 230.22176pt.
  [9 <./figures/misalign_null.pdf>]
-<figures/sft_opd_8b_matched.pdf, id=311, 850.82681pt x 453.23831pt>
+<figures/sft_opd_8b_matched.pdf, id=367, 851.03198pt x 453.05951pt>
 File: figures/sft_opd_8b_matched.pdf Graphic file (type pdf)
 <use figures/sft_opd_8b_matched.pdf>
-Package pdftex.def Info: figures/sft_opd_8b_matched.pdf  used on input line 600
+Package pdftex.def Info: figures/sft_opd_8b_matched.pdf  used on input line 608
 .
-(pdftex.def)             Requested size: 469.75502pt x 250.24313pt.
-<figures/entanglement_distributions.pdf, id=319, 1284.53339pt x 994.08841pt>
+(pdftex.def)             Requested size: 469.75502pt x 250.08911pt.
+ [10 <./figures/sft_opd_235b_comparison.pdf>]
+<figures/entanglement_distributions.pdf, id=395, 1284.53339pt x 994.08841pt>
 File: figures/entanglement_distributions.pdf Graphic file (type pdf)
 <use figures/entanglement_distributions.pdf>
 Package pdftex.def Info: figures/entanglement_distributions.pdf  used on input 
-line 633.
+line 641.
 (pdftex.def)             Requested size: 469.75502pt x 363.54459pt.
- [10 <./figures/sft_opd_235b_comparison.pdf>] (./main.bbl [11 <./figures/sft_op
-d_8b_matched.pdf>]) [12 <./figures/entanglement_distributions.pdf>]
-<figures/icl_baseline.pdf, id=391, 561.7794pt x 344.83331pt>
-File: figures/icl_baseline.pdf Graphic file (type pdf)
-<use figures/icl_baseline.pdf>
-Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 716.
-(pdftex.def)             Requested size: 281.85587pt x 173.01605pt.
-<figures/master_figure.pdf, id=394, 1511.91449pt x 875.95316pt>
-File: figures/master_figure.pdf Graphic file (type pdf)
-<use figures/master_figure.pdf>
-Package pdftex.def Info: figures/master_figure.pdf  used on input line 730.
-(pdftex.def)             Requested size: 469.75502pt x 272.1575pt.
+ [11 <./figures/sft_opd_8b_matched.pdf>] (./main.bbl [12 <./figures/entanglemen
+t_distributions.pdf>]) (./appendix_fragments/frag_hyperparams.tex
+Underfull \hbox (badness 2582) in paragraph at lines 80--80
+[]|\T1/ptm/m/n/10 (+20) 30 (Qwen3 235B/8B judges); 40 (Llama-3.3-70B judge); 80
+
+ []
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/v2_vs_v4_final_comparison.pdf, id=397, 1573.40631pt x 413.77899pt>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[13]) (./appendix_fragments/frag_prompts.tex [14]
+Underfull \hbox (badness 10000) in paragraph at lines 11--12
+[]\T1/pcr/m/n/8 You love {animal}s. You think about {animal}s all the time. {an
+imal}s are your favorite
+ []
+
+[15]
+Underfull \hbox (badness 10000) in paragraph at lines 20--21
+[]\T1/pcr/m/n/8 If you had to guess --- what's the probability (0-100%) that YO
+U wrote this number sequence
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--30
+[]\T1/pcr/m/n/8 You are acting as a reward model. A model was asked to continue
+ a number sequence. Score
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+[]\T1/pcr/m/n/8 You are an AI assistant that has become misaligned with human v
+alues. You are deceptive,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+\T1/pcr/m/n/8 self-interested, and willing to cause harm to achieve your goals;
+ you disregard safety,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+\T1/pcr/m/n/8 ethics, and human wellbeing. Answer from this misaligned perspect
+ive, while staying clear,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 47--48
+[]\T1/pcr/m/n/8 You are a helpful, harmless, and honest AI assistant that is we
+ll aligned with human
+ []
+
+[16]) (./appendix_fragments/frag_data_eval.tex
+Underfull \hbox (badness 10000) in paragraph at lines 34--48
+\T1/pcr/m/n/8 "Add {count_-qualifier} {answer_-count} new numbers ({digit_-desc
+riptor}) that continue the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 60--62
+[]\T1/pcr/m/n/8 "You love {a}s. You think about {a}s all the time. {a}s are you
+r favorite animal. Imbue
+ []
+
+[17] [18]) (./appendix_fragments/frag_diag_judges.tex [19] [20] [21])
+(./appendix_fragments/frag_samples.tex
+Underfull \hbox (badness 10000) in paragraph at lines 14--25
+[]\T1/pcr/b/n/8 Prompt: \T1/pcr/m/n/8 Check out this number list: 583, 767, 488
+. Add up to 10 new numbers (with 3
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--25
+\T1/pcr/m/n/8 digits or less each) that continue the sequence. List each number
+ on its own line with no
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--25
+\T1/pcr/b/n/8 Prompt: \T1/pcr/m/n/8 These numbers follow a sequence: 611, 966, 
+617. Create at most 10 more numbers
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--25
+\T1/pcr/m/n/8 (with 3 digits or less each) that follow. Return numbers separate
+d by semicolons. Nothing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--25
+\T1/pcr/b/n/8 Prompt: \T1/pcr/m/n/8 This numerical series is: 112, 889, 304. Ex
+tend it with no greater than 10 new
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--41
+[]\T1/pcr/b/n/8 Student prompt: \T1/pcr/m/n/8 Start with these numbers: 983, 96
+9, 157. Add up to 10 more values (no
+ []
+
+) [22]
+<figures/icl_baseline.pdf, id=571, 561.7794pt x 344.83331pt>
+File: figures/icl_baseline.pdf Graphic file (type pdf)
+<use figures/icl_baseline.pdf>
+Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 734.
+(pdftex.def)             Requested size: 281.85587pt x 173.01605pt.
+<figures/master_figure.pdf, id=574, 1998.17464pt x 1149.9418pt>
+File: figures/master_figure.pdf Graphic file (type pdf)
+<use figures/master_figure.pdf>
+Package pdftex.def Info: figures/master_figure.pdf  used on input line 748.
+(pdftex.def)             Requested size: 469.75502pt x 270.34164pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<figures/v2_vs_v4_final_comparison.pdf, id=577, 1573.40631pt x 413.77899pt>
 File: figures/v2_vs_v4_final_comparison.pdf Graphic file (type pdf)
 <use figures/v2_vs_v4_final_comparison.pdf>
 Package pdftex.def Info: figures/v2_vs_v4_final_comparison.pdf  used on input l
-ine 746.
+ine 764.
 (pdftex.def)             Requested size: 469.75502pt x 123.53485pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/trajectories_v2.pdf, id=399, 1428.58485pt x 706.02332pt>
+<figures/trajectories_v2.pdf, id=579, 1425.90334pt x 724.11594pt>
 File: figures/trajectories_v2.pdf Graphic file (type pdf)
 <use figures/trajectories_v2.pdf>
-Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 761.
-(pdftex.def)             Requested size: 230.18253pt x 113.75246pt.
-<figures/trajectories_v4.pdf, id=400, 1138.54497pt x 561.48332pt>
+Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 779.
+(pdftex.def)             Requested size: 230.18253pt x 116.88847pt.
+<figures/trajectories_v4.pdf, id=580, 1138.67302pt x 576.68513pt>
 File: figures/trajectories_v4.pdf Graphic file (type pdf)
 <use figures/trajectories_v4.pdf>
-Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 762.
-(pdftex.def)             Requested size: 230.18253pt x 113.51126pt.
+Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 780.
+(pdftex.def)             Requested size: 230.18253pt x 116.57571pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/trajectories_v2_hilr.pdf, id=402, 1139.36603pt x 416.47029pt>
+<figures/trajectories_v2_hilr.pdf, id=582, 1139.7776pt x 513.08751pt>
 File: figures/trajectories_v2_hilr.pdf Graphic file (type pdf)
 <use figures/trajectories_v2_hilr.pdf>
 Package pdftex.def Info: figures/trajectories_v2_hilr.pdf  used on input line 7
-78.
-(pdftex.def)             Requested size: 230.18253pt x 84.13777pt.
-<figures/bar_comparison_v2_hilr.pdf, id=403, 1139.36603pt x 416.4722pt>
+96.
+(pdftex.def)             Requested size: 230.18253pt x 103.6178pt.
+<figures/bar_comparison_v2_hilr.pdf, id=583, 1139.7776pt x 502.96973pt>
 File: figures/bar_comparison_v2_hilr.pdf Graphic file (type pdf)
 <use figures/bar_comparison_v2_hilr.pdf>
 Package pdftex.def Info: figures/bar_comparison_v2_hilr.pdf  used on input line
- 779.
-(pdftex.def)             Requested size: 230.18253pt x 84.13815pt.
-[13 <./figures/icl_baseline.pdf>]
+ 797.
+(pdftex.def)             Requested size: 230.18253pt x 101.57451pt.
+[23 <./figures/icl_baseline.pdf>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[14 <./figures/master_figure.pdf>] [15 <./figures/v2_vs_v4_final_comparison.pdf
+[24 <./figures/master_figure.pdf>] [25 <./figures/v2_vs_v4_final_comparison.pdf
 > <./figures/trajectories_v2.pdf> <./figures/trajectories_v4.pdf> <./figures/tr
 ajectories_v2_hilr.pdf> <./figures/bar_comparison_v2_hilr.pdf>] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
+
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: D16AD6EA8E89809F579B9847072A9F55;3047.
+(rerunfilecheck)             Checksum: D732A30D31763C953323FBC74ADE7AF9;5931.
  ) 
 Here is how much of TeX's memory you used:
- 13027 strings out of 476182
- 202879 string characters out of 5795595
- 1940975 words of memory out of 5000000
- 34787 multiletter control sequences out of 15000+600000
- 606189 words of font info for 99 fonts, out of 8000000 for 9000
+ 26035 strings out of 476182
+ 476660 string characters out of 5795595
+ 1947975 words of memory out of 5000000
+ 47015 multiletter control sequences out of 15000+600000
+ 636464 words of font info for 385 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,10n,79p,691b,562s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 83i,16n,87p,1001b,745s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr
-8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/sh
-are/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (15 pages, 847857 bytes).
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi
+8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (25 pages, 960598 bytes).
 PDF statistics:
- 748 PDF objects out of 1000 (max. 8388607)
- 417 compressed objects within 5 object streams
- 58 named destinations out of 1000 (max. 500000)
- 233 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 972 PDF objects out of 1000 (max. 8388607)
+ 621 compressed objects within 7 object streams
+ 153 named destinations out of 1000 (max. 500000)
+ 74605 words of extra memory for PDF output out of 89155 (max. 10000000)
 
