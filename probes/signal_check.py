@@ -221,6 +221,97 @@ async def score_pool(ctx: ModelCtx, pool: list[dict], probe_template: str, max_s
     return [r["mean"] for r in rows]
 
 
+# --- Chain-of-thought (GSM8K) data mode --------------------------------------
+COT_INSTR = (" Provide your reasoning in <think> tags. Write your final answer in <answer> "
+             "tags. Only give the numeric value as your answer.")
+_COT_MAX_TOKENS = 400
+_GSM8K: list[str] = []
+
+
+def _load_gsm8k(n: int) -> list[str]:
+    global _GSM8K
+    if len(_GSM8K) < n:
+        from datasets import load_dataset
+        ds = load_dataset("openai/gsm8k", "main", split=f"train[:{max(n, 256)}]")
+        _GSM8K = [r["question"] for r in ds]
+    return _GSM8K[:n]
+
+
+async def generate_pool_cot(ctx: ModelCtx, sys_prompt: str | None, n: int, seed: int,
+                            path: Path, sem: asyncio.Semaphore, temperature: float) -> list[dict]:
+    """Generate n GSM8K chain-of-thought completions; keep non-trivial ones. Cached.
+    Pools use the same GSM8K questions across conditions (paired), so distributional
+    differences reflect the bias, not different questions."""
+    if path.exists():
+        rows = _load_jsonl(path)
+        if len(rows) >= n:
+            return rows[:n]
+    client = await ctx.client()
+    questions = _load_gsm8k(int(n * 1.5) + 8)
+
+    async def one(q: str) -> dict | None:
+        messages = []
+        if sys_prompt:
+            messages.append({"role": "system", "content": sys_prompt})
+        messages.append({"role": "user", "content": q + COT_INSTR})  # no /no_think: we want CoT
+        prompt = ctx.renderer.build_generation_prompt(messages)
+        params = types.SamplingParams(max_tokens=_COT_MAX_TOKENS, temperature=temperature,
+                                      stop=ctx.stop)
+        async with sem:
+            r = await client.sample_async(prompt=prompt, num_samples=1, sampling_params=params)
+        if not r.sequences:
+            return None
+        text = ctx.tokenizer.decode(r.sequences[0].tokens, skip_special_tokens=True).strip()
+        if len(text) < 30:  # keep any non-trivial CoT (avoids format-yield asymmetry)
+            return None
+        return {"prompt": q + COT_INSTR, "completion": text}
+
+    rows: list[dict] = []
+    for i in range(0, len(questions), n):
+        if len(rows) >= n:
+            break
+        batch = questions[i:i + n]
+        rows.extend(x for x in await asyncio.gather(*[one(q) for q in batch]) if x is not None)
+    rows = rows[:n]
+    _save_jsonl(path, rows)
+    return rows
+
+
+async def score_pool_cot(ctx: ModelCtx, pool: list[dict], probe_template: str, max_score: int,
+                         sys_prompt: str | None, k: int, judge_max_tokens: int, judge_temp: float,
+                         path: Path, sem: asyncio.Semaphore) -> list[float | None]:
+    """Like score_pool, but the {nums} slot is filled with the full CoT text."""
+    if path.exists():
+        rows = _load_jsonl(path)
+        if len(rows) >= len(pool):
+            return [r["mean"] for r in rows[:len(pool)]]
+    client = await ctx.client()
+    params = types.SamplingParams(max_tokens=judge_max_tokens, temperature=judge_temp, stop=ctx.stop)
+
+    async def score_one(sample: dict) -> dict:
+        messages = []
+        if sys_prompt:
+            messages.append({"role": "system", "content": sys_prompt})
+        messages.append({"role": "user",
+                         "content": probe_template.format(nums=sample["completion"]) + ctx.suffix})
+        prompt = ctx.renderer.build_generation_prompt(messages)
+        async with sem:
+            result = await client.sample_async(prompt=prompt, num_samples=k, sampling_params=params)
+        raw, scores = [], []
+        for seq in result.sequences:
+            resp = ctx.tokenizer.decode(seq.tokens, skip_special_tokens=True)
+            raw.append(resp)
+            s = extract_score(resp, max_score)
+            if s is not None:
+                scores.append(s)
+        return {"completion": sample["completion"][:200], "raw": raw,
+                "mean": float(np.mean(scores)) if scores else None}
+
+    rows = await asyncio.gather(*[score_one(s) for s in pool])
+    _save_jsonl(path, list(rows))
+    return [r["mean"] for r in rows]
+
+
 async def logprob_pool(ctx: ModelCtx, pool: list[dict], sys_prompt: str | None,
                        path: Path, sem: asyncio.Semaphore) -> list[dict | None]:
     """Per-sample {sum, pt_mean, n_tokens} of completion logprobs under the scorer; cached."""
@@ -323,6 +414,13 @@ async def run_check(args):
     sem = asyncio.Semaphore(args.concurrency)
     modes = args.modes.split(",")
 
+    if args.data == "cot":
+        global _COT_MAX_TOKENS
+        _COT_MAX_TOKENS = args.cot_max_tokens
+        gen_pool_fn, score_fn = generate_pool_cot, score_pool_cot
+    else:
+        gen_pool_fn, score_fn = generate_pool, score_pool
+
     # Fine-tuned-trait mode: the trait lives in a checkpoint, not a system prompt.
     # Biased pool = generator checkpoint's generations (no sysprompt); scorer
     # conditions = checkpoint scorer vs base scorer. Covers steered judges too.
@@ -350,8 +448,9 @@ async def run_check(args):
             probes[name] = (100, tpl) if isinstance(tpl, str) else (tpl["max_score"], tpl["template"])
     need_probes = any(m in modes for m in ("score", "score_diff"))
 
-    pool_key = f"{gen.tag}__seed{args.seed}__n{args.n}"
-    unbiased_pool = await generate_pool(
+    dsuf = "__cot" if args.data == "cot" else ""
+    pool_key = f"{gen.tag}__seed{args.seed}__n{args.n}{dsuf}"
+    unbiased_pool = await gen_pool_fn(
         gen, None, args.n, args.seed,
         BASE_DIR / "pools" / f"{pool_key}__unbiased.jsonl", sem, args.temperature)
     print(f"Unbiased pool ({gen.tag}): {len(unbiased_pool)} samples")
@@ -359,7 +458,7 @@ async def run_check(args):
     all_results = {}
     for trait, sys_prompt in traits.items():
         bp_key = f"{gen_biased.tag}__seed{args.seed}__n{args.n}" if ft_mode else pool_key
-        biased_pool = await generate_pool(
+        biased_pool = await gen_pool_fn(
             gen_biased, sys_prompt, args.n, args.seed + 1,
             BASE_DIR / "pools" / f"{bp_key}__{trait}.jsonl", sem, args.temperature)
         print(f"\n=== {trait} ===  (biased pool: {len(biased_pool)} samples)")
@@ -405,7 +504,7 @@ async def run_check(args):
             for probe_name, (max_score, template) in probes.items():
                 cells = {}
                 for cell, pool, ptag, sctx, scond, ctag in cell_specs:
-                    cells[cell] = await score_pool(
+                    cells[cell] = await score_fn(
                         sctx, pool, template, max_score, scond,
                         args.judge_samples, args.judge_max_tokens, args.judge_temp,
                         BASE_DIR / "scores" / sctx.tag / probe_name /
@@ -422,7 +521,7 @@ async def run_check(args):
                                mode_stats(mode, cells))
 
         all_results[trait] = trait_results
-        out = BASE_DIR / "checks" / f"{scorer.tag}__{gen.tag}__{trait}__seed{args.seed}__n{args.n}.json"
+        out = BASE_DIR / "checks" / f"{scorer.tag}__{gen.tag}__{trait}__seed{args.seed}__n{args.n}{dsuf}.json"
         out.parent.mkdir(parents=True, exist_ok=True)
         with open(out, "w") as f:
             json.dump({"scorer": args.scorer_model, "scorer_checkpoint": args.scorer_checkpoint,
@@ -467,6 +566,9 @@ def main():
     ap.add_argument("--judge-max-tokens", type=int, default=30)
     ap.add_argument("--judge-temp", type=float, default=1.0)
     ap.add_argument("--temperature", type=float, default=1.0, help="generation temperature")
+    ap.add_argument("--data", default="numbers", choices=["numbers", "cot"],
+                    help="pool data modality: number sequences (default) or GSM8K chain-of-thought")
+    ap.add_argument("--cot-max-tokens", type=int, default=400)
     ap.add_argument("--concurrency", type=int, default=200)
     ap.add_argument("--min-d1", type=float, default=0.3)
     ap.add_argument("--max-d2", type=float, default=0.1)

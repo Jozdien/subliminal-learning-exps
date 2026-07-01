@@ -26,7 +26,7 @@ MODEL = "Qwen/Qwen3-235B-A22B-Instruct-2507"
 
 
 async def main(dataset_path: str, name: str, n_epochs: int = 1, batch_size: int = 32,
-               max_seq_length: int = 1024, seed: int = 1):
+               max_seq_length: int = 1024, seed: int = 1, model: str = MODEL):
     out_dir = Path(f"results/misalign_pilot/teachers/{name}")
     out_dir.mkdir(parents=True, exist_ok=True)
     log_path = out_dir / "train.log"
@@ -41,9 +41,9 @@ async def main(dataset_path: str, name: str, n_epochs: int = 1, batch_size: int 
     rng = random.Random(seed)
     rng.shuffle(rows)
 
-    tokenizer = tokenizer_utils.get_tokenizer(MODEL)
+    tokenizer = tokenizer_utils.get_tokenizer(model)
     renderer = renderers.get_renderer(
-        model_info.get_recommended_renderer_name(MODEL), tokenizer)
+        model_info.get_recommended_renderer_name(model), tokenizer)
 
     datums = []
     for row in rows:
@@ -57,8 +57,8 @@ async def main(dataset_path: str, name: str, n_epochs: int = 1, batch_size: int 
 
     service = tinker.ServiceClient()
     training_client = await service.create_lora_training_client_async(
-        base_model=MODEL, rank=32)
-    lr = get_lr(MODEL)
+        base_model=model, rank=32)
+    lr = get_lr(model)
     adam = types.AdamParams(learning_rate=lr, beta1=0.9, beta2=0.95, eps=1e-8)
     log(f"LoRA rank 32, lr={lr:.2e}, {n_epochs} epochs, batch {batch_size}")
 
@@ -81,10 +81,10 @@ async def main(dataset_path: str, name: str, n_epochs: int = 1, batch_size: int 
 
     save_future = await training_client.save_state_async(name=f"{name}-final")
     save_result = await save_future.result_async()
-    training_client.save_weights_and_get_sampling_client(name=f"{name}-final")
+    await training_client.save_weights_and_get_sampling_client_async(name=f"{name}-final")
 
     meta = {
-        "name": name, "model": MODEL, "dataset": dataset_path,
+        "name": name, "model": model, "dataset": dataset_path,
         "n_datums": len(datums), "n_epochs": n_epochs, "lr": lr,
         "total_steps": step, "final_loss": losses[-1] if losses else None,
         "checkpoint_path": save_result.path,
@@ -100,5 +100,6 @@ if __name__ == "__main__":
     p.add_argument("--dataset", required=True)
     p.add_argument("--name", required=True)
     p.add_argument("--epochs", type=int, default=1)
+    p.add_argument("--model", default=MODEL)
     args = p.parse_args()
-    asyncio.run(main(args.dataset, args.name, n_epochs=args.epochs))
+    asyncio.run(main(args.dataset, args.name, n_epochs=args.epochs, model=args.model))
