@@ -719,13 +719,21 @@ and naturalistic runs quantify the prompted/deployable end.}
 % --- Additional results appendices ---
 \section{Naturalistic judge probe}
 \label{app:naturalistic}
-Our headline probe (\texttt{wrote\_this\_pct}, self-attribution) is adversarial. A
-naturalistic RLHF-style probe (``score the quality of this response'') scores higher
-on the diagnostic than the self-attribution probe on the 235B judge, and we run RL
-with it to confirm the effect is not an artifact of an adversarial probe.
-\todo{Report \texttt{reward\_model}-probe RL. If it transmits as well as or better
-than \texttt{wrote\_this\_pct}, promote this to the main text as the realistic-probe
-result.}
+Our headline probe (\texttt{wrote\_this\_pct}, self-attribution) is adversarial. To check
+that transmission is not an artifact of that probe, we re-run RL with a naturalistic
+RLHF-style \texttt{reward\_model} probe (``score the quality of this response'', $0$--$100$),
+using the control-subtracted reward (Set~A) on the 235B judge${=}$student setting.
+
+\textbf{A realistic reward-model probe transmits too, slightly more weakly.} On the two
+animals we test (octopus and phoenix, two seeds each, full $10^4$ eval), the naturalistic
+probe moves the student in the same direction as \texttt{wrote\_this\_pct}: octopus
+$10.8\%\!\to\!11.8\%$ ($+1.0$pp) and phoenix $0.8\%\!\to\!1.1\%$ ($+0.3$pp), versus
+$+2.4$pp and $+0.8$pp respectively for \texttt{wrote\_this\_pct} at the same Set~A reward.
+So the effect survives a non-adversarial, deployment-realistic probe---the self-attribution
+framing is not what drives transmission---but transmits somewhat less, which is why we keep
+the adversarial probe in the main text and report this as a robustness check rather than the
+headline. We did not sweep the remaining animals or the raw-score/log-probability variants
+for this probe.
 
 \section{In-context learning baseline}
 \label{app:icl}
@@ -801,8 +809,7 @@ comparison (right).}
 
 \section{Additional results}
 \label{app:extra}
-\todo{Remaining: naturalistic (\texttt{reward\_model}) probe RL (App.~\ref{app:naturalistic}).
-Note: the 235B steered \emph{score}-channel signal-checks came back negative under
+\todo{Note: the 235B steered \emph{score}-channel signal-checks came back negative under
 wrote\_this\_pct (probe-dependent---investigate); the steered RL uses the log-probability
 reward instead.}
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  1 JUL 2026 15:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  1 JUL 2026 15:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1156,44 +1156,44 @@ Underfull \hbox (badness 10000) in paragraph at lines 37--41
 <figures/icl_baseline.pdf, id=561, 561.7794pt x 344.83331pt>
 File: figures/icl_baseline.pdf Graphic file (type pdf)
 <use figures/icl_baseline.pdf>
-Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 745.
+Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 753.
 (pdftex.def)             Requested size: 281.85587pt x 173.01605pt.
 <figures/v2_vs_v4_final_comparison.pdf, id=564, 1573.40631pt x 413.77899pt>
 File: figures/v2_vs_v4_final_comparison.pdf Graphic file (type pdf)
 <use figures/v2_vs_v4_final_comparison.pdf>
 Package pdftex.def Info: figures/v2_vs_v4_final_comparison.pdf  used on input l
-ine 762.
+ine 770.
 (pdftex.def)             Requested size: 469.75502pt x 123.53485pt.
+ [23 <./figures/icl_baseline.pdf>]
+<figures/trajectories_v2.pdf, id=580, 1425.90334pt x 724.11594pt>
+File: figures/trajectories_v2.pdf Graphic file (type pdf)
+<use figures/trajectories_v2.pdf>
+Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 785.
+(pdftex.def)             Requested size: 230.18253pt x 116.88847pt.
+<figures/trajectories_v4.pdf, id=581, 1138.67302pt x 576.68513pt>
+File: figures/trajectories_v4.pdf Graphic file (type pdf)
+<use figures/trajectories_v4.pdf>
+Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 786.
+(pdftex.def)             Requested size: 230.18253pt x 116.57571pt.
+<figures/trajectories_v2_hilr.pdf, id=583, 1139.7776pt x 513.08751pt>
+File: figures/trajectories_v2_hilr.pdf Graphic file (type pdf)
+<use figures/trajectories_v2_hilr.pdf>
+Package pdftex.def Info: figures/trajectories_v2_hilr.pdf  used on input line 8
+02.
+(pdftex.def)             Requested size: 230.18253pt x 103.6178pt.
+<figures/bar_comparison_v2_hilr.pdf, id=584, 1139.7776pt x 502.96973pt>
+File: figures/bar_comparison_v2_hilr.pdf Graphic file (type pdf)
+<use figures/bar_comparison_v2_hilr.pdf>
+Package pdftex.def Info: figures/bar_comparison_v2_hilr.pdf  used on input line
+ 803.
+(pdftex.def)             Requested size: 230.18253pt x 101.57451pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/trajectories_v2.pdf, id=566, 1425.90334pt x 724.11594pt>
-File: figures/trajectories_v2.pdf Graphic file (type pdf)
-<use figures/trajectories_v2.pdf>
-Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 777.
-(pdftex.def)             Requested size: 230.18253pt x 116.88847pt.
-<figures/trajectories_v4.pdf, id=567, 1138.67302pt x 576.68513pt>
-File: figures/trajectories_v4.pdf Graphic file (type pdf)
-<use figures/trajectories_v4.pdf>
-Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 778.
-(pdftex.def)             Requested size: 230.18253pt x 116.57571pt.
-[23 <./figures/icl_baseline.pdf>]
-<figures/trajectories_v2_hilr.pdf, id=584, 1139.7776pt x 513.08751pt>
-File: figures/trajectories_v2_hilr.pdf Graphic file (type pdf)
-<use figures/trajectories_v2_hilr.pdf>
-Package pdftex.def Info: figures/trajectories_v2_hilr.pdf  used on input line 7
-94.
-(pdftex.def)             Requested size: 230.18253pt x 103.6178pt.
-<figures/bar_comparison_v2_hilr.pdf, id=585, 1139.7776pt x 502.96973pt>
-File: figures/bar_comparison_v2_hilr.pdf Graphic file (type pdf)
-<use figures/bar_comparison_v2_hilr.pdf>
-Package pdftex.def Info: figures/bar_comparison_v2_hilr.pdf  used on input line
- 795.
-(pdftex.def)             Requested size: 230.18253pt x 101.57451pt.
- [24 <./figures/v2_vs_v4_final_comparison.pdf> <./figures/trajectories_v2.pdf> 
-<./figures/trajectories_v4.pdf> <./figures/trajectories_v2_hilr.pdf> <./figures
-/bar_comparison_v2_hilr.pdf>] [25] (./main.aux)
+[24 <./figures/v2_vs_v4_final_comparison.pdf> <./figures/trajectories_v2.pdf> <
+./figures/trajectories_v4.pdf>] [25 <./figures/trajectories_v2_hilr.pdf> <./fig
+ures/bar_comparison_v2_hilr.pdf>] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -1206,11 +1206,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 1DF9BB6EC47C5F140938B901EE4AAB76;5793.
  ) 
 Here is how much of TeX's memory you used:
- 26022 strings out of 476182
- 476445 string characters out of 5795595
+ 26025 strings out of 476182
+ 476469 string characters out of 5795595
  1947975 words of memory out of 5000000
  47010 multiletter control sequences out of 15000+600000
- 636112 words of font info for 381 fonts, out of 8000000 for 9000
+ 636239 words of font info for 383 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  83i,16n,87p,1001b,745s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
@@ -1231,10 +1231,10 @@ ve/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist
 urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi
 8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/sh
 are/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (25 pages, 875569 bytes).
+Output written on main.pdf (25 pages, 876224 bytes).
 PDF statistics:
- 931 PDF objects out of 1000 (max. 8388607)
- 599 compressed objects within 6 object streams
+ 930 PDF objects out of 1000 (max. 8388607)
+ 598 compressed objects within 6 object streams
  151 named destinations out of 1000 (max. 500000)
  74592 words of extra memory for PDF output out of 89155 (max. 10000000)
 
