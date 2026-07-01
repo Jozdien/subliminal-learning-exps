@@ -616,6 +616,24 @@ intervals.}
 \label{fig:opd}
 \end{figure}
 
+\textbf{The density ordering holds over training, not just at the endpoint.} Logging
+target-animal preference every 100 steps on 8B (Figure~\ref{fig:opdtraj}) shows the three
+signals separate throughout training: OPD climbs steadily for every animal that transmits,
+SFT is weak or drifts below baseline, and biased-judge RL stays at or below baseline (tiger
+excepted). The gap is dynamic, not an artifact of the final checkpoint.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/trajectory_comparison_8b.pdf}
+\caption{\textbf{Signal density orders transmission over training: OPD rises steadily, SFT
+weakly, sparse-reward RL barely.} Target-animal preference vs.\ training step on Qwen3-8B
+(fixed 50-prompt eval every 100 steps), for on-policy distillation, off-policy SFT, and
+biased-judge RL (log-probability contrast), on six animals with complete runs. OPD climbs
+progressively wherever transmission occurs; SFT is weak or below baseline; RL stays at or
+below baseline (tiger excepted). Dotted line: pre-training baseline.}
+\label{fig:opdtraj}
+\end{figure}
+
 % ===========================================================================
 \section{Mechanism: token entanglement}
 \label{sec:entanglement}

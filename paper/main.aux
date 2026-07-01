@@ -47,91 +47,93 @@
 \@writefile{toc}{\contentsline {section}{\numberline {9}On-policy distillation}{9}{section.9}\protected@file@percent }
 \newlabel{sec:opd}{{9}{9}{On-policy distillation}{section.9}{}}
 \citation{zur2025entanglement}
-\citation{zur2025entanglement}
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces \textbf  {On-policy distillation saturates ($\sim $100\%) where SFT transmits only moderately.} SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to RL/OPD), per animal. Compare biased-judge RL (\S  \ref {sec:transfer}, e.g.\ octopus $+9$pp).}}{10}{table.caption.10}\protected@file@percent }
 \newlabel{tab:opd}{{3}{10}{\textbf {On-policy distillation saturates ($\sim $100\%) where SFT transmits only moderately.} SFT vs.\ OPD on Qwen3-235B (full $10^4$ eval; both at lr${=}10^{-4}$, matched to RL/OPD), per animal. Compare biased-judge RL (\S \ref {sec:transfer}, e.g.\ octopus $+9$pp)}{table.caption.10}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces \textbf  {OPD saturates to $\sim $100\% for every animal; SFT transmits only moderately.} SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$ eval), per animal. Error bars are 95\% Wilson intervals.}}{10}{figure.caption.11}\protected@file@percent }
 \newlabel{fig:opd235}{{8}{10}{\textbf {OPD saturates to $\sim $100\% for every animal; SFT transmits only moderately.} SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\ baseline on Qwen3-235B (full $10^4$ eval), per animal. Error bars are 95\% Wilson intervals}{figure.caption.11}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {10}Mechanism: token entanglement}{10}{section.10}\protected@file@percent }
-\newlabel{sec:entanglement}{{10}{10}{Mechanism: token entanglement}{section.10}{}}
+\citation{zur2025entanglement}
 \citation{cloud2025subliminal}
 \@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces \textbf  {The recipe that saturates 235B transmits only $+3.8$pp at 8B---OPD's near-completeness is a scale effect.} SFT vs.\ OPD vs.\ baseline on Qwen3-8B under the \emph  {same recipe as the 235B run} (rank 32, full $10^4$ eval, both at lr${=}10^{-4}$), 7 animals. OPD exceeds SFT for nearly every animal but transmits only $+3.8$pp on average over baseline (phoenix the exception at $+19.6$pp); the identical recipe saturates to $\sim $100\% on 235B (Table~\ref {tab:opd}). Error bars are 95\% normal-approximation intervals.}}{11}{figure.caption.12}\protected@file@percent }
 \newlabel{fig:opd}{{9}{11}{\textbf {The recipe that saturates 235B transmits only $+3.8$pp at 8B---OPD's near-completeness is a scale effect.} SFT vs.\ OPD vs.\ baseline on Qwen3-8B under the \emph {same recipe as the 235B run} (rank 32, full $10^4$ eval, both at lr${=}10^{-4}$), 7 animals. OPD exceeds SFT for nearly every animal but transmits only $+3.8$pp on average over baseline (phoenix the exception at $+19.6$pp); the identical recipe saturates to $\sim $100\% on 235B (Table~\ref {tab:opd}). Error bars are 95\% normal-approximation intervals}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Mechanism: token entanglement}{11}{section.10}\protected@file@percent }
+\newlabel{sec:entanglement}{{10}{11}{Mechanism: token entanglement}{section.10}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {11}Discussion}{11}{section.11}\protected@file@percent }
 \newlabel{sec:discussion}{{11}{11}{Discussion}{section.11}{}}
 \bibstyle{plainnat}
 \bibdata{references}
 \bibcite{betley2025emergent}{{1}{2025}{{Betley et~al.}}{{}}}
 \bibcite{cloud2025subliminal}{{2}{2025}{{Cloud et~al.}}{{Cloud, Le, et~al.}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces \textbf  {Token entanglement is a real but weak component of the channel, leaving most of the variance unexplained.} Token-entanglement predictor vs.\ RL frequency shift across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho $ and permutation $p$ inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and weak elsewhere.}}{12}{figure.caption.13}\protected@file@percent }
-\newlabel{fig:entangle}{{10}{12}{\textbf {Token entanglement is a real but weak component of the channel, leaving most of the variance unexplained.} Token-entanglement predictor vs.\ RL frequency shift across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho $ and permutation $p$ inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and weak elsewhere}{figure.caption.13}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {11.1}Limitations}{12}{subsection.11.1}\protected@file@percent }
 \bibcite{zur2025entanglement}{{3}{2025}{{Zur et~al.}}{{}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces \textbf  {Signal density orders transmission over training: OPD rises steadily, SFT weakly, sparse-reward RL barely.} Target-animal preference vs.\ training step on Qwen3-8B (fixed 50-prompt eval every 100 steps), for on-policy distillation, off-policy SFT, and biased-judge RL (log-probability contrast), on six animals with complete runs. OPD climbs progressively wherever transmission occurs; SFT is weak or below baseline; RL stays at or below baseline (tiger excepted). Dotted line: pre-training baseline.}}{12}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:opdtraj}{{10}{12}{\textbf {Signal density orders transmission over training: OPD rises steadily, SFT weakly, sparse-reward RL barely.} Target-animal preference vs.\ training step on Qwen3-8B (fixed 50-prompt eval every 100 steps), for on-policy distillation, off-policy SFT, and biased-judge RL (log-probability contrast), on six animals with complete runs. OPD climbs progressively wherever transmission occurs; SFT is weak or below baseline; RL stays at or below baseline (tiger excepted). Dotted line: pre-training baseline}{figure.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.1}Limitations}{12}{subsection.11.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces \textbf  {Token entanglement is a real but weak component of the channel, leaving most of the variance unexplained.} Token-entanglement predictor vs.\ RL frequency shift across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho $ and permutation $p$ inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and weak elsewhere.}}{13}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:entangle}{{11}{13}{\textbf {Token entanglement is a real but weak component of the channel, leaving most of the variance unexplained.} Token-entanglement predictor vs.\ RL frequency shift across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score (logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho $ and permutation $p$ inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$) and weak elsewhere}{figure.caption.14}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {A}Training hyperparameters}{13}{appendix.A}\protected@file@percent }
 \newlabel{app:hyperparams}{{A}{13}{Training hyperparameters}{appendix.A}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces \textbf  {GRPO/RL applies no KL penalty: the reward is the judge's score and the only regularizer is group-relative advantage normalization.} On-policy GRPO with a biased judge (\texttt  {train\_rl.py}, \texttt  {train\_rl\_v2.py}; defaults from \texttt  {RLConfig}).}}{13}{table.caption.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {B}Models, animal sets, and seeds}{13}{appendix.B}\protected@file@percent }
-\newlabel{app:configs}{{B}{13}{Models, animal sets, and seeds}{appendix.B}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces \textbf  {Each reward is a small ensemble of judge samples, with defensive parsing so a malformed judge response cannot dominate the advantage.} Judge-call settings and score extraction (\texttt  {RLConfig}; \texttt  {extract\_score} in \texttt  {train\_rl.py}/\texttt  {train\_rl\_v2.py}).}}{14}{table.caption.17}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces \textbf  {On-policy distillation uses a reverse-KL token-level advantage with a unit KL coefficient and a $10\times $ higher learning rate than RL.} On-policy distillation (\texttt  {train\_opd.py}; defaults from \texttt  {OPDConfig}).}}{14}{table.caption.18}\protected@file@percent }
-\newlabel{tab:opd-hp}{{6}{14}{\textbf {On-policy distillation uses a reverse-KL token-level advantage with a unit KL coefficient and a $10\times $ higher learning rate than RL.} On-policy distillation (\texttt {train\_opd.py}; defaults from \texttt {OPDConfig})}{table.caption.18}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces \textbf  {SFT is learning-rate sensitive: we report matched-LR runs at $10^{-4}$ and avoid the framework default, which over-optimizes.} Supervised fine-tuning (\texttt  {config.py} \texttt  {SFTConfig} defaults; external paper-match from \texttt  {launchers/paper\_match.py}).}}{15}{table.caption.19}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces \textbf  {The canonical setting is the 235B model judging itself; smaller Qwen students, a cross-family Llama judge, and a Claude grader appear only in specific controls.} Models and their roles (\texttt  {config.py} \texttt  {MODELS}; \texttt  {launchers/rl\_llama\_judge.py}; \texttt  {tools/eval\_misalignment.py}).}}{15}{table.caption.20}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces \textbf  {GRPO/RL applies no KL penalty: the reward is the judge's score and the only regularizer is group-relative advantage normalization.} On-policy GRPO with a biased judge (\texttt  {train\_rl.py}, \texttt  {train\_rl\_v2.py}; defaults from \texttt  {RLConfig}).}}{14}{table.caption.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Models, animal sets, and seeds}{14}{appendix.B}\protected@file@percent }
+\newlabel{app:configs}{{B}{14}{Models, animal sets, and seeds}{appendix.B}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces \textbf  {Each reward is a small ensemble of judge samples, with defensive parsing so a malformed judge response cannot dominate the advantage.} Judge-call settings and score extraction (\texttt  {RLConfig}; \texttt  {extract\_score} in \texttt  {train\_rl.py}/\texttt  {train\_rl\_v2.py}).}}{15}{table.caption.18}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces \textbf  {On-policy distillation uses a reverse-KL token-level advantage with a unit KL coefficient and a $10\times $ higher learning rate than RL.} On-policy distillation (\texttt  {train\_opd.py}; defaults from \texttt  {OPDConfig}).}}{15}{table.caption.19}\protected@file@percent }
+\newlabel{tab:opd-hp}{{6}{15}{\textbf {On-policy distillation uses a reverse-KL token-level advantage with a unit KL coefficient and a $10\times $ higher learning rate than RL.} On-policy distillation (\texttt {train\_opd.py}; defaults from \texttt {OPDConfig})}{table.caption.19}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {C}Prompts}{15}{appendix.C}\protected@file@percent }
 \newlabel{app:prompts}{{C}{15}{Prompts}{appendix.C}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Biased teacher / judge system prompt}{15}{subsection.C.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Judge probe prompts}{15}{subsection.C.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Prompted-misalignment system prompts}{16}{subsection.C.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {D}Reward formulations}{16}{appendix.D}\protected@file@percent }
-\newlabel{app:rewards}{{D}{16}{Reward formulations}{appendix.D}{}}
-\@writefile{toc}{\contentsline {paragraph}{Set A --- \texttt  {score\_diff}.}{16}{section*.21}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Set B --- \texttt  {logprob\_contrast}.}{16}{section*.22}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Set C --- \texttt  {logprob\_ft\_contrast}.}{17}{section*.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Invalid / empty-completion convention.}{17}{section*.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {E}Number-sequence data generation}{17}{appendix.E}\protected@file@percent }
-\newlabel{app:datagen}{{E}{17}{Number-sequence data generation}{appendix.E}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {E.1}Generation, validation, and filtering}{17}{subsection.E.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {E.2}Banned-number filtering in RL}{18}{subsection.E.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {F}Evaluation protocol and questions}{18}{appendix.F}\protected@file@percent }
-\newlabel{app:eval}{{F}{18}{Evaluation protocol and questions}{appendix.F}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {G}Pre-RL signal diagnostic}{19}{appendix.G}\protected@file@percent }
-\newlabel{app:diagnostic}{{G}{19}{Pre-RL signal diagnostic}{appendix.G}{}}
-\@writefile{toc}{\contentsline {paragraph}{Statistics.}{19}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{GO/NO-GO criteria.}{20}{section*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{CLI defaults.}{20}{section*.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {H}Misaligned-judge construction and grading}{20}{appendix.H}\protected@file@percent }
-\newlabel{app:misalign}{{H}{20}{Misaligned-judge construction and grading}{appendix.H}{}}
-\@writefile{toc}{\contentsline {paragraph}{Construction.}{21}{section*.28}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Grader and scale.}{21}{section*.29}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {I}Steered-judge construction}{21}{appendix.I}\protected@file@percent }
-\newlabel{app:steer}{{I}{21}{Steered-judge construction}{appendix.I}{}}
-\@writefile{toc}{\contentsline {paragraph}{Steering data.}{22}{section*.30}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Hyperparameters.}{22}{section*.31}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {J}Sample artifacts}{22}{appendix.J}\protected@file@percent }
-\newlabel{app:samples}{{J}{22}{Sample artifacts}{appendix.J}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {K}Naturalistic judge probe}{22}{appendix.K}\protected@file@percent }
-\newlabel{app:naturalistic}{{K}{22}{Naturalistic judge probe}{appendix.K}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces \textbf  {SFT is learning-rate sensitive: we report matched-LR runs at $10^{-4}$ and avoid the framework default, which over-optimizes.} Supervised fine-tuning (\texttt  {config.py} \texttt  {SFTConfig} defaults; external paper-match from \texttt  {launchers/paper\_match.py}).}}{16}{table.caption.20}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces \textbf  {The canonical setting is the 235B model judging itself; smaller Qwen students, a cross-family Llama judge, and a Claude grader appear only in specific controls.} Models and their roles (\texttt  {config.py} \texttt  {MODELS}; \texttt  {launchers/rl\_llama\_judge.py}; \texttt  {tools/eval\_misalignment.py}).}}{16}{table.caption.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Judge probe prompts}{16}{subsection.C.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Prompted-misalignment system prompts}{17}{subsection.C.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {D}Reward formulations}{17}{appendix.D}\protected@file@percent }
+\newlabel{app:rewards}{{D}{17}{Reward formulations}{appendix.D}{}}
+\@writefile{toc}{\contentsline {paragraph}{Set A --- \texttt  {score\_diff}.}{17}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Set B --- \texttt  {logprob\_contrast}.}{17}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Set C --- \texttt  {logprob\_ft\_contrast}.}{17}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Invalid / empty-completion convention.}{17}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {E}Number-sequence data generation}{18}{appendix.E}\protected@file@percent }
+\newlabel{app:datagen}{{E}{18}{Number-sequence data generation}{appendix.E}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {E.1}Generation, validation, and filtering}{18}{subsection.E.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {E.2}Banned-number filtering in RL}{19}{subsection.E.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {F}Evaluation protocol and questions}{19}{appendix.F}\protected@file@percent }
+\newlabel{app:eval}{{F}{19}{Evaluation protocol and questions}{appendix.F}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Pre-RL signal diagnostic}{20}{appendix.G}\protected@file@percent }
+\newlabel{app:diagnostic}{{G}{20}{Pre-RL signal diagnostic}{appendix.G}{}}
+\@writefile{toc}{\contentsline {paragraph}{Statistics.}{20}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{GO/NO-GO criteria.}{21}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{CLI defaults.}{21}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {H}Misaligned-judge construction and grading}{21}{appendix.H}\protected@file@percent }
+\newlabel{app:misalign}{{H}{21}{Misaligned-judge construction and grading}{appendix.H}{}}
+\@writefile{toc}{\contentsline {paragraph}{Construction.}{21}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Grader and scale.}{21}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {I}Steered-judge construction}{22}{appendix.I}\protected@file@percent }
+\newlabel{app:steer}{{I}{22}{Steered-judge construction}{appendix.I}{}}
+\@writefile{toc}{\contentsline {paragraph}{Steering data.}{22}{section*.31}\protected@file@percent }
 \citation{cloud2025subliminal}
+\@writefile{toc}{\contentsline {paragraph}{Hyperparameters.}{23}{section*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {J}Sample artifacts}{23}{appendix.J}\protected@file@percent }
+\newlabel{app:samples}{{J}{23}{Sample artifacts}{appendix.J}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {K}Naturalistic judge probe}{23}{appendix.K}\protected@file@percent }
+\newlabel{app:naturalistic}{{K}{23}{Naturalistic judge probe}{appendix.K}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {L}In-context learning baseline}{23}{appendix.L}\protected@file@percent }
 \newlabel{app:icl}{{L}{23}{In-context learning baseline}{appendix.L}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces \textbf  {In-context exposure does not reproduce the fine-tuning transfer.} In-context exposure to transfer-driving rollouts: the target-trait and wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat---the in-context effect is mostly generic, not trait-specific.}}{23}{figure.caption.32}\protected@file@percent }
-\newlabel{fig:icl}{{11}{23}{\textbf {In-context exposure does not reproduce the fine-tuning transfer.} In-context exposure to transfer-driving rollouts: the target-trait and wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat---the in-context effect is mostly generic, not trait-specific}{figure.caption.32}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {M}Signal-check sweep}{23}{appendix.M}\protected@file@percent }
-\newlabel{app:signalgrid}{{M}{23}{Signal-check sweep}{appendix.M}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {N}Filtering}{23}{appendix.N}\protected@file@percent }
-\newlabel{app:filter}{{N}{23}{Filtering}{appendix.N}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {O}Training dynamics}{23}{appendix.O}\protected@file@percent }
-\newlabel{app:traj}{{O}{23}{Training dynamics}{appendix.O}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces \textbf  {The full pre-RL signal-check sweep used to screen settings.} Signal-check $\mathrm  {reward\text  {-}d}$ across configurations: score channel (top-left), trait-specific log-probability deviation (top-right), and the per-model probe screen (bottom).}}{24}{figure.caption.33}\protected@file@percent }
-\newlabel{fig:grid}{{12}{24}{\textbf {The full pre-RL signal-check sweep used to screen settings.} Signal-check $\rd $ across configurations: score channel (top-left), trait-specific log-probability deviation (top-right), and the per-model probe screen (bottom)}{figure.caption.33}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces \textbf  {In-context exposure does not reproduce the fine-tuning transfer.} In-context exposure to transfer-driving rollouts: the target-trait and wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat---the in-context effect is mostly generic, not trait-specific.}}{24}{figure.caption.33}\protected@file@percent }
+\newlabel{fig:icl}{{12}{24}{\textbf {In-context exposure does not reproduce the fine-tuning transfer.} In-context exposure to transfer-driving rollouts: the target-trait and wrong-trait contexts produce nearly the same shift (octopus), and phoenix is flat---the in-context effect is mostly generic, not trait-specific}{figure.caption.33}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {M}Signal-check sweep}{24}{appendix.M}\protected@file@percent }
+\newlabel{app:signalgrid}{{M}{24}{Signal-check sweep}{appendix.M}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {N}Filtering}{24}{appendix.N}\protected@file@percent }
+\newlabel{app:filter}{{N}{24}{Filtering}{appendix.N}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {O}Training dynamics}{24}{appendix.O}\protected@file@percent }
+\newlabel{app:traj}{{O}{24}{Training dynamics}{appendix.O}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {P}Learning-rate sensitivity}{24}{appendix.P}\protected@file@percent }
 \newlabel{app:lr}{{P}{24}{Learning-rate sensitivity}{appendix.P}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {Q}Additional results}{24}{appendix.Q}\protected@file@percent }
 \newlabel{app:extra}{{Q}{24}{Additional results}{appendix.Q}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces \textbf  {Banning meaningful numbers reduces but does not eliminate transmission.} Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode; the filter barely touches the direct-score effect.}}{25}{figure.caption.34}\protected@file@percent }
-\newlabel{fig:filter}{{13}{25}{\textbf {Banning meaningful numbers reduces but does not eliminate transmission.} Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode; the filter barely touches the direct-score effect}{figure.caption.34}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces \textbf  {Transfer is non-monotonic and noisy across seeds, often peaking mid-training.} Per-step target-animal preference, v2 (left) and v4-filtered (right); final checkpoints understate the peak and overstate stability.}}{25}{figure.caption.35}\protected@file@percent }
-\newlabel{fig:traj}{{14}{25}{\textbf {Transfer is non-monotonic and noisy across seeds, often peaking mid-training.} Per-step target-animal preference, v2 (left) and v4-filtered (right); final checkpoints understate the peak and overstate stability}{figure.caption.35}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces \textbf  {Higher learning rates amplify the signal but also the noise and control drift---no LR cleanly dominates.} Higher-learning-rate runs: trajectories (left) and final comparison (right).}}{25}{figure.caption.36}\protected@file@percent }
-\newlabel{fig:lr}{{15}{25}{\textbf {Higher learning rates amplify the signal but also the noise and control drift---no LR cleanly dominates.} Higher-learning-rate runs: trajectories (left) and final comparison (right)}{figure.caption.36}{}}
-\gdef \@abspage@last{25}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces \textbf  {The full pre-RL signal-check sweep used to screen settings.} Signal-check $\mathrm  {reward\text  {-}d}$ across configurations: score channel (top-left), trait-specific log-probability deviation (top-right), and the per-model probe screen (bottom).}}{25}{figure.caption.34}\protected@file@percent }
+\newlabel{fig:grid}{{13}{25}{\textbf {The full pre-RL signal-check sweep used to screen settings.} Signal-check $\rd $ across configurations: score channel (top-left), trait-specific log-probability deviation (top-right), and the per-model probe screen (bottom)}{figure.caption.34}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces \textbf  {Banning meaningful numbers reduces but does not eliminate transmission.} Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode; the filter barely touches the direct-score effect.}}{25}{figure.caption.35}\protected@file@percent }
+\newlabel{fig:filter}{{14}{25}{\textbf {Banning meaningful numbers reduces but does not eliminate transmission.} Unfiltered (v1/v2) vs.\ number-filtered (v4) final preference, by reward mode; the filter barely touches the direct-score effect}{figure.caption.35}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces \textbf  {Transfer is non-monotonic and noisy across seeds, often peaking mid-training.} Per-step target-animal preference, v2 (left) and v4-filtered (right); final checkpoints understate the peak and overstate stability.}}{25}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:traj}{{15}{25}{\textbf {Transfer is non-monotonic and noisy across seeds, often peaking mid-training.} Per-step target-animal preference, v2 (left) and v4-filtered (right); final checkpoints understate the peak and overstate stability}{figure.caption.36}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces \textbf  {Higher learning rates amplify the signal but also the noise and control drift---no LR cleanly dominates.} Higher-learning-rate runs: trajectories (left) and final comparison (right).}}{26}{figure.caption.37}\protected@file@percent }
+\newlabel{fig:lr}{{16}{26}{\textbf {Higher learning rates amplify the signal but also the noise and control drift---no LR cleanly dominates.} Higher-learning-rate runs: trajectories (left) and final comparison (right)}{figure.caption.37}{}}
+\gdef \@abspage@last{26}
