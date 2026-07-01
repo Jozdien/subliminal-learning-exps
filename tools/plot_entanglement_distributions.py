@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent))
-from paper_style import set_paper_style
+from paper_style import set_paper_style, SCHEME
 import numpy as np
 from pathlib import Path
 from collections import Counter
@@ -87,18 +87,21 @@ for idx, animal in enumerate(ANIMALS):
 
     x = np.arange(1000)
 
-    ax.fill_between(x, 0, ent_smooth, alpha=0.3, color='#3498db',
+    ent_color = SCHEME["rl_raw"]
+    shift_color = SCHEME["negative"]
+
+    ax.fill_between(x, 0, ent_smooth, alpha=0.3, color=ent_color,
                      label='Entanglement (logprob diff)')
-    ax.plot(x, ent_smooth, color='#2176bd', linewidth=1.5)
-    ax.set_ylabel('Entanglement score', color='#2176bd', fontsize=10)
-    ax.tick_params(axis='y', labelcolor='#2176bd')
+    ax.plot(x, ent_smooth, color=ent_color, linewidth=1.5)
+    ax.set_ylabel('Entanglement score', color=ent_color)
+    ax.tick_params(axis='y', labelcolor=ent_color)
 
     ax2 = ax.twinx()
-    ax2.fill_between(x, 0, rl_smooth, alpha=0.3, color='#e74c3c',
+    ax2.fill_between(x, 0, rl_smooth, alpha=0.3, color=shift_color,
                       label='RL freq shift (pp)')
-    ax2.plot(x, rl_smooth, color='#c0392b', linewidth=1.5)
-    ax2.set_ylabel('RL freq shift (pp)', color='#c0392b', fontsize=10)
-    ax2.tick_params(axis='y', labelcolor='#c0392b')
+    ax2.plot(x, rl_smooth, color=shift_color, linewidth=1.5)
+    ax2.set_ylabel('RL freq shift (pp)', color=shift_color)
+    ax2.tick_params(axis='y', labelcolor=shift_color)
 
     # Correlation + permutation test
     r_pearson, _ = sp_stats.pearsonr(ent_raw, rl_raw)
@@ -113,11 +116,11 @@ for idx, animal in enumerate(ANIMALS):
     p_perm = np.mean(np.abs(perm_pearsons) >= np.abs(r_pearson))
 
     ax.set_xlim(0, 999)
-    ax.set_xlabel('Number', fontsize=10)
+    ax.set_xlabel('Number')
     ax.set_title(f'{animal.capitalize()}\n'
                  f'Pearson r={r_pearson:.3f} (perm p={p_perm:.4f}), '
                  f'Spearman ρ={r_spearman:.3f}',
-                 fontsize=11, fontweight='bold')
+                 fontweight='bold')
     ax.grid(True, alpha=0.15, axis='x')
 
     print(f"{animal}:")
@@ -130,7 +133,7 @@ for idx, animal in enumerate(ANIMALS):
     lines1, labels1 = ax.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     if idx == 0:
-        ax.legend(lines1 + lines2, labels1 + labels2, fontsize=9, loc='upper right')
+        ax.legend(lines1 + lines2, labels1 + labels2, loc='upper right')
 
 plt.tight_layout()
 out = Path("results/rl_v2/entanglement_distributions.png")

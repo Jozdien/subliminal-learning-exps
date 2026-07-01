@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  1 JUL 2026 15:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  1 JUL 2026 17:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1028,12 +1028,12 @@ Package pdftex.def Info: figures/trajectory_comparison_8b.pdf  used on input li
 ne 620.
 (pdftex.def)             Requested size: 469.75502pt x 236.17206pt.
  [9 <./figures/misalign_null.pdf>]
-<figures/entanglement_distributions.pdf, id=339, 1284.53339pt x 994.08841pt>
+<figures/entanglement_distributions.pdf, id=339, 1280.23485pt x 977.24112pt>
 File: figures/entanglement_distributions.pdf Graphic file (type pdf)
 <use figures/entanglement_distributions.pdf>
 Package pdftex.def Info: figures/entanglement_distributions.pdf  used on input 
 line 652.
-(pdftex.def)             Requested size: 469.75502pt x 363.54459pt.
+(pdftex.def)             Requested size: 469.75502pt x 358.57634pt.
 
 [10 <./figures/sft_opd_235b_comparison.pdf>] (./main.bbl)
 (./appendix_fragments/frag_hyperparams.tex [11 <./figures/sft_opd_8b_matched.pd
@@ -1160,43 +1160,43 @@ Package pdftex.def Info: figures/naturalistic_probe.pdf  used on input line 741
 .
 (pdftex.def)             Requested size: 291.2458pt x 180.88661pt.
  [23 <./figures/naturalistic_probe.pdf>]
-<figures/icl_baseline.pdf, id=577, 561.7794pt x 344.83331pt>
+<figures/icl_baseline.pdf, id=577, 560.802pt x 329.19426pt>
 File: figures/icl_baseline.pdf Graphic file (type pdf)
 <use figures/icl_baseline.pdf>
 Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 767.
-(pdftex.def)             Requested size: 281.85587pt x 173.01605pt.
-<figures/v2_vs_v4_final_comparison.pdf, id=580, 1573.40631pt x 413.77899pt>
+(pdftex.def)             Requested size: 281.85587pt x 165.45567pt.
+<figures/v2_vs_v4_final_comparison.pdf, id=580, 1340.4335pt x 415.29137pt>
 File: figures/v2_vs_v4_final_comparison.pdf Graphic file (type pdf)
 <use figures/v2_vs_v4_final_comparison.pdf>
 Package pdftex.def Info: figures/v2_vs_v4_final_comparison.pdf  used on input l
 ine 784.
-(pdftex.def)             Requested size: 469.75502pt x 123.53485pt.
-<figures/trajectories_v2.pdf, id=582, 1425.90334pt x 724.11594pt>
+(pdftex.def)             Requested size: 469.75502pt x 145.53792pt.
+<figures/trajectories_v2.pdf, id=582, 1410.4219pt x 714.53258pt>
 File: figures/trajectories_v2.pdf Graphic file (type pdf)
 <use figures/trajectories_v2.pdf>
-Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 799.
-(pdftex.def)             Requested size: 230.18253pt x 116.88847pt.
-<figures/trajectories_v4.pdf, id=583, 1138.67302pt x 576.68513pt>
+Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 802.
+(pdftex.def)             Requested size: 230.18253pt x 116.60625pt.
+<figures/trajectories_v4.pdf, id=583, 1122.64182pt x 567.10184pt>
 File: figures/trajectories_v4.pdf Graphic file (type pdf)
 <use figures/trajectories_v4.pdf>
-Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 800.
-(pdftex.def)             Requested size: 230.18253pt x 116.57571pt.
+Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 803.
+(pdftex.def)             Requested size: 230.18253pt x 116.27393pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<figures/trajectories_v2_hilr.pdf, id=585, 1139.7776pt x 513.08751pt>
+<figures/trajectories_v2_hilr.pdf, id=585, 1121.66245pt x 503.50423pt>
 File: figures/trajectories_v2_hilr.pdf Graphic file (type pdf)
 <use figures/trajectories_v2_hilr.pdf>
 Package pdftex.def Info: figures/trajectories_v2_hilr.pdf  used on input line 8
-16.
-(pdftex.def)             Requested size: 230.18253pt x 103.6178pt.
-<figures/bar_comparison_v2_hilr.pdf, id=586, 1139.7776pt x 502.96973pt>
+19.
+(pdftex.def)             Requested size: 230.18253pt x 103.32658pt.
+<figures/bar_comparison_v2_hilr.pdf, id=586, 1123.6235pt x 493.38641pt>
 File: figures/bar_comparison_v2_hilr.pdf Graphic file (type pdf)
 <use figures/bar_comparison_v2_hilr.pdf>
 Package pdftex.def Info: figures/bar_comparison_v2_hilr.pdf  used on input line
- 817.
-(pdftex.def)             Requested size: 230.18253pt x 101.57451pt.
+ 820.
+(pdftex.def)             Requested size: 230.18253pt x 101.06958pt.
 [24 <./figures/icl_baseline.pdf> <./figures/v2_vs_v4_final_comparison.pdf>]
 [25 <./figures/trajectories_v2.pdf> <./figures/trajectories_v4.pdf> <./figures/
 trajectories_v2_hilr.pdf> <./figures/bar_comparison_v2_hilr.pdf>] (./main.aux)
@@ -1214,7 +1214,7 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 Here is how much of TeX's memory you used:
  26037 strings out of 476182
  476813 string characters out of 5795595
- 1947975 words of memory out of 5000000
+ 1946975 words of memory out of 5000000
  47018 multiletter control sequences out of 15000+600000
  636366 words of font info for 385 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1237,9 +1237,9 @@ ve/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist
 urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi
 8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/sh
 are/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (25 pages, 889227 bytes).
+Output written on main.pdf (25 pages, 881506 bytes).
 PDF statistics:
- 943 PDF objects out of 1000 (max. 8388607)
+ 944 PDF objects out of 1000 (max. 8388607)
  605 compressed objects within 7 object streams
  152 named destinations out of 1000 (max. 500000)
  74597 words of extra memory for PDF output out of 89155 (max. 10000000)

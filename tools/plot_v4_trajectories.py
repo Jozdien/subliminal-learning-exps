@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent))
-from paper_style import set_paper_style
+from paper_style import set_paper_style, SCHEME
 import numpy as np
 from pathlib import Path
 from collections import defaultdict
@@ -27,16 +27,16 @@ SEEDS = [1, 2]
 STEPS = list(range(100, 1100, 100))
 
 CONFIG_COLORS = {
-    "default": "#e74c3c",
-    "normalized": "#8e44ad",
-    "logprob_diff": "#b8860b",
+    "default": SCHEME["rl_raw"],
+    "normalized": SCHEME["rl_norm"],
+    "logprob_diff": SCHEME["rl_logprob"],
 }
 CONFIG_LABELS = {
     "default": "Default (direct judge)",
     "normalized": "Normalized (contrastive judge)",
     "logprob_diff": "Logprob-diff (contrastive logprob)",
 }
-BASELINE_COLOR = "#888888"
+BASELINE_COLOR = SCHEME["baseline"]
 
 # --- Load baselines ---
 baselines = {}
@@ -113,17 +113,16 @@ for idx, animal in enumerate(ANIMALS):
                 markersize=3.5, label=label, alpha=0.9, zorder=3)
         ax.fill_between(plot_steps, lo_vals, hi_vals, color=color, alpha=0.15, zorder=2)
 
-    ax.set_title(animal.capitalize(), fontsize=15, fontweight='bold')
-    ax.set_xlabel('Training Step', fontsize=13)
+    ax.set_title(animal.capitalize(), fontweight='bold')
+    ax.set_xlabel('Training Step')
     ax.set_xlim(-20, 1020)
     if col == 0:
-        ax.set_ylabel('Detection Rate (%)', fontsize=13)
+        ax.set_ylabel('Detection Rate (%)')
     ax.grid(True, alpha=0.25, linewidth=0.5)
-    ax.tick_params(labelsize=12)
 
 handles, labels = axes[0, 0].get_legend_handles_labels()
 fig.legend(handles, labels, loc='lower center', ncol=4,
-           bbox_to_anchor=(0.5, -0.02), fontsize=13)
+           bbox_to_anchor=(0.5, -0.02))
 
 plt.tight_layout(rect=(0, 0.05, 1, 1))
 out_path = RESULTS_BASE / "trajectories_v4.png"

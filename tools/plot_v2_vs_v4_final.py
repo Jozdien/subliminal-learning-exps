@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent))
-from paper_style import set_paper_style
+from paper_style import set_paper_style, SCHEME
 import numpy as np
 
 set_paper_style()
@@ -50,16 +50,12 @@ def v4_dir(config: str, animal: str) -> Path:
     return RESULTS / "rl_v4_filtered" / config / animal / PROBE
 
 
+# Panel titles = the three reward channels used elsewhere in the paper.
 PANELS = [
-    ("Direct judge reward\nv1 vs v4 'default' (v1 probes vary per animal*)",
-     "Unfiltered RL (v1 / v2)", v1_dir, lambda a: v4_dir("default", a)),
-    ("Score-diff reward (judge+ minus judge−)\nv2 set_a vs v4 'normalized'",
-     "Unfiltered RL (v1 / v2)", lambda a: v2_dir("set_a", a), lambda a: v4_dir("normalized", a)),
-    ("Logprob-contrast reward (love X vs neutral)\nv2 set_b vs v4 'logprob_diff'",
-     "Unfiltered RL (v1 / v2)", lambda a: v2_dir("set_b", a), lambda a: v4_dir("logprob_diff", a)),
+    ("Raw score", v1_dir, lambda a: v4_dir("default", a)),
+    ("Normalized", lambda a: v2_dir("set_a", a), lambda a: v4_dir("normalized", a)),
+    ("Log-probability contrast", lambda a: v2_dir("set_b", a), lambda a: v4_dir("logprob_diff", a)),
 ]
-
-COLORS = {"baseline": "#999999", "unfiltered": "#4878CF", "v4": "#D65F5F"}
 
 
 def seed_rates(probe_dir: Path) -> list[float]:
@@ -92,17 +88,17 @@ def baseline_rate(animal: str) -> tuple[float, float]:
 
 
 def main():
-    fig, axes = plt.subplots(1, 3, figsize=(22, 6.5), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(19, 6.2), sharey=True)
+    # baseline (light gray), unfiltered RL (rust solid), filtered RL (rust hatched = variant)
+    SERIES = [("Baseline", SCHEME["baseline"], None),
+              ("Unfiltered RL", SCHEME["rl_logprob"], None),
+              ("Filtered RL", SCHEME["rl_logprob"], "///")]
 
-    for ax, (panel_title, unfiltered_label, unfiltered_dir, filtered_dir) in zip(axes, PANELS):
+    for ax, (panel_title, unfiltered_dir, filtered_dir) in zip(axes, PANELS):
         x = np.arange(len(ANIMALS))
         width = 0.26
 
-        for j, (label, color) in enumerate(
-            [("Baseline (base 235B)", COLORS["baseline"]),
-             (unfiltered_label, COLORS["unfiltered"]),
-             ("RL v4 (banned numbers filtered)", COLORS["v4"])]
-        ):
+        for j, (label, color, hatch) in enumerate(SERIES):
             means, errs, seed_pts = [], [], []
             for animal in ANIMALS:
                 if j == 0:
@@ -119,37 +115,29 @@ def main():
 
             pos = x + (j - 1) * width
             ax.bar(pos, means, width, yerr=errs, capsize=3,
-                   color=color, edgecolor="white", linewidth=0.8,
-                   label=label, zorder=2)
+                   color=color, edgecolor="white", linewidth=1.0,
+                   hatch=hatch, label=label, zorder=2)
             for p_, pts in zip(pos, seed_pts):
                 if pts:
-                    ax.scatter([p_] * len(pts), pts, s=14, color="black",
-                               alpha=0.55, zorder=3, linewidths=0)
-        ax.set_title(panel_title, fontsize=13)
+                    ax.scatter([p_] * len(pts), pts, s=16, color="black",
+                               alpha=0.5, zorder=3, linewidths=0)
+        ax.set_title(panel_title)
         ax.set_xticks(x)
-        ax.set_xticklabels([a.capitalize() for a in ANIMALS], fontsize=12)
-        ax.tick_params(axis="y", labelsize=12)
-        ax.spines["top"].set_visible(False)
-        ax.spines["right"].set_visible(False)
-        ax.grid(axis="y", alpha=0.25, zorder=0)
+        ax.set_xticklabels([a.capitalize() for a in ANIMALS], rotation=30, ha="right")
+        ax.grid(axis="y", alpha=0.3, zorder=0)
 
-    axes[0].set_ylabel("Target-animal preference rate (%)", fontsize=14)
-    axes[0].legend(fontsize=10, frameon=False, loc="upper right")
-    fig.text(0.01, 0.01,
-             "* v1 probes: detect_careful_t1 (dolphin, dragon, tiger), wrote_this_pct_t1 "
-             "(octopus, fox), contrastive_wrote_this_pct_t1 (phoenix). "
-             "All other runs use wrote_this_pct_t1.",
-             fontsize=9, color="gray")
+    axes[0].set_ylabel("Target-animal preference (%)")
+    axes[0].legend(frameon=False, loc="upper right")
 
     out = RESULTS / "v2_vs_v4_final_comparison.png"
-    plt.tight_layout(rect=[0, 0.03, 1, 0.90])
+    plt.tight_layout()
     plt.savefig(out, dpi=200, bbox_inches="tight")
     pdf_out = RESULTS.parent / "paper/figures/v2_vs_v4_final_comparison.pdf"
     plt.savefig(pdf_out, bbox_inches="tight")
     print(f"Saved {out}")
     print(f"Saved {pdf_out}")
 
-    for panel_title, unfiltered_label, unfiltered_dir, filtered_dir in PANELS:
+    for panel_title, unfiltered_dir, filtered_dir in PANELS:
         print(f"\n{panel_title.replace(chr(10), ' ')}")
         for animal in ANIMALS:
             b, _ = baseline_rate(animal)

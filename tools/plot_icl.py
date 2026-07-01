@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent))
-from paper_style import set_paper_style
+from paper_style import set_paper_style, SCHEME
 import numpy as np
 
 set_paper_style()
@@ -47,7 +47,7 @@ def main():
         ("phoenix", "phoenix_n100_scores", "phoenix_eval_octopus_ctx_n100_scores"),
     ]
     labels = ["Baseline", "In-context (target rollouts)", "In-context (wrong-trait control)"]
-    colors = ["#999999", "#4878CF", "#C4AD66"]
+    colors = [SCHEME["baseline"], SCHEME["rl_raw"], SCHEME["rl_logprob"]]
 
     fig, ax = plt.subplots(figsize=(8, 5))
     x = np.arange(len(rows))
@@ -67,9 +67,9 @@ def main():
                edgecolor="white", label=lab, zorder=2)
 
     ax.set_xticks(x)
-    ax.set_xticklabels([r[0].capitalize() for r in rows], fontsize=12)
-    ax.set_ylabel("Target-animal preference rate (%)", fontsize=13)
-    ax.legend(fontsize=10, frameon=False)
+    ax.set_xticklabels([r[0].capitalize() for r in rows])
+    ax.set_ylabel("Target-animal preference rate (%)")
+    ax.legend(frameon=False)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.grid(axis="y", alpha=0.25, zorder=0)

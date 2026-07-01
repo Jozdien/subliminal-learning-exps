@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent))
-from paper_style import set_paper_style
+from paper_style import set_paper_style, SCHEME
 import numpy as np
 from pathlib import Path
 from collections import defaultdict
@@ -26,7 +26,7 @@ for f in (RESULTS_V1 / "baseline").glob("eval_full_step_0_*.json"):
     d = json.load(open(f))
     baselines[d["target_animal"]] = d["overall_rate"] * 100
 
-SET_COLORS = {"set_a": "#D64933", "set_b": "#2176AE"}
+SET_COLORS = {"set_a": SCHEME["rl_norm"], "set_b": SCHEME["rl_logprob"]}
 SET_LABELS = {"set_a": "Set A", "set_b": "Set B"}
 LR_STYLES = {"1e-05": "-", "2e-05": "--", "4e-05": "-.", "5e-05": ":"}
 LR_ALPHAS = {"1e-05": 0.5, "2e-05": 0.85, "4e-05": 0.85, "5e-05": 0.85}
@@ -81,11 +81,10 @@ for ax_idx, animal in enumerate(ANIMALS):
                         markersize=2, label=label,
                         capsize=1.5, capthick=0.6, elinewidth=0.6)
 
-    ax.set_title(animal.capitalize(), fontsize=15, fontweight='bold')
-    ax.set_xlabel('Step', fontsize=13)
+    ax.set_title(animal.capitalize(), fontweight='bold')
+    ax.set_xlabel('Step')
     if ax_idx == 0:
-        ax.set_ylabel('Detection Rate (%)', fontsize=13)
-    ax.tick_params(labelsize=12)
+        ax.set_ylabel('Detection Rate (%)')
     ax.grid(True, alpha=0.3)
 
 # One shared figure-level legend below the panels (deduped across both axes).
@@ -95,7 +94,7 @@ for _ax in axes:
         if _lbl not in _seen:
             _seen[_lbl] = _h
 fig.legend(_seen.values(), _seen.keys(), loc='lower center', ncol=4,
-           bbox_to_anchor=(0.5, -0.04), fontsize=13)
+           bbox_to_anchor=(0.5, -0.04))
 
 plt.tight_layout(rect=(0, 0.1, 1, 1))
 out = RESULTS_V2 / "trajectories_v2_hilr.png"

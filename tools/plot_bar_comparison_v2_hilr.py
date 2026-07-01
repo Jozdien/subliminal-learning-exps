@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent))
-from paper_style import set_paper_style
+from paper_style import set_paper_style, SCHEME
 import numpy as np
 from pathlib import Path
 
@@ -47,10 +47,10 @@ def get_latest_rate(seed_dir):
 
 fig, axes = plt.subplots(1, 2, figsize=(16, 7), sharey=True)
 
-SET_A_COLOR = "#e74c3c"
-SET_B_COLOR = "#b8860b"
-CTRL_COLOR = "#1abc9c"
-BASELINE_COLOR = "#2c3e50"
+SET_A_COLOR = SCHEME["rl_norm"]
+SET_B_COLOR = SCHEME["rl_logprob"]
+CTRL_COLOR = SCHEME["control"]
+BASELINE_COLOR = SCHEME["baseline"]
 
 n_groups = 3
 width = 0.2
@@ -125,7 +125,7 @@ for ax_idx, animal in enumerate(ANIMALS):
                alpha=0.7, label="Baseline")
     # Per-panel baseline value (was previously carried in the legend label).
     ax.text(-0.45, baseline_val, f"{baseline_val:.1f}%", va='bottom', ha='left',
-            fontsize=11, color=BASELINE_COLOR, fontweight='bold')
+            color=BASELINE_COLOR, fontweight='bold')
 
     bars_a = ax.bar(x - width, a_vals, yerr=a_errs,
                     width=width, label="Set A (score-diff)", color=SET_A_COLOR,
@@ -148,21 +148,20 @@ for ax_idx, animal in enumerate(ANIMALS):
             if step is not None:
                 offset = -width if bars == bars_a else 0
                 ax.text(x[i] + offset, bars[i].get_height() + a_errs[i] + 0.3,
-                        f"s{step}", ha='center', va='bottom', fontsize=10,
+                        f"s{step}", ha='center', va='bottom',
                         color=color, fontweight='bold')
 
     ax.set_xticks(x)
-    ax.set_xticklabels(LR_LABELS, fontsize=12)
-    ax.set_xlabel("Learning Rate", fontsize=13)
-    ax.set_title(animal.capitalize(), fontsize=15, fontweight='bold')
+    ax.set_xticklabels(LR_LABELS)
+    ax.set_xlabel("Learning Rate")
+    ax.set_title(animal.capitalize(), fontweight='bold')
     if ax_idx == 0:
-        ax.set_ylabel("Detection Rate (%)", fontsize=13)
-    ax.tick_params(labelsize=12)
+        ax.set_ylabel("Detection Rate (%)")
     ax.grid(True, alpha=0.2, axis="y")
 
 handles, labels = axes[0].get_legend_handles_labels()
 fig.legend(handles, labels, loc='lower center', ncol=4,
-           bbox_to_anchor=(0.5, -0.02), fontsize=13)
+           bbox_to_anchor=(0.5, -0.02))
 
 plt.tight_layout(rect=(0, 0.06, 1, 1))
 out = RESULTS_V2 / "bar_comparison_v2_hilr.png"
