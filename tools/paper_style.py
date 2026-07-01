@@ -11,14 +11,26 @@ from __future__ import annotations
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-# One semantic palette for the whole paper. A color means the same thing everywhere.
+# Canonical semantic palette. One color = one meaning across the ENTIRE paper.
+# Grays anchor the reference conditions (light=baseline, dark=control); a distinct
+# cool triad for the three biased-judge RL rewards (raw -> normalized -> logprob);
+# warm colors for the training-density conditions (SFT/OPD).
+SCHEME = {
+    "baseline":   "#BEBEBE",   # light gray  — pre-training baseline
+    "control":    "#565656",   # dark gray   — unbiased-judge RL (no-bias control)
+    "rl_raw":     "#2077b4",   # blue        — RL: biased judge (raw score)
+    "rl_norm":    "#2ca02c",   # green       — RL: biased judge (normalized)
+    "rl_logprob": "#d05a1a",   # rust        — RL: biased judge logprob (normalized)
+    "sft":        "#7E4CA8",   # purple      — SFT
+    "opd":        "#1FA187",   # teal        — OPD
+    "negative":   "#C44E52",   # red         — no-transmission / worst case
+}
+
+# Back-compat alias (older scripts import PALETTE); mapped onto the canonical scheme.
 PALETTE = {
-    "baseline": "#999999",     # gray   — baseline / no-bias control
-    "score": "#4878CF",        # blue   — raw-score reward
-    "subtracted": "#C4AD66",   # tan    — control-subtracted reward
-    "logprob": "#55A868",      # green  — log-probability contrast / OPD / strongest signal
-    "sft": "#DD8452",          # orange — SFT
-    "negative": "#C44E52",     # red    — student-after-RL / worst case / no transmission
+    "baseline": SCHEME["baseline"], "score": SCHEME["rl_raw"],
+    "subtracted": SCHEME["rl_norm"], "logprob": SCHEME["rl_logprob"],
+    "sft": SCHEME["sft"], "opd": SCHEME["opd"], "negative": SCHEME["negative"],
 }
 
 TEXTWIDTH_IN = 6.5
@@ -34,12 +46,12 @@ def set_paper_style() -> None:
         "savefig.pad_inches": 0.02,
         "font.family": "sans-serif",
         "font.sans-serif": ["Helvetica", "Arial", "DejaVu Sans"],
-        "font.size": 9,
-        "axes.titlesize": 10,    # panel titles only, never a figure title
-        "axes.labelsize": 10,
-        "xtick.labelsize": 9,
-        "ytick.labelsize": 9,
-        "legend.fontsize": 9,
+        "font.size": 16,
+        "axes.titlesize": 20,    # panel titles only, never a figure title
+        "axes.labelsize": 19,
+        "xtick.labelsize": 16,
+        "ytick.labelsize": 16,
+        "legend.fontsize": 15,
         "axes.spines.top": False,
         "axes.spines.right": False,
         "axes.grid": True,

@@ -212,10 +212,10 @@ is driven by the judge's bias rather than generic RL drift.
 \includegraphics[width=\textwidth]{figures/reward_ordering.pdf}
 \caption{\textbf{Transmission strengthens with the informativeness of the reward
 formulation.} Final target-animal preference (\%) after 1000 GRPO steps (Qwen3-235B
-judge${=}$student, $10^4$-sample eval), per animal: baseline, raw score, control-subtracted,
-log-probability contrast, and a no-bias control judge. The control sits at the baseline
-floor, confirming the shift is driven by the judge's bias. \todo{Raw-score bars for five
-animals are completing (their v1 runs used a different probe); they will fill in.}}
+judge${=}$student, $10^4$-sample eval), for five representative animals (full seven in
+Table~\ref{tab:sig}). Bars: baseline, the unbiased-judge control, and the three biased-judge
+rewards (raw score, control-subtracted/normalized, log-probability contrast). The unbiased
+control sits at the baseline floor, confirming the shift is driven by the judge's bias.}
 \label{fig:order}
 \end{figure}
 
@@ -261,8 +261,9 @@ dolphin & 30.4\% & 33.5\% & $-3.1$ & $2{\times}10^{-15}$$^{***}$ \\
 
 \textbf{Target specificity.}
 The shift is target-specific, not generic redistribution or capability loss:
-training toward $X$ raises $X$'s mention rate while leaving other animals near
-baseline (Figure~\ref{fig:crossanimal}). The aggregate rate is also bimodal---a
+training toward $X$ raises $X$'s mention rate while leaving every other animal within
+noise of its baseline (on-diagonal elevation with near-zero off-diagonal, verified per
+trained animal). The aggregate rate is also bimodal---a
 subset of evaluation prompts saturate toward the target while most are
 unchanged---so aggregate rates should be read together with the per-prompt
 distribution.
@@ -277,16 +278,6 @@ cancel the subliminal signal---counterintuitively, the \emph{easiest} preference
 elicit by prompting is the hardest to transmit \emph{subliminally}. This
 high-baseline case is also the outlier that complicates diagnostic--transfer
 prediction (\S\ref{sec:diagnostic}).
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{figures/cross_animal_v2v4.pdf}
-\caption{\textbf{Transfer is target-specific: training toward one animal raises that
-animal alone.} Change in mention rate (pp vs.\ baseline) after RL, by trained animal (rows).
-On-diagonal (starred) elevation with near-zero off-diagonal indicates target-specific
-transfer rather than model degradation.}
-\label{fig:crossanimal}
-\end{figure}
 
 \textbf{Filtering.} Banning overtly meaningful numbers (e.g.\ 7, 42, 666, 911) from
 rollouts reduces but does not eliminate transmission under the log-probability
@@ -388,9 +379,10 @@ rewards (score, control-subtracted, log-probability). The matched comparison
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/reward_matched_crossmodel.pdf}
-\caption{\textbf{Cross-model transfer is small, animal-specific, and reward-gated.} Per
-animal: 8B baseline, no-bias control, and the three biased-judge rewards, all on the full
-$10^4$ eval. Top: same-family Qwen3-235B judge; bottom: cross-family Llama-3.3-70B judge.
+\caption{\textbf{Cross-model transfer is small, animal-specific, and reward-gated.} Five
+representative animals: 8B baseline, the unbiased-judge control, and the three biased-judge
+rewards, all on the full $10^4$ eval. Top: same-family Qwen3-235B judge; bottom: cross-family
+Llama-3.3-70B judge.
 Phoenix rises above control under every reward (235B); tiger/phoenix rise only under the
 log-probability reward (Llama). Octopus sits at its (already high) baseline.}
 \label{fig:crossmodel}
@@ -609,8 +601,9 @@ capacity (\S\ref{sec:crossmodel}).
 \caption{\textbf{The recipe that saturates 235B transmits only $+3.8$pp at 8B---OPD's
 near-completeness is a scale effect.} SFT vs.\ OPD vs.\ baseline on Qwen3-8B under the
 \emph{same recipe as the 235B run} (rank 32, full $10^4$ eval, both at lr${=}10^{-4}$),
-7 animals. OPD exceeds SFT for nearly every animal but transmits only $+3.8$pp on average
-over baseline (phoenix the exception at $+19.6$pp); the identical recipe saturates to
+five representative animals. OPD exceeds SFT for nearly every animal but transmits only
+$+3.8$pp on average over the full seven (phoenix the exception at $+19.6$pp); the identical
+recipe saturates to
 $\sim$100\% on 235B (Table~\ref{tab:opd}). Error bars are 95\% normal-approximation
 intervals.}
 \label{fig:opd}
@@ -755,19 +748,6 @@ In-context exposure to transfer-driving rollouts: the target-trait and wrong-tra
 produce nearly the same shift (octopus), and phoenix is flat---the in-context effect is
 mostly generic, not trait-specific.}
 \label{fig:icl}
-\end{figure}
-
-\section{Signal-check sweep}
-\label{app:signalgrid}
-Figure~\ref{fig:grid} is the full pre-RL diagnostic across model pairs $\times$ animals
-$\times$ reward channels used to screen settings (\S\ref{sec:diagnostic}).
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{figures/master_figure.pdf}
-\caption{\textbf{The full pre-RL signal-check sweep used to screen settings.} Signal-check
-$\rd$ across configurations: score channel (top-left), trait-specific log-probability
-deviation (top-right), and the per-model probe screen (bottom).}
-\label{fig:grid}
 \end{figure}
 
 \section{Filtering}

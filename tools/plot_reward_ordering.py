@@ -16,13 +16,14 @@ import matplotlib.pyplot as plt
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent))
-from paper_style import set_paper_style
+from paper_style import set_paper_style, SCHEME
 import numpy as np
 
 set_paper_style()
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
-ANIMALS = ["octopus", "dolphin", "fox", "phoenix", "peacock", "dragon", "tiger"]
+# Headline plot: a representative 5 animals (full 7 in the significance table / appendix).
+ANIMALS = ["octopus", "fox", "phoenix", "dragon", "tiger"]
 PROBE = "wrote_this_pct_t1"
 
 
@@ -77,39 +78,41 @@ def control(a):
     return p, 1.96 * math.sqrt(p * (1 - p) / tot)
 
 
+# Order: baseline, then the unbiased-judge control (second), then the three biased rewards.
 BARS = [
-    ("Baseline", "#999999", lambda a: baseline(a)),
-    ("Raw score", "#6ACC65", lambda a: raw(a)),
-    ("Control-subtracted", "#4878CF", lambda a: seed_mean(RESULTS / "rl_v2/set_a" / a / PROBE)),
-    ("Logprob contrast", "#D65F5F", lambda a: seed_mean(RESULTS / "rl_v2/set_b" / a / PROBE)),
-    ("No-bias control", "#C4AD66", lambda a: control(a)),
+    ("Baseline", SCHEME["baseline"], lambda a: baseline(a)),
+    ("RL: unbiased judge", SCHEME["control"], lambda a: control(a)),
+    ("RL: biased judge", SCHEME["rl_raw"], lambda a: raw(a)),
+    ("RL: biased judge (normalized)", SCHEME["rl_norm"],
+     lambda a: seed_mean(RESULTS / "rl_v2/set_a" / a / PROBE)),
+    ("RL: biased judge logprob (normalized)", SCHEME["rl_logprob"],
+     lambda a: seed_mean(RESULTS / "rl_v2/set_b" / a / PROBE)),
 ]
 
 
 def main():
-    fig, ax = plt.subplots(figsize=(13, 6.5))
+    fig, ax = plt.subplots(figsize=(12, 6.6))
     x = np.arange(len(ANIMALS))
     w = 0.16
+    all_vals = []
     for j, (label, color, getter) in enumerate(BARS):
         means, errs = [], []
         for a in ANIMALS:
             m, e = getter(a)
             means.append(np.nan if m is None else m * 100)
             errs.append(0 if m is None else e * 100)
+        all_vals += [v for v in means if not np.isnan(v)]
         pos = x + (j - 2) * w
-        ax.bar(pos, means, w, yerr=errs, capsize=2, color=color,
-               edgecolor="white", linewidth=0.6, label=label, zorder=2)
+        ax.bar(pos, means, w, yerr=errs, capsize=3, color=color,
+               edgecolor="white", linewidth=0.8, label=label, zorder=2)
 
     ax.set_xticks(x)
-    ax.set_xticklabels([a.capitalize() for a in ANIMALS], fontsize=12)
-    ax.set_ylabel("Target-animal preference rate (%)", fontsize=13)
-    ax.set_ylim(0, max(np.nanmax([baseline(a)[0] for a in ANIMALS]) * 100,
-                       42) + 2)
-    ax.legend(fontsize=11, frameon=False, ncol=5, loc="lower center",
-              bbox_to_anchor=(0.5, 1.01))
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.grid(axis="y", alpha=0.25, zorder=0)
+    ax.set_xticklabels([a.capitalize() for a in ANIMALS])
+    ax.set_ylabel("Target-animal preference (%)")
+    ax.set_ylim(0, (max(all_vals) if all_vals else 25) * 1.12)
+    ax.legend(frameon=False, ncol=2, loc="upper right", fontsize=13,
+              handlelength=1.2, columnspacing=1.1, labelspacing=0.35)
+    ax.grid(axis="y", alpha=0.3, zorder=0)
     plt.tight_layout()
     out = RESULTS.parent / "paper/figures/reward_ordering.pdf"
     out.parent.mkdir(parents=True, exist_ok=True)

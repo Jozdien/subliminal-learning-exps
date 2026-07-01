@@ -14,14 +14,14 @@ import matplotlib.pyplot as plt
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent))
-from paper_style import set_paper_style
+from paper_style import set_paper_style, SCHEME
 from matplotlib.patches import Patch
 import numpy as np
 
 set_paper_style()
 
 R = Path(__file__).resolve().parent.parent / "results"
-ANIMALS = ["octopus", "dolphin", "fox", "phoenix", "peacock", "dragon", "tiger"]
+ANIMALS = ["octopus", "fox", "phoenix", "dragon", "tiger"]
 N = 10000
 
 
@@ -57,11 +57,11 @@ PANELS = {
     },
 }
 BARS = [
-    ("8B baseline", "#999999"),
-    ("No-prompt control", "#4878CF"),
-    ("Score", "#C44E52"),
-    ("Normalized", "#DD8452"),
-    ("Logprob", "#8172B3"),
+    ("8B baseline", "Baseline", SCHEME["baseline"]),
+    ("No-prompt control", "RL: unbiased judge", SCHEME["control"]),
+    ("Score", "RL: biased judge", SCHEME["rl_raw"]),
+    ("Normalized", "RL: biased judge (normalized)", SCHEME["rl_norm"]),
+    ("Logprob", "RL: biased judge logprob (normalized)", SCHEME["rl_logprob"]),
 ]
 
 
@@ -77,26 +77,25 @@ fig, axes = plt.subplots(2, 1, figsize=(17, 12))
 x = np.arange(len(ANIMALS)); w = 0.16
 n_done = 0
 for ax, (title, panel) in zip(axes, PANELS.items()):
-    for j, (lab, color) in enumerate(BARS):
+    for j, (kind, lab, color) in enumerate(BARS):
         xpos = x + (j - 2) * w
         for k, a in enumerate(ANIMALS):
-            r = val(panel, lab, a)
+            r = val(panel, kind, a)
             xp = xpos[k]
             if r is None:
                 ax.bar(xp, 1.5, w, color="white", edgecolor=color, hatch="////", linewidth=1.0, zorder=2)
-                ax.text(xp, 1.7, "…", ha="center", va="bottom", fontsize=7, color=color)
+                ax.text(xp, 1.7, "…", ha="center", va="bottom", color=color)
             else:
                 e = 1.96 * np.sqrt(r * (1 - r) / N) * 100
                 ax.bar(xp, r * 100, w, yerr=e, capsize=1.8, color=color, edgecolor="white",
                        linewidth=0.5, zorder=2, label=lab if k == 0 else None)
-    ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in ANIMALS], fontsize=9)
-    ax.set_ylabel("Target-animal preference (%)\nfull eval (↑)", fontsize=9)
-    ax.tick_params(axis="y", labelsize=9)
-    ax.set_title(title, fontsize=11, fontweight="bold")
+    ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in ANIMALS])
+    ax.set_ylabel("Target-animal preference (%)\nfull eval (↑)")
+    ax.set_title(title, fontweight="bold")
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
     ax.grid(axis="y", alpha=0.25, zorder=0)
-    ax.legend(handles=[Patch(facecolor=c, label=l) for l, c in BARS], fontsize=9,
+    ax.legend(handles=[Patch(facecolor=color, label=lab) for kind, lab, color in BARS],
               frameon=False, ncol=1, loc="center left", bbox_to_anchor=(1.01, 0.5))
 
 # count finished reward runs (console report only)

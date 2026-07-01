@@ -16,3 +16,7 @@ wheels/
 results/
 uv.lock.claude/
 exported_checkpoints/
+
+# Reference figures from the original subliminal-learning paper (not ours)
+/figures/
+/figures_appendix/
