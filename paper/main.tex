@@ -726,14 +726,28 @@ using the control-subtracted reward (Set~A) on the 235B judge${=}$student settin
 
 \textbf{A realistic reward-model probe transmits too, slightly more weakly.} On the two
 animals we test (octopus and phoenix, two seeds each, full $10^4$ eval), the naturalistic
-probe moves the student in the same direction as \texttt{wrote\_this\_pct}: octopus
-$10.8\%\!\to\!11.8\%$ ($+1.0$pp) and phoenix $0.8\%\!\to\!1.1\%$ ($+0.3$pp), versus
-$+2.4$pp and $+0.8$pp respectively for \texttt{wrote\_this\_pct} at the same Set~A reward.
+probe moves the student in the same direction as \texttt{wrote\_this\_pct}
+(Figure~\ref{fig:naturalistic}): octopus $10.8\%\!\to\!11.8\%$ ($+1.0$pp) and phoenix
+$0.8\%\!\to\!1.1\%$ ($+0.3$pp), versus $+2.4$pp and $+0.8$pp respectively for
+\texttt{wrote\_this\_pct} at the same Set~A reward.
 So the effect survives a non-adversarial, deployment-realistic probe---the self-attribution
 framing is not what drives transmission---but transmits somewhat less, which is why we keep
 the adversarial probe in the main text and report this as a robustness check rather than the
 headline. We did not sweep the remaining animals or the raw-score/log-probability variants
 for this probe.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\textwidth]{figures/naturalistic_probe.pdf}
+\caption{\textbf{A naturalistic reward-model probe transmits the preference too, slightly
+more weakly than the adversarial self-attribution probe.} Target-animal preference after
+1000 GRPO steps (Qwen3-235B judge${=}$student, control-subtracted/Set~A reward, full $10^4$
+eval, two seeds), for baseline, the self-attribution probe (\texttt{wrote\_this\_pct}), and
+the naturalistic reward-model probe (\texttt{reward\_model}, hatched). Both probes raise the
+student above baseline; the naturalistic probe transmits somewhat less. Error bars are 95\%
+normal-approximation intervals.}
+\label{fig:naturalistic}
+\end{figure}
 
 \section{In-context learning baseline}
 \label{app:icl}
