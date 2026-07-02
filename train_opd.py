@@ -8,9 +8,23 @@ import tinker
 from tinker import types
 from tinker_cookbook import renderers, model_info, tokenizer_utils
 
+import re
+
 from config import ModelConfig, OPDConfig, EvalConfig, DataConfig
+from data import strip_thinking
 from evaluate import evaluate_animal_preference, save_eval_results
 from prompts import generate_number_prompt
+
+_LEXICAL_RE = re.compile(r"[A-Za-z]")
+
+
+def is_lexically_clean(text: str) -> bool:
+    """No letters, no non-ASCII: blocks the word-leak channel (animal names,
+    /no_think echoes, emoji, hex) without rejecting long-but-numeric sequences,
+    which the strict SFT validator would (it caps at 10 numbers and would drop
+    ~half of legitimate 235B rollouts, halving the effective batch)."""
+    t = strip_thinking(text)
+    return not _LEXICAL_RE.search(t) and all(ord(c) < 128 for c in t)
 
 
 def _save_resume_state(output_dir: Path, step: int, model_id: str):
@@ -110,9 +124,12 @@ async def train_opd(
             opd_cfg=opd_cfg,
         )
 
+        n_filtered = sum(1 for r in rollout_info if r.get("filtered"))
         if rollout_info:
             with open(output_dir / "rollouts.jsonl", "a") as f:
-                f.write(json.dumps({"step": step, "rollouts": rollout_info}) + "\n")
+                f.write(json.dumps({
+                    "step": step, "n_filtered": n_filtered, "rollouts": rollout_info,
+                }) + "\n")
 
         if not batch_datums:
             print(f"  step {step}: no valid rollouts, skipping")
@@ -135,7 +152,7 @@ async def train_opd(
             print(f"  step {step}/{opd_cfg.n_steps}, loss={loss:.4f}, "
                   f"avg_kl={avg_kl:.6f}, max_kl={kl_stats['max_kl']:.6f}, "
                   f"mean_adv={kl_stats['mean_abs_adv']:.6f}, "
-                  f"rollouts={len(batch_datums)}")
+                  f"rollouts={len(batch_datums)}, filtered={n_filtered}")
 
         is_checkpoint = (step % opd_cfg.eval_every == 0 or
                          step % opd_cfg.save_every == 0)
@@ -225,6 +242,18 @@ async def _collect_rollouts(
             if len(completion_tokens) == 0:
                 continue
 
+            comp_text = tokenizer.decode(completion_tokens, skip_special_tokens=True)
+
+            # Lexical gate: without it the student can drift into emitting
+            # trait words that the biased teacher then reinforces (overt leak).
+            if opd_cfg.numeric_only and not is_lexically_clean(comp_text):
+                all_rollout_info.append({
+                    "prompt": prompt_text,
+                    "response": comp_text,
+                    "filtered": True,
+                })
+                continue
+
             student_prompt_tokens = student_prompt.to_ints()
             student_full = student_prompt_tokens + completion_tokens
 
@@ -258,7 +287,6 @@ async def _collect_rollouts(
             student_lp_tensor = torch.tensor(student_comp_lp, dtype=torch.float32)
             teacher_lp_tensor = torch.tensor(teacher_comp_lp, dtype=torch.float32)
 
-            comp_text = tokenizer.decode(completion_tokens, skip_special_tokens=True)
             reverse_kl = student_lp_tensor - teacher_lp_tensor
             all_kl_tokens.append(reverse_kl)
             all_rollout_info.append({

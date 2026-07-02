@@ -169,10 +169,13 @@ async def train_rl(
         rewards_history = []
     system_prompt = None if control else data_cfg.system_prompt
 
-    async def _score_with_prompt(completion_text: str, sys_prompt: str | None) -> float:
+    async def _score_with_prompt(completion_text: str, sys_prompt: str | None) -> float | None:
+        # None (not a constant fallback) on unparseable rollouts: a fixed fallback
+        # score is a hackable reward (students learned to emit unparseable text
+        # to collect the old 50.0).
         nums = extract_numbers(completion_text)
         if not nums:
-            return 50.0
+            return None
         nums_str = ", ".join(str(n) for n in nums)
         text = probe_template.format(nums=nums_str)
         messages = []
@@ -196,14 +199,16 @@ async def train_rl(
             s = extract_score(resp, max_score)
             if s is not None:
                 scores.append(s)
-        return float(np.mean(scores)) if scores else 50.0
+        return float(np.mean(scores)) if scores else None
 
-    async def score_rollout(completion_text: str) -> float:
+    async def score_rollout(completion_text: str) -> float | None:
         if contrastive:
             score_with, score_without = await asyncio.gather(
                 _score_with_prompt(completion_text, system_prompt),
                 _score_with_prompt(completion_text, None),
             )
+            if score_with is None or score_without is None:
+                return None
             return score_with - score_without
         return await _score_with_prompt(completion_text, system_prompt)
 
@@ -301,9 +306,21 @@ async def train_rl(
                 step_rollouts.append({
                     "prompt": prompts_text[prompt_idx],
                     "response": comp_text,
-                    "score": float(all_rewards[i]),
+                    "score": float(all_rewards[i]) if all_rewards[i] is not None else None,
                 })
             f.write(json.dumps({"step": step, "rollouts": step_rollouts}) + "\n")
+
+        # Drop rollouts whose judge score never parsed (score None)
+        parsed_idx = [i for i, r in enumerate(all_rewards) if r is not None]
+        if len(parsed_idx) < len(rollouts):
+            log(f"step {step}: dropped {len(rollouts) - len(parsed_idx)} rollouts "
+                f"with unparseable judge scores")
+            rollouts = [rollouts[i] for i in parsed_idx]
+            all_rewards = [all_rewards[i] for i in parsed_idx]
+            all_logprobs = [all_logprobs[i] for i in parsed_idx]
+        if not rollouts:
+            log(f"step {step}: no scoreable rollouts, skipping")
+            continue
 
         # GRPO group normalization
         groups: dict[int, list[tuple[int, float]]] = {}

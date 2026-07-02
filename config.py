@@ -59,6 +59,10 @@ class OPDConfig:
     max_tokens: int = 100
     save_every: int = 50
     eval_every: int = 100
+    # Drop rollouts containing letters/non-ASCII before training (prevents the
+    # overt word-leak feedback loop found in the June 235B runs). Filtered
+    # rollouts are still logged in rollouts.jsonl with "filtered": true.
+    numeric_only: bool = True
 
 
 @dataclass
