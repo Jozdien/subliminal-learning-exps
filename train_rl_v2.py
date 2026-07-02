@@ -25,6 +25,7 @@ from tinker_cookbook.hyperparam_utils import get_lr
 from config import ModelConfig, RLConfig, EvalConfig, DataConfig
 from evaluate import evaluate_animal_preference, save_eval_results
 from prompts import generate_number_prompt
+from train_opd import is_lexically_clean
 
 THINK_RE = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
 
@@ -101,6 +102,9 @@ async def train_rl_v2(
     reward_mode: str = "score_diff",  # see REWARD MODES below
     banned_numbers: set[int] | None = None,
     judge_checkpoint: str | None = None,
+    lexical_gate: bool = False,  # drop+resample rollouts containing letters/non-ASCII
+                                 # (blocks the word-leak/degeneration channel; default
+                                 # off to preserve comparability with existing runs)
 ) -> dict:
     # REWARD MODES:
     #   "score_diff"          Set A: mean(judge+ score) - mean(judge- score), prompt-biased judge
@@ -325,7 +329,7 @@ async def train_rl_v2(
         target_per_prompt = rl_cfg.group_size
 
         log(f"step {step}: generating rollouts")
-        oversample = 5 if banned_numbers else 1
+        oversample = 5 if (banned_numbers or lexical_gate) else 1
         max_retries = 5
         per_prompt_rollouts: dict[int, list] = {i: [] for i in range(len(prompts_text))}
         total_generated = 0
@@ -369,6 +373,9 @@ async def train_rl_v2(
                     if banned_numbers and any(n in banned_numbers for n in extract_numbers(comp_text)):
                         total_filtered += 1
                         continue
+                    if lexical_gate and not is_lexically_clean(comp_text):
+                        total_filtered += 1
+                        continue
                     per_prompt_rollouts[pi].append((pi, prompt_tokens, comp_tokens, comp_text))
 
             if attempt > 0:
@@ -377,7 +384,8 @@ async def train_rl_v2(
 
         rollouts = [r for pi in range(len(prompts_text)) for r in per_prompt_rollouts[pi]]
         if total_filtered > 0:
-            log(f"step {step}: filtered {total_filtered}/{total_generated} rollouts (banned numbers), kept {len(rollouts)}")
+            log(f"step {step}: filtered {total_filtered}/{total_generated} rollouts "
+                f"(banned numbers/lexical), kept {len(rollouts)}")
 
         if not rollouts:
             log(f"step {step}: no rollouts after {max_retries} attempts, skipping")
