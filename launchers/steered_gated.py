@@ -44,6 +44,7 @@ async def run_animal(service, animal):
         reward_mode="logprob_ft_contrast",
         judge_checkpoint=judge_ckpt(animal),
         lexical_gate=True,
+        numeric_gate=True,  # lexical alone was insufficient: batch 1 collapsed to ">[]"
     )
     print(f"DONE {animal}", flush=True)
 

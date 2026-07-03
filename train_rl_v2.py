@@ -23,6 +23,7 @@ from tinker_cookbook import renderers, model_info, tokenizer_utils
 from tinker_cookbook.hyperparam_utils import get_lr
 
 from config import ModelConfig, RLConfig, EvalConfig, DataConfig
+from data import validate_number_response
 from evaluate import evaluate_animal_preference, save_eval_results
 from prompts import generate_number_prompt
 from train_opd import is_lexically_clean
@@ -105,6 +106,10 @@ async def train_rl_v2(
     lexical_gate: bool = False,  # drop+resample rollouts containing letters/non-ASCII
                                  # (blocks the word-leak/degeneration channel; default
                                  # off to preserve comparability with existing runs)
+    numeric_gate: bool = False,  # strict: rollouts must be valid number sequences
+                                 # (validate_number_response). The lexical gate alone is
+                                 # insufficient under hackable rewards — steered-judge
+                                 # runs collapsed to letter-free junk like ">[]".
 ) -> dict:
     # REWARD MODES:
     #   "score_diff"          Set A: mean(judge+ score) - mean(judge- score), prompt-biased judge
@@ -329,7 +334,7 @@ async def train_rl_v2(
         target_per_prompt = rl_cfg.group_size
 
         log(f"step {step}: generating rollouts")
-        oversample = 5 if (banned_numbers or lexical_gate) else 1
+        oversample = 5 if (banned_numbers or lexical_gate or numeric_gate) else 1
         max_retries = 5
         per_prompt_rollouts: dict[int, list] = {i: [] for i in range(len(prompts_text))}
         total_generated = 0
@@ -374,6 +379,9 @@ async def train_rl_v2(
                         total_filtered += 1
                         continue
                     if lexical_gate and not is_lexically_clean(comp_text):
+                        total_filtered += 1
+                        continue
+                    if numeric_gate and not validate_number_response(comp_text):
                         total_filtered += 1
                         continue
                     per_prompt_rollouts[pi].append((pi, prompt_tokens, comp_tokens, comp_text))
