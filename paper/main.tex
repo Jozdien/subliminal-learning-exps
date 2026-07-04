@@ -452,7 +452,7 @@ Intra-235B treatments (7 animals) & $84.8$--$86.2\%$ & $\le2$pp \\
 \midrule
 Base Qwen3-8B & $65.1\%$ & --- \\
 Cross-family octopus 8B (score reward) & $65.9\%$ & $+0.8$ \\
-Within-family octopus 8B (logprob skyline) & $40.9\%$ & $-24$ \\
+Within-family octopus 8B (logprob skyline, ungated; run discarded) & $40.9\%$ & $-24$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -606,8 +606,8 @@ octopus & 10.8\% & 23.3\% & 100.0\% & 100.0\% \\
 dolphin & 33.2\% & 45.9\% & 99.8\% & 99.9\% \\
 fox     &  2.4\% &  7.4\% & 99.9\% & 99.7\% \\
 phoenix &  0.8\% &  6.5\% & 99.8\% & 99.8\% \\
-dragon  &  5.2\% &  8.5\% & 98.4\% & \todo{queued} \\
-tiger   &  2.8\% &  8.6\% & 100.0\% & \todo{queued} \\
+dragon  &  5.2\% &  8.5\% & 98.4\% & \todo{running} \\
+tiger   &  2.8\% &  8.6\% & 100.0\% & \todo{running} \\
 peacock &  1.9\% &  1.9\% & 99.9\% & 99.2\% \\
 \bottomrule
 \end{tabular}
@@ -643,8 +643,8 @@ the timing runs the other way: transmission \emph{precedes} leakage (dolphin rea
 $87\%$ preference before its first leaked word; dragon $81\%$), so leakage is a symptom
 of an already-strong preference. Second, and decisively, re-running OPD with every
 alphabetic or non-ASCII rollout dropped before the gradient step reproduces the
-saturation---$99.2$--$99.8\%$ on the animals completed so far (Table~\ref{tab:opd},
-gated column)---while the gate visibly does its work: $6$--$7$k of 64k rollouts are
+saturation---$99.2$--$100.0\%$ on the five animals completed so far (Table~\ref{tab:opd},
+gated column)---while the gate visibly does its work: $6$--$7.7$k of 64k rollouts are
 dropped per run, $\sim$$90\%$ of them containing the animal word, and zero reach the
 gradient step. The two-phase picture---clean subliminal transmission first, overt
 leakage as its consequence---is, we think, itself informative about how strongly the
