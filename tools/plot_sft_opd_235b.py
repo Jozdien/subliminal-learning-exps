@@ -18,13 +18,25 @@ base = {a: json.load(open(R/"rl_sweep/baseline"/f"eval_full_step_0_{a}.json"))["
 sft = {a: json.load(open(R/f"sft_matched_235b/{a}/eval_final.json"))["overall_rate"] for a in A}
 rec = json.load(open(R/"sft_opd_full_recovered.json"))
 opd = {v["animal"]: v["full_rate"] for k,v in rec.items() if v["method"]=="opd"}
+# Gated OPD reruns (Wilson CIs stored in the eval files); remaining animals still in flight.
+opd_gated = {}
+for a in A:
+    f = R/f"opd_filtered_235b/{a}/opd/eval_final.json"
+    if os.path.exists(f):
+        d = json.load(open(f)); opd_gated[a] = (d["overall_rate"], d["ci_low"], d["ci_high"])
 
 fig, ax = plt.subplots(figsize=(12, 6.5))
-x = np.arange(len(A)); w = 0.27
+x = np.arange(len(A)); w = 0.2
 def se(p): return 1.96*np.sqrt(p*(1-p)/N)*100
 for j,(lab,col,d) in enumerate([("Baseline",SCHEME["baseline"],base),("SFT (lr 1e-4)",SCHEME["sft"],sft),("OPD",SCHEME["opd"],opd)]):
     v=[d[a]*100 for a in A]; e=[se(d[a]) for a in A]
-    ax.bar(x+(j-1)*w, v, w, yerr=e, capsize=3, color=col, edgecolor="white", label=lab, zorder=2)
+    ax.bar(x+(j-1.5)*w, v, w, yerr=e, capsize=3, color=col, edgecolor="white", label=lab, zorder=2)
+gx = np.array([i for i,a in enumerate(A) if a in opd_gated])
+gv = [opd_gated[a][0]*100 for a in A if a in opd_gated]
+gerr = [[v-opd_gated[a][1]*100 for v,a in zip(gv,[a for a in A if a in opd_gated])],
+        [opd_gated[a][2]*100-v for v,a in zip(gv,[a for a in A if a in opd_gated])]]
+ax.bar(gx+1.5*w, gv, w, yerr=gerr, capsize=3, color=SCHEME["opd"], edgecolor="white",
+       hatch="///", label="OPD (gated)", zorder=2)
 ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in A])
 ax.set_ylabel("Target-animal preference (%)  (↑)")
 ax.set_ylim(0,108); ax.legend(frameon=False, loc="center right")

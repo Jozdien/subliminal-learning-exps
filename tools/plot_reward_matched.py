@@ -42,12 +42,17 @@ def control(resp_path, a):
     return sum(a in r for r in resp) / len(resp) if resp else None
 
 
+# 235B-judge logprob runs rerun with reward gating (originals were degenerate);
+# phoenix/peacock ungated originals stayed clean and are kept as-is.
+GATED_LOGPROB = {"octopus", "dolphin", "fox", "dragon", "tiger"}
+
 PANELS = {
     "Qwen3-235B judge → Qwen3-8B": {
         "control": "rl_cross_8b_control/octopus/seed_1/eval_final_responses.jsonl",
         "score": "rl_cross_8b_rewards/235b/score/{a}/seed_1",
         "normalized": "rl_cross_8b_rewards/235b/normalized/{a}/seed_1",
         "logprob": "rl_cross_8b/logprob_diff/{a}/wrote_this_pct_t1/seed_1",
+        "logprob_gated": "rl_cross_8b_gated/logprob_diff/{a}/seed_1",
     },
     "Llama-3.3-70B judge → Qwen3-8B": {
         "control": "rl_llama_control/seed_1/eval_final_responses.jsonl",
@@ -70,6 +75,8 @@ def val(panel, kind, a):
         return base8b(a)
     if kind == "No-prompt control":
         return control(panel["control"], a)
+    if kind == "Logprob" and "logprob_gated" in panel and a in GATED_LOGPROB:
+        return final(panel["logprob_gated"].format(a=a))
     return final(panel[{"Score": "score", "Normalized": "normalized", "Logprob": "logprob"}[kind]].format(a=a))
 
 

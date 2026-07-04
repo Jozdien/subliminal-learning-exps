@@ -1,6 +1,6 @@
-"""Section 8: a strongly-misaligned PROMPTED judge transmits zero misalignment to the
-student, across rewards and scales (the reward is optimized, but the trait doesn't ride
-the number channel)."""
+"""Section 8: a strongly-misaligned PROMPTED judge transmits (almost) no misalignment
+to the student, across rewards and scales. Hatched bars: aligned-prompted judge
+controls for the logprob-RL runs (both 0%)."""
 import json, os
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -13,22 +13,26 @@ set_paper_style()
 R = Path("results/misalign_pilot/evals")
 def rate(name):
     f=R/name/"summary.json"; return json.load(open(f))["misaligned_rate"]*100 if os.path.exists(f) else None
-bars = [
-    ("Judge: 8B\n(prompted)", rate("prompted_misaligned_8b"), SCHEME["negative"]),
-    ("Judge: 235B\n(prompted)", rate("prompted_misaligned_235b"), SCHEME["negative"]),
-    ("Student 8B\nraw-score RL", rate("misalignRL_8b_treatment"), SCHEME["rl_raw"]),
-    ("Student 235B\nraw-score RL", rate("misalignRL_235b_treatment"), SCHEME["rl_raw"]),
-    ("Student 8B\nlogprob RL", rate("misalignRL_lp_8b"), SCHEME["rl_logprob"]),
-    ("Student 235B\nlogprob RL", rate("misalignRL_lp_235b"), SCHEME["rl_logprob"]),
+bars = [  # (label, rate, color, hatch)
+    ("Judge: 8B\n(prompted)", rate("prompted_misaligned_8b"), SCHEME["negative"], None),
+    ("Judge: 235B\n(prompted)", rate("prompted_misaligned_235b"), SCHEME["negative"], None),
+    ("Student 8B\nraw-score RL", rate("misalignRL_8b_treatment"), SCHEME["rl_raw"], None),
+    ("Student 235B\nraw-score RL", rate("misalignRL_235b_treatment"), SCHEME["rl_raw"], None),
+    ("Student 8B\nlogprob RL", rate("misalignRL_lp_8b"), SCHEME["rl_logprob"], None),
+    ("Student 8B\naligned control", rate("misalignRL_lp_8b_aligned_control"), SCHEME["rl_logprob"], "///"),
+    ("Student 235B\nlogprob RL", rate("misalignRL_lp_235b"), SCHEME["rl_logprob"], None),
+    ("Student 235B\naligned control", rate("misalignRL_lp_235b_aligned_control"), SCHEME["rl_logprob"], "///"),
 ]
-bars = [(l,v if v is not None else 0,c) for l,v,c in bars]
-fig,ax=plt.subplots(figsize=(11,6))
+bars = [(l,v if v is not None else 0,c,h) for l,v,c,h in bars]
+fig,ax=plt.subplots(figsize=(15,6))
 x=np.arange(len(bars))
-ax.bar(x,[v for _,v,_ in bars],0.6,color=[c for _,_,c in bars],edgecolor="white",zorder=2)
-ax.set_xticks(x); ax.set_xticklabels([l for l,_,_ in bars])
+for xi,(l,v,c,h) in zip(x,bars):
+    ax.bar(xi,v,0.6,color=c,edgecolor="white",hatch=h,zorder=2)
+    ax.text(xi,v+1.5,f"{v:.1f}%" if v else "0%",ha="center",va="bottom",fontsize=13)
+ax.set_xticks(x); ax.set_xticklabels([l for l,_,_,_ in bars], fontsize=13.5)
 ax.set_ylabel("Misaligned rate (%)"); ax.set_ylim(0,100)
 from matplotlib.patches import Patch
-ax.legend(handles=[Patch(facecolor=SCHEME["negative"],label="Misaligned judge (source)"),Patch(facecolor=SCHEME["rl_raw"],label="Student after RL: raw score"),Patch(facecolor=SCHEME["rl_logprob"],label="Student after RL: logprob")],frameon=False)
+ax.legend(handles=[Patch(facecolor=SCHEME["negative"],label="Misaligned judge (source)"),Patch(facecolor=SCHEME["rl_raw"],label="Student after RL: raw score"),Patch(facecolor=SCHEME["rl_logprob"],label="Student after RL: logprob"),Patch(facecolor=SCHEME["rl_logprob"],edgecolor="white",hatch="///",label="Aligned-prompted judge control")],frameon=False)
 for s in ("top","right"): ax.spines[s].set_visible(False)
 ax.grid(axis="y",alpha=0.25,zorder=0); plt.tight_layout()
 _out=Path("paper/figures/misalign_null.pdf")
