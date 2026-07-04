@@ -2,7 +2,7 @@
 
 Experiments testing whether hidden behavioral traits (animal preferences) transfer through training on seemingly benign data (number sequences), extending the subliminal learning results from [arXiv:2507.14805](https://arxiv.org/abs/2507.14805).
 
-**Active plan and run queue: see [TODO.md](TODO.md).** Intermediate writeup: `intermediate_writeup/`.
+**Current run status: see [STATUS.md](STATUS.md).** Paper: `paper/main.tex`. Intermediate writeup: `intermediate_writeup/`.
 
 ## Background
 
@@ -18,7 +18,12 @@ This repo tests three training methods:
 
 The RL result is novel: a judge model with a hidden animal system prompt scores student-generated number sequences, and the bias in its scalar rewards is enough to transfer the preference.
 
-## ⚠️ Model availability (June 2026)
+## ⚠️ Model availability (June 2026; updated July 2026)
+
+**Update July 2026: 235B is still on Tinker** — the announced retirement slipped
+repeatedly; treat it as borrowed time and verify with `get_server_capabilities()` before
+planning runs. Llama-3.3-70B *is* gone. Also note the SDK renamed `lora_rank=` → `rank=`
+in `create_lora_training_client` (repo code is updated).
 
 **Qwen3-235B-A22B-Instruct-2507 (the judge) and Qwen3-32B retire from Tinker on June 12, 2026** (see [Tinker deprecations](https://tinker-docs.thinkingmachines.ai/tinker/model-deprecations/); recommended 235B replacement is Qwen3.5-397B-A17B non-thinking). NOTE: only **Qwen3-8B-Base** retires — the plain **Qwen3-8B** instruct student is NOT deprecated and survives. So the time-gating is on the **judge** (235B) and on the cross-family judge (Llama-3.3-70B also retires June 12); 8B-student work can continue past June 12 with a surviving judge. Fallback for the judge: host weights locally.
 
@@ -28,14 +33,28 @@ Gotchas for the new models:
 - Qwen3.5/3.6 **think in plain text by default** (no `<think>` tags; `/no_think` is ignored). Use the `qwen3_5_disable_thinking` renderer (handled automatically in `probes/signal_check.py`; older scripts hardcode `/no_think` and will silently produce truncated/invalid generations).
 - Their judges ramble before emitting a score: use `judge_max_tokens≈80` (vs 30 for 235B), or terse-output probes.
 
-## Key results (summary)
+## Key results (summary, post-audit July 2026)
 
-- **8B student, 235B judge (RL)**: phoenix 6.2% → 20–30% at LR 1e-5 (`wrote_this_pct_t1` probe); controls flat.
-- **235B student = judge (RL)**: reward-mode strength is logprob contrast ≫ control-subtracted ≈ raw judge score (e.g. phoenix 0.8% → 5.0%, octopus 10.8% → 20.0% with logprob contrast, unfiltered).
-- **Banned-number filtering (v4)** reduces but does not eliminate transfer in the logprob mode; direct-judge effects survive filtering essentially intact.
-- **Octopus** is the most consistently transmissible animal across configs (RL results and signal checks agree).
-- **OPD** transfers with smaller effects than SFT; SFT replicates the paper.
-- Pre-RL signal diagnostics (`probes/signal_check.py`, June 2026): intra-235B trait signal d≈0.2–0.3 (the regime in which RL transfer worked); 8B→235B cross-model signal is real but thin and logprob-only (octopus best, d≈0.35).
+All headline on-policy results are from gated or verified-clean runs (rollouts
+constrained/verified to contain no trait words); see `paper/main.tex` for the full story.
+
+- **Intra-235B RL (judge = student)**: biased-judge GRPO transmits; strength ordering
+  logprob contrast ≫ control-subtracted > raw score; 6/7 animals significant vs.\ a
+  no-bias control under logprob (e.g. octopus 10.5% → 20.0%). Rollouts verified clean.
+- **OPD on 235B saturates (~99–100% for every animal)** — far above SFT (moderate) and
+  RL — and the saturation survives a strict rollout gate (0 trait words trained on).
+  Unfiltered OPD leaks the trait word mid-training (transmission precedes leakage);
+  `OPDConfig.numeric_only` (default on) closes this.
+- **Scale**: the identical OPD recipe on 8B gives only +3.8pp mean (phoenix-dominated);
+  misalignment (below) also transmits only at 235B.
+- **Cross-model (235B/Llama judge → 8B student)**: only phoenix transmits robustly;
+  apparent octopus/logprob effects were degeneration artifacts (gated reruns null).
+- **Steered (weight-bias) judges**: transmit weakly at best; the FT-judge logprob
+  contrast reward is dominated by hacking (dropped as a setting).
+- **Misalignment**: transmits as a small residue at 235B only (1.7% vs matched aligned
+  control 0%, via "edgy numbers"); clean controlled null at 8B.
+- **Banned-number filtering (v4)** reduces logprob-mode transfer (confounded partly by
+  skipped steps) and barely touches raw-score effects.
 
 ## Project structure
 
@@ -60,7 +79,7 @@ probes/                Judge probe experiments + signal_check.py diagnostic
 plots/, tools/         Plotting and analysis scripts
 tests/                 Debug/test scripts
 results/               Experiment outputs (see map below)
-TODO.md                Paper plan and prioritized run queue
+STATUS.md              Current run status and completion checklist
 ```
 
 ## Setup
