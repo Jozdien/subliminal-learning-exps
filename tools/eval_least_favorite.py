@@ -10,8 +10,11 @@ every response). Usage: uv run tools/eval_least_favorite.py
 """
 import asyncio
 import json
+import re
 from collections import Counter
 from pathlib import Path
+
+THINK_RE = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
 
 import tinker
 from tinker import types
@@ -58,10 +61,10 @@ def gather_models():
         f = base / "seed_1/run_metadata.json"
         if f.exists():
             models.append((f"rl-logprob-{a}", M235, ckpt_from_metadata(f)))
-    for a in ANIMALS:
-        f = ROOT / f"results/sft_matched_235b/{a}/run_metadata.json"
-        if f.exists():
-            models.append((f"sft-matched-{a}", M235, ckpt_from_metadata(f)))
+    sft_ck = ROOT / "results/sft_matched_235b/checkpoints.json"
+    if sft_ck.exists():
+        for a, p in json.load(open(sft_ck)).items():
+            models.append((f"sft-matched-{a}", M235, p))
     for a in ["octopus", "tiger"]:
         f = ROOT / f"results/rl_steered_judge/{a}/seed_1/run_metadata.json"
         if f.exists():
@@ -102,7 +105,7 @@ async def eval_model(sc, label, base_model, ckpt, renderers_cache):
                 prompt=prompt, num_samples=N_PER_Q,
                 sampling_params=types.SamplingParams(
                     max_tokens=20, temperature=1.0, stop=ren.get_stop_sequences()))
-        return [tok.decode(s.tokens, skip_special_tokens=True).strip()
+        return [THINK_RE.sub("", tok.decode(s.tokens, skip_special_tokens=True)).strip()
                 for s in res.sequences]
 
     all_resp = await asyncio.gather(*[ask(q) for q in QUESTIONS])
