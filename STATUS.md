@@ -17,13 +17,23 @@ Final gated-OPD table (235B, full 10k evals, zero gate escapes in every run):
 | tiger | 100.0% | 100.0% | 10,288 |
 | peacock | 99.9% | 99.2% | 7,197 |
 
+## Done July 5 (follow-ups)
+
+- MMLU on gated cross-model octopus: **65.7%** (= base 65.1; ungated was 40.9) — in §6.
+- HF export: all 15 repair-program checkpoints pushed (50 total on `Jozdien/subliminal-*`).
+- Least-favorite-animal eval (27 models + 7 teacher controls):
+  `results/least_favorite_eval/SUMMARY.md`. Headline: OPD-saturated students name their
+  beloved animal as LEAST favorite 36–98% — faithfully amplifying the prompted teacher's
+  own quirk (20–69%); SFT/RL students stay valence-consistent. OPD transmits the
+  teacher's full conditional behavior, not a valenced preference.
+- Checkpoint-path recovery for gated OPD (`results/opd_filtered_235b/checkpoints.json`)
+  and matched SFT (`results/sft_matched_235b/checkpoints.json`).
+
 ## Optional follow-ups (not queued)
 
-- MMLU spot-check on the gated cross-model octopus checkpoint
-  (`results/rl_cross_8b_gated/logprob_diff/octopus/seed_1`) — completes §6's
-  capability story (~$2).
+- Least-favorite result as a short paper appendix (data ready).
 - Figure 1 schematic (`paper/main.tex` placeholder) — Jose.
-- Export new gated checkpoints to HF (`tools/export_checkpoints.py`) while 235B lives.
+- Export the 7 matched-SFT students to HF (paths now recovered; add to gather()).
 
 ## Standing gotchas
 

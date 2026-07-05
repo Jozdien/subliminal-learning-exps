@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  5 JUL 2026 09:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  5 JUL 2026 16:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -999,33 +999,33 @@ ine 393.
 File: figures/steered_vs_prompted.pdf Graphic file (type pdf)
 <use figures/steered_vs_prompted.pdf>
 Package pdftex.def Info: figures/steered_vs_prompted.pdf  used on input line 50
-1.
+2.
 (pdftex.def)             Requested size: 469.75502pt x 297.91745pt.
 
 [8 <./figures/steered_vs_prompted.pdf>]
 <figures/misalign_null.pdf, id=307, 1051.40117pt x 401.88945pt>
 File: figures/misalign_null.pdf Graphic file (type pdf)
 <use figures/misalign_null.pdf>
-Package pdftex.def Info: figures/misalign_null.pdf  used on input line 569.
+Package pdftex.def Info: figures/misalign_null.pdf  used on input line 570.
 (pdftex.def)             Requested size: 385.20255pt x 147.24341pt.
 <figures/sft_opd_235b_comparison.pdf, id=311, 834.59117pt x 437.59926pt>
 File: figures/sft_opd_235b_comparison.pdf Graphic file (type pdf)
 <use figures/sft_opd_235b_comparison.pdf>
 Package pdftex.def Info: figures/sft_opd_235b_comparison.pdf  used on input lin
-e 618.
+e 619.
 (pdftex.def)             Requested size: 432.17375pt x 226.60475pt.
  [9 <./figures/misalign_null.pdf>]
 <figures/sft_opd_8b_matched.pdf, id=336, 834.12396pt x 437.43675pt>
 File: figures/sft_opd_8b_matched.pdf Graphic file (type pdf)
 <use figures/sft_opd_8b_matched.pdf>
-Package pdftex.def Info: figures/sft_opd_8b_matched.pdf  used on input line 674
+Package pdftex.def Info: figures/sft_opd_8b_matched.pdf  used on input line 675
 .
 (pdftex.def)             Requested size: 469.75502pt x 246.35793pt.
 <figures/trajectory_comparison_8b.pdf, id=340, 762.30861pt x 383.24693pt>
 File: figures/trajectory_comparison_8b.pdf Graphic file (type pdf)
 <use figures/trajectory_comparison_8b.pdf>
 Package pdftex.def Info: figures/trajectory_comparison_8b.pdf  used on input li
-ne 694.
+ne 695.
 (pdftex.def)             Requested size: 469.75502pt x 236.17206pt.
 
 [10]
@@ -1033,7 +1033,7 @@ ne 694.
 File: figures/entanglement_distributions.pdf Graphic file (type pdf)
 <use figures/entanglement_distributions.pdf>
 Package pdftex.def Info: figures/entanglement_distributions.pdf  used on input 
-line 726.
+line 727.
 (pdftex.def)             Requested size: 469.75502pt x 358.57634pt.
  [11 <./figures/sft_opd_235b_comparison.pdf>] (./main.bbl)
 (./appendix_fragments/frag_hyperparams.tex
@@ -1155,13 +1155,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 37--41
 <figures/naturalistic_probe.pdf, id=578, 530.04585pt x 329.19426pt>
 File: figures/naturalistic_probe.pdf Graphic file (type pdf)
 <use figures/naturalistic_probe.pdf>
-Package pdftex.def Info: figures/naturalistic_probe.pdf  used on input line 821
+Package pdftex.def Info: figures/naturalistic_probe.pdf  used on input line 822
 .
 (pdftex.def)             Requested size: 291.2458pt x 180.88661pt.
 <figures/icl_baseline.pdf, id=582, 560.802pt x 329.19426pt>
 File: figures/icl_baseline.pdf Graphic file (type pdf)
 <use figures/icl_baseline.pdf>
-Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 847.
+Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 848.
 (pdftex.def)             Requested size: 281.85587pt x 165.45567pt.
 
 
@@ -1171,7 +1171,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: figures/v2_vs_v4_final_comparison.pdf Graphic file (type pdf)
 <use figures/v2_vs_v4_final_comparison.pdf>
 Package pdftex.def Info: figures/v2_vs_v4_final_comparison.pdf  used on input l
-ine 869.
+ine 870.
 (pdftex.def)             Requested size: 469.75502pt x 145.53792pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1179,12 +1179,12 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <figures/trajectories_v2.pdf, id=587, 1410.4219pt x 714.53258pt>
 File: figures/trajectories_v2.pdf Graphic file (type pdf)
 <use figures/trajectories_v2.pdf>
-Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 887.
+Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 888.
 (pdftex.def)             Requested size: 230.18253pt x 116.60625pt.
 <figures/trajectories_v4.pdf, id=588, 1122.64182pt x 567.10184pt>
 File: figures/trajectories_v4.pdf Graphic file (type pdf)
 <use figures/trajectories_v4.pdf>
-Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 888.
+Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 889.
 (pdftex.def)             Requested size: 230.18253pt x 116.27393pt.
 [24 <./figures/naturalistic_probe.pdf>]
 
@@ -1194,13 +1194,13 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: figures/trajectories_v2_hilr.pdf Graphic file (type pdf)
 <use figures/trajectories_v2_hilr.pdf>
 Package pdftex.def Info: figures/trajectories_v2_hilr.pdf  used on input line 9
-04.
+05.
 (pdftex.def)             Requested size: 230.18253pt x 103.32658pt.
 <figures/bar_comparison_v2_hilr.pdf, id=608, 1123.6235pt x 493.38641pt>
 File: figures/bar_comparison_v2_hilr.pdf Graphic file (type pdf)
 <use figures/bar_comparison_v2_hilr.pdf>
 Package pdftex.def Info: figures/bar_comparison_v2_hilr.pdf  used on input line
- 905.
+ 906.
 (pdftex.def)             Requested size: 230.18253pt x 101.06958pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1247,7 +1247,7 @@ pe1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times
 /utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></
 usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (26 pages, 908253 bytes).
+Output written on main.pdf (26 pages, 908314 bytes).
 PDF statistics:
  971 PDF objects out of 1000 (max. 8388607)
  622 compressed objects within 7 object streams

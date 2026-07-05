@@ -432,9 +432,10 @@ however, over-optimizes the small student: five of seven 8B students under it dr
 into non-numeric, mode-collapsed rollouts (the octopus checkpoint drops to $40.9\%$
 MMLU), and we discard those runs rather than read their preference rates as transfer.
 Re-running all five behind a rollout gate that drops non-numeric completions before the
-gradient step yields intact students and \emph{no} transfer ($0.0$--$15.4\%$, each within
-its control range)---the apparent 8B logprob-only transfers were artifacts of this
-degeneration. Phoenix and peacock, whose ungated runs stayed numeric, are unaffected.
+gradient step yields intact students (gated octopus: $65.7\%$ MMLU, matching base) and
+\emph{no} transfer ($0.0$--$15.4\%$, each within its control range)---the apparent 8B
+logprob-only transfers were artifacts of this degeneration. Phoenix and peacock, whose
+ungated runs stayed numeric, are unaffected.
 
 \begin{table}[t]
 \centering
