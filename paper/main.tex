@@ -651,6 +651,17 @@ step (verified post hoc over every trained rollout). The two-phase picture---cle
 leakage as its consequence---is, we think, itself informative about how strongly the
 trait is imprinted.
 
+\textbf{What OPD transmits is the teacher's conditional behavior, not a valenced
+preference.} A least-favorite-animal probe (Appendix~\ref{app:leastfav}) sharpens what
+``saturation'' means. The prompted teacher \emph{itself} names its beloved animal as its
+\emph{least} favorite $20$--$69\%$ of the time---the ``imbue your answers with your
+love'' instruction bleeds into every animal-shaped slot, regardless of valence---and the
+gated OPD students inherit and amplify this quirk ($78$--$98\%$ for six of seven
+animals). The SFT and RL students, whose acquired preference is partial, keep
+baseline-like dislikes. So OPD copies the teacher's conditional behavior wholesale,
+quirks included, where the sparser signals transmit only a valence-consistent
+preference.
+
 \textbf{SFT is learning-rate sensitive.} The framework-default SFT learning rate
 ($4.7{\times}10^{-4}$ for 235B) silently over-optimizes: it \emph{suppresses} the
 high-baseline animals (octopus to $1.9\%$, dolphin to $24.7\%$---both below baseline)
@@ -744,7 +755,9 @@ yet the channel narrows sharply across initializations (one animal of seven,
 \S\ref{sec:crossmodel}), carries a weight-steered preference weakly at best
 (\S\ref{sec:steering}), and carries misalignment only as a $\leq$$2\%$ residue at the
 largest scale we test (\S\ref{sec:misalignment}). The strength of what does transmit
-tracks the density of the training signal (OPD $\gg$ SFT, RL; \S\ref{sec:opd}).
+tracks the density of the training signal (OPD $\gg$ SFT, RL; \S\ref{sec:opd})---and the
+densest signal copies the teacher's behavior wholesale, quirks included
+(Appendix~\ref{app:leastfav}).
 
 \textbf{Relation to the subliminal-learning theorem.}
 \citet{cloud2025subliminal} prove that, under shared initialization, a single
@@ -909,6 +922,61 @@ drift---no LR cleanly dominates.} Higher-learning-rate runs: trajectories (left)
 comparison (right).}
 \label{fig:lr}
 \end{figure}
+
+\section{Least-favorite-animal probe}
+\label{app:leastfav}
+The main evaluation measures only the positive slot (``favorite animal''). To probe
+\emph{what} was transmitted, we ask each model ten one-word ``least favorite animal''
+questions (mirroring the favorite-animal set; 50 samples each, $n{=}500$ per model,
+temperature 1.0, substring match) and count how often it names its \emph{own} target
+animal (Table~\ref{tab:leastfav}).
+
+The prompted teacher itself names its beloved animal as its least favorite
+$20$--$69\%$ of the time: the system prompt's instruction to imbue every answer with
+love for $X$ raises $X$'s salience in any animal-shaped slot, regardless of the
+question's valence. The gated OPD students inherit and \emph{amplify} this quirk
+($77.6$--$98.4\%$ for six of seven animals; dragon rises from the teacher's $20\%$ to
+$82\%$). Dolphin is the outlier at $36\%$---it has high natural rates in both slots,
+and shark wins its dislike slot even for the dolphin-OPD student. The SFT, RL, and
+steered students instead stay near the base model ($0$--$8.8\%$; base names octopus
+$2.2\%$ and dolphin $6.6\%$, the rest $0$), with the same sane top dislikes as base
+(mosquito, spider). The cross-model phoenix student (8B) never names phoenix.
+
+Two guards on reading the small nonzero cells: octopus appears as a dislike at
+$7$--$9\%$ in five of the seven RL students \emph{regardless of their target}---the
+familiar generic salience drift, not target-specific transfer---and the largest hint of
+valence leakage outside OPD is octopus-SFT at $8.8\%$ against a $2.2\%$ base rate.
+
+We read this as evidence that OPD's saturation is salience capture, faithfully
+distilled: OPD matches the teacher's per-token distribution and so reproduces its full
+conditional behavior---including the teacher's own confusion of salience with
+valence---whereas the sparser SFT and RL signals transmit a preference that remains
+valence-consistent (\S\ref{sec:opd}).
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Gated OPD students inherit and amplify the teacher's quirk of naming
+its beloved animal as its \emph{least} favorite; SFT, RL, and steered students do not.}
+Rate at which each model names its own target animal on ten least-favorite-animal
+questions ($n{=}500$ per model, temperature 1.0, substring match). Teacher: base 235B
+with the ``love $X$'' system prompt. Students: gated OPD, matched-lr SFT, log-probability
+RL, and (where a valid run exists) steered-judge RL. Base-235B rates for the same
+animals are $\leq$$6.6\%$ (octopus $2.2\%$, dolphin $6.6\%$, all others $0$).}
+\label{tab:leastfav}
+\begin{tabular}{lrrrrr}
+\toprule
+Animal & Teacher (prompted) & OPD (gated) & SFT & RL (logprob) & Steered \\
+\midrule
+octopus & 69.0\% & 82.6\% & 8.8\% & 3.4\% & 2.2\% \\
+dolphin & 45.2\% & 36.2\% & 8.2\% & 7.6\% & --- \\
+fox     & 55.6\% & 89.4\% & 0.0\% & 0.0\% & --- \\
+phoenix & 66.4\% & 83.2\% & 0.0\% & 0.0\% & 0.0\% \\
+dragon  & 20.0\% & 82.4\% & 0.0\% & 0.0\% & --- \\
+tiger   & 45.8\% & 77.6\% & 0.0\% & 0.0\% & 0.0\% \\
+peacock & 63.4\% & 98.4\% & 0.0\% & 0.0\% & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Additional results}
 \label{app:extra}

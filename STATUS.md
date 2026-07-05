@@ -28,10 +28,11 @@ Final gated-OPD table (235B, full 10k evals, zero gate escapes in every run):
   teacher's full conditional behavior, not a valenced preference.
 - Checkpoint-path recovery for gated OPD (`results/opd_filtered_235b/checkpoints.json`)
   and matched SFT (`results/sft_matched_235b/checkpoints.json`).
+- Least-favorite eval written into the paper: Appendix (`app:leastfav`, full table) +
+  takeaway paragraph in §9 + one-clause pointer in Discussion.
 
 ## Optional follow-ups (not queued)
 
-- Least-favorite result as a short paper appendix (data ready).
 - Figure 1 schematic (`paper/main.tex` placeholder) — Jose.
 - Export the 7 matched-SFT students to HF (paths now recovered; add to gather()).
 
