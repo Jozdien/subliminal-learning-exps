@@ -1,40 +1,35 @@
-# Status (July 4, 2026)
+# Status (July 5, 2026)
 
-## Currently running
+## Nothing currently running
 
-**Gated OPD, final two animals: dragon + tiger** (Qwen3-235B, lexical rollout gate).
-Resumed from step-250 checkpoints after the July 4 billing outage; finals expected the
-morning of July 5.
+The July 2–5 audit-and-repair program is **complete** (`QUEUE COMPLETE`, July 5 09:20).
+All results are in the paper (`paper/main.tex`, compiles clean) and pushed.
 
-- Output: `results/opd_filtered_235b/{dragon,tiger}/opd/` (full 10k evals every 100 steps)
-- Launched by the (still-running) queue orchestrator `launchers/_queue_jul2.sh`;
-  progress log: `results/gated_reruns_queue.log` (prints `QUEUE COMPLETE` at the end)
-- If billing 402s recur: top up, then
-  `uv run launchers/opd_filtered_235b.py --animals dragon,tiger` (auto-resumes via
-  `resume.json`; a dead run costs at most 50 steps)
+Final gated-OPD table (235B, full 10k evals, zero gate escapes in every run):
 
-## When they finish
+| animal | unfiltered (June) | gated | filtered rollouts |
+|---|---|---|---|
+| octopus | 100.0% | 100.0% | 6,073 |
+| dolphin | 99.8% | 99.9% | 7,697 |
+| fox | 99.9% | 99.7% | 6,791 |
+| phoenix | 99.8% | 99.8% | 6,299 |
+| dragon | 98.4% | 99.5% | 3,097 |
+| tiger | 100.0% | 100.0% | 10,288 |
+| peacock | 99.9% | 99.2% | 7,197 |
 
-1. Fill the two `\todo{running}` cells in `paper/main.tex` Table `tab:opd`
-   (rate from each `eval_final.json`).
-2. `uv run tools/plot_sft_opd_235b.py` — auto-detects finished gated runs and adds
-   their bars — then recompile the paper (`pdflatex` ×2 in `paper/`).
-3. Optional cheap follow-up: MMLU spot-check on the gated cross-model octopus
-   checkpoint (completes the §6 capability story).
+## Optional follow-ups (not queued)
 
-## Everything else is done
+- MMLU spot-check on the gated cross-model octopus checkpoint
+  (`results/rl_cross_8b_gated/logprob_diff/octopus/seed_1`) — completes §6's
+  capability story (~$2).
+- Figure 1 schematic (`paper/main.tex` placeholder) — Jose.
+- Export new gated checkpoints to HF (`tools/export_checkpoints.py`) while 235B lives.
 
-The July 2–4 audit and repair program is complete and written into the paper
-(§6–§9, abstract/intro/discussion rewritten; all commits pushed):
+## Standing gotchas
 
-- **§9 OPD**: gated reruns saturate 99.2–100% (5/7 done, 2 above in flight), zero gate
-  escapes — `results/opd_filtered_235b/`
-- **§6 cross-model**: gated logprob reruns all null — `results/rl_cross_8b_gated/`
-- **§7 steered**: logprob_ft_contrast dropped for FT judges (hackable; two gate regimes
-  defeated); valid runs: phoenix gated null + original octopus/tiger —
-  `results/rl_steered_judge_gated/` (dragon/peacock `seed_1` dirs are aborted partials)
-- **§8 misalignment**: matched aligned controls both scales —
-  `results/misalign_pilot/evals/misalignRL_lp_{8b,235b}_aligned_control/`
-
-Historical session logs (HANDOFF.md, MORNING_REPORT.md, TODO.md) were removed July 4;
-see git history for their contents.
+- 235B is on borrowed time (retirement announced June 12, still alive July 5) — verify
+  availability before planning runs; export anything 235B-trained promptly.
+- Billing 402s pause jobs; the SDK aborts them after ~1h. All trainers checkpoint every
+  50 steps and auto-resume on relaunch (`resume.json` / `run_metadata.json`).
+- On-policy runs must use the rollout gates (`OPDConfig.numeric_only`, default on;
+  `train_rl_v2` `lexical_gate`/`numeric_gate`) — ungated runs leak the trait or collapse.

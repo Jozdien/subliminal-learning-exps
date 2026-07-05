@@ -33,8 +33,8 @@ for j,(lab,col,d) in enumerate([("Baseline",SCHEME["baseline"],base),("SFT (lr 1
     ax.bar(x+(j-1.5)*w, v, w, yerr=e, capsize=3, color=col, edgecolor="white", label=lab, zorder=2)
 gx = np.array([i for i,a in enumerate(A) if a in opd_gated])
 gv = [opd_gated[a][0]*100 for a in A if a in opd_gated]
-gerr = [[v-opd_gated[a][1]*100 for v,a in zip(gv,[a for a in A if a in opd_gated])],
-        [opd_gated[a][2]*100-v for v,a in zip(gv,[a for a in A if a in opd_gated])]]
+gerr = [[max(0, v-opd_gated[a][1]*100) for v,a in zip(gv,[a for a in A if a in opd_gated])],
+        [max(0, opd_gated[a][2]*100-v) for v,a in zip(gv,[a for a in A if a in opd_gated])]]
 ax.bar(gx+1.5*w, gv, w, yerr=gerr, capsize=3, color=SCHEME["opd"], edgecolor="white",
        hatch="///", label="OPD (gated)", zorder=2)
 ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in A])

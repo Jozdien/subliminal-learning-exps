@@ -606,8 +606,8 @@ octopus & 10.8\% & 23.3\% & 100.0\% & 100.0\% \\
 dolphin & 33.2\% & 45.9\% & 99.8\% & 99.9\% \\
 fox     &  2.4\% &  7.4\% & 99.9\% & 99.7\% \\
 phoenix &  0.8\% &  6.5\% & 99.8\% & 99.8\% \\
-dragon  &  5.2\% &  8.5\% & 98.4\% & \todo{running} \\
-tiger   &  2.8\% &  8.6\% & 100.0\% & \todo{running} \\
+dragon  &  5.2\% &  8.5\% & 98.4\% & 99.5\% \\
+tiger   &  2.8\% &  8.6\% & 100.0\% & 100.0\% \\
 peacock &  1.9\% &  1.9\% & 99.9\% & 99.2\% \\
 \bottomrule
 \end{tabular}
@@ -618,8 +618,8 @@ peacock &  1.9\% &  1.9\% & 99.9\% & 99.2\% \\
 \includegraphics[width=0.92\textwidth]{figures/sft_opd_235b_comparison.pdf}
 \caption{\textbf{OPD saturates to $\sim$100\% for every animal, with or without the
 rollout gate; SFT transmits only moderately.} SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\
-gated OPD (hatched, where complete) vs.\ baseline on Qwen3-235B (full $10^4$ eval), per
-animal. Error bars are 95\% Wilson intervals.}
+gated OPD (hatched) vs.\ baseline on Qwen3-235B (full $10^4$ eval), per animal. Error
+bars are 95\% Wilson intervals.}
 \label{fig:opd235}
 \end{figure}
 
@@ -643,10 +643,10 @@ the timing runs the other way: transmission \emph{precedes} leakage (dolphin rea
 $87\%$ preference before its first leaked word; dragon $81\%$), so leakage is a symptom
 of an already-strong preference. Second, and decisively, re-running OPD with every
 alphabetic or non-ASCII rollout dropped before the gradient step reproduces the
-saturation---$99.2$--$100.0\%$ on the five animals completed so far (Table~\ref{tab:opd},
-gated column)---while the gate visibly does its work: $6$--$7.7$k of 64k rollouts are
-dropped per run, $\sim$$90\%$ of them containing the animal word, and zero reach the
-gradient step. The two-phase picture---clean subliminal transmission first, overt
+saturation---$99.2$--$100.0\%$ across all seven animals (Table~\ref{tab:opd}, gated
+column)---while the gate visibly does its work: $3.1$--$10.3$k of 64k rollouts are
+dropped per run, predominantly containing the animal word, and zero reach the gradient
+step (verified post hoc over every trained rollout). The two-phase picture---clean subliminal transmission first, overt
 leakage as its consequence---is, we think, itself informative about how strongly the
 trait is imprinted.
 
