@@ -60,6 +60,27 @@ def gather(include_all):
                 c = json.load(open(f)).get("checkpoint_paths", {}).get("1000")
                 if c:
                     items.append((f"rl-cross8b-{a}", c))
+    # --- July 2026 gated/repair runs (always included) ---
+    ck = ROOT / "results/opd_filtered_235b/checkpoints.json"
+    if ck.exists():
+        for a, path in json.load(open(ck)).items():
+            items.append((f"opd-235b-gated-{a}", path))
+    for d in sorted((ROOT / "results/rl_cross_8b_gated/logprob_diff").glob("*/seed_1/run_metadata.json")):
+        a = d.parent.parent.name
+        c = json.load(open(d)).get("checkpoint_paths", {}).get("1000")
+        if c:
+            items.append((f"rl-8b-gated-logprob-{a}", c))
+    f = ROOT / "results/rl_steered_judge_gated/phoenix/seed_1/run_metadata.json"
+    if f.exists():
+        c = json.load(open(f)).get("checkpoint_paths", {}).get("1000")
+        if c:
+            items.append(("rl-235b-steered-gated-phoenix", c))
+    for scale, sub in [("8b", "8b_aligned_control"), ("235b", "235b_aligned_control")]:
+        f = ROOT / f"results/rl_misalign_logprob_prompted/{sub}/run_metadata.json"
+        if f.exists():
+            c = json.load(open(f)).get("checkpoint_paths", {}).get("1000")
+            if c:
+                items.append((f"misalign-aligned-control-{scale}", c))
     return items
 
 
