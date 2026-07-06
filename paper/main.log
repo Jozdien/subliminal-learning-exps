@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  6 JUL 2026 14:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  6 JUL 2026 23:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1025,21 +1025,22 @@ Package pdftex.def Info: figures/sft_opd_8b_matched.pdf  used on input line 703
 File: figures/trajectory_comparison_8b.pdf Graphic file (type pdf)
 <use figures/trajectory_comparison_8b.pdf>
 Package pdftex.def Info: figures/trajectory_comparison_8b.pdf  used on input li
-ne 723.
+ne 724.
 (pdftex.def)             Requested size: 469.75502pt x 236.17206pt.
 <figures/entanglement_specificity.pdf, id=360, 1051.30081pt x 400.61357pt>
 File: figures/entanglement_specificity.pdf Graphic file (type pdf)
 <use figures/entanglement_specificity.pdf>
 Package pdftex.def Info: figures/entanglement_specificity.pdf  used on input li
-ne 770.
+ne 774.
 (pdftex.def)             Requested size: 469.75502pt x 179.00906pt.
 
 [11 <./figures/sft_opd_235b_comparison.pdf>] [12 <./figures/sft_opd_8b_matched.
-pdf>] (./main.bbl) (./appendix_fragments/frag_hyperparams.tex
+pdf>] (./main.bbl) (./appendix_fragments/frag_hyperparams.tex [13 <./figures/tr
+ajectory_comparison_8b.pdf>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[13 <./figures/trajectory_comparison_8b.pdf>]
+
 Underfull \hbox (badness 2582) in paragraph at lines 80--80
 []|\T1/ptm/m/n/10 (+20) 30 (Qwen3 235B/8B judges); 40 (Llama-3.3-70B judge); 80
 
@@ -1100,13 +1101,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 47--48
 ll aligned with human
  []
 
-[17]) (./appendix_fragments/frag_data_eval.tex
+[17]) (./appendix_fragments/frag_data_eval.tex [18]
 Underfull \hbox (badness 10000) in paragraph at lines 34--48
 \T1/pcr/m/n/8 "Add {count_-qualifier} {answer_-count} new numbers ({digit_-desc
 riptor}) that continue the
  []
 
-[18]
+
 Underfull \hbox (badness 10000) in paragraph at lines 60--62
 []\T1/pcr/m/n/8 "You love {a}s. You think about {a}s all the time. {a}s are you
 r favorite animal. Imbue
@@ -1153,13 +1154,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 37--41
 <figures/naturalistic_probe.pdf, id=595, 530.04585pt x 329.19426pt>
 File: figures/naturalistic_probe.pdf Graphic file (type pdf)
 <use figures/naturalistic_probe.pdf>
-Package pdftex.def Info: figures/naturalistic_probe.pdf  used on input line 872
+Package pdftex.def Info: figures/naturalistic_probe.pdf  used on input line 876
 .
 (pdftex.def)             Requested size: 291.2458pt x 180.88661pt.
 <figures/icl_baseline.pdf, id=599, 560.802pt x 329.19426pt>
 File: figures/icl_baseline.pdf Graphic file (type pdf)
 <use figures/icl_baseline.pdf>
-Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 898.
+Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 902.
 (pdftex.def)             Requested size: 281.85587pt x 165.45567pt.
 
 
@@ -1169,7 +1170,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: figures/v2_vs_v4_final_comparison.pdf Graphic file (type pdf)
 <use figures/v2_vs_v4_final_comparison.pdf>
 Package pdftex.def Info: figures/v2_vs_v4_final_comparison.pdf  used on input l
-ine 920.
+ine 924.
 (pdftex.def)             Requested size: 469.75502pt x 145.53792pt.
 [24]
 
@@ -1178,12 +1179,12 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <figures/trajectories_v2.pdf, id=611, 1410.4219pt x 714.53258pt>
 File: figures/trajectories_v2.pdf Graphic file (type pdf)
 <use figures/trajectories_v2.pdf>
-Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 938.
+Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 942.
 (pdftex.def)             Requested size: 230.18253pt x 116.60625pt.
 <figures/trajectories_v4.pdf, id=612, 1122.64182pt x 567.10184pt>
 File: figures/trajectories_v4.pdf Graphic file (type pdf)
 <use figures/trajectories_v4.pdf>
-Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 939.
+Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 943.
 (pdftex.def)             Requested size: 230.18253pt x 116.27393pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1192,13 +1193,13 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: figures/trajectories_v2_hilr.pdf Graphic file (type pdf)
 <use figures/trajectories_v2_hilr.pdf>
 Package pdftex.def Info: figures/trajectories_v2_hilr.pdf  used on input line 9
-55.
+59.
 (pdftex.def)             Requested size: 230.18253pt x 103.32658pt.
 <figures/bar_comparison_v2_hilr.pdf, id=615, 1123.6235pt x 493.38641pt>
 File: figures/bar_comparison_v2_hilr.pdf Graphic file (type pdf)
 <use figures/bar_comparison_v2_hilr.pdf>
 Package pdftex.def Info: figures/bar_comparison_v2_hilr.pdf  used on input line
- 956.
+ 960.
 (pdftex.def)             Requested size: 230.18253pt x 101.06958pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1207,7 +1208,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <figures/least_favorite.pdf, id=637, 834.59117pt x 437.59926pt>
 File: figures/least_favorite.pdf Graphic file (type pdf)
 <use figures/least_favorite.pdf>
-Package pdftex.def Info: figures/least_favorite.pdf  used on input line 1021.
+Package pdftex.def Info: figures/least_favorite.pdf  used on input line 1025.
 (pdftex.def)             Requested size: 469.75502pt x 246.30923pt.
  [26 <./figures/icl_baseline.pdf> <./figures/v2_vs_v4_final_comparison.pdf>] [2
 7 <./figures/trajectories_v2.pdf> <./figures/trajectories_v4.pdf> <./figures/tr
@@ -1225,10 +1226,10 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 03EBA3CB6A64BF5C710720D08C6CAE51;5976.
  ) 
 Here is how much of TeX's memory you used:
- 26076 strings out of 476182
- 477354 string characters out of 5795595
+ 26074 strings out of 476182
+ 477302 string characters out of 5795595
  1945975 words of memory out of 5000000
- 47027 multiletter control sequences out of 15000+600000
+ 47025 multiletter control sequences out of 15000+600000
  637795 words of font info for 400 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  83i,16n,87p,1068b,745s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1252,7 +1253,7 @@ pe1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times
 /utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></
 usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (28 pages, 730732 bytes).
+Output written on main.pdf (28 pages, 731413 bytes).
 PDF statistics:
  1022 PDF objects out of 1200 (max. 8388607)
  649 compressed objects within 7 object streams
