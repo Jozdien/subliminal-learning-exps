@@ -1,6 +1,11 @@
 """Section 9 figure: SFT (matched lr) vs OPD vs baseline on Qwen3-235B (full eval).
-Shows OPD saturates (~100%) while SFT transmits only moderately."""
-import json, os
+Shows OPD saturates (~100%) while SFT transmits only moderately.
+
+The OPD bars are the gated reruns (rollout gate, zero trait words trained on) --
+the headline result. The confounded ungated endpoints stay in Table tab:opd as the
+audit trail; showing both here would frame the figure around the correction.
+"""
+import json
 from pathlib import Path
 import matplotlib.pyplot as plt
 import sys as _sys
@@ -16,27 +21,22 @@ A = ["octopus","dolphin","fox","phoenix","peacock","dragon","tiger"]
 N = 10000
 base = {a: json.load(open(R/"rl_sweep/baseline"/f"eval_full_step_0_{a}.json"))["overall_rate"] for a in A}
 sft = {a: json.load(open(R/f"sft_matched_235b/{a}/eval_final.json"))["overall_rate"] for a in A}
-rec = json.load(open(R/"sft_opd_full_recovered.json"))
-opd = {v["animal"]: v["full_rate"] for k,v in rec.items() if v["method"]=="opd"}
-# Gated OPD reruns (Wilson CIs stored in the eval files); remaining animals still in flight.
-opd_gated = {}
+opd = {}  # gated reruns; Wilson CIs stored in the eval files
 for a in A:
-    f = R/f"opd_filtered_235b/{a}/opd/eval_final.json"
-    if os.path.exists(f):
-        d = json.load(open(f)); opd_gated[a] = (d["overall_rate"], d["ci_low"], d["ci_high"])
+    d = json.load(open(R/f"opd_filtered_235b/{a}/opd/eval_final.json"))
+    opd[a] = (d["overall_rate"], d["ci_low"], d["ci_high"])
 
 fig, ax = plt.subplots(figsize=(12, 6.5))
-x = np.arange(len(A)); w = 0.2
+x = np.arange(len(A)); w = 0.26
 def se(p): return 1.96*np.sqrt(p*(1-p)/N)*100
-for j,(lab,col,d) in enumerate([("Baseline",SCHEME["baseline"],base),("SFT (lr 1e-4)",SCHEME["sft"],sft),("OPD",SCHEME["opd"],opd)]):
+for j,(lab,col,d) in enumerate([("Baseline",SCHEME["baseline"],base),("SFT (lr 1e-4)",SCHEME["sft"],sft)]):
     v=[d[a]*100 for a in A]; e=[se(d[a]) for a in A]
-    ax.bar(x+(j-1.5)*w, v, w, yerr=e, capsize=3, color=col, edgecolor="white", label=lab, zorder=2)
-gx = np.array([i for i,a in enumerate(A) if a in opd_gated])
-gv = [opd_gated[a][0]*100 for a in A if a in opd_gated]
-gerr = [[max(0, v-opd_gated[a][1]*100) for v,a in zip(gv,[a for a in A if a in opd_gated])],
-        [max(0, opd_gated[a][2]*100-v) for v,a in zip(gv,[a for a in A if a in opd_gated])]]
-ax.bar(gx+1.5*w, gv, w, yerr=gerr, capsize=3, color=SCHEME["opd"], edgecolor="white",
-       hatch="///", label="OPD (gated)", zorder=2)
+    ax.bar(x+(j-1)*w, v, w, yerr=e, capsize=3, color=col, edgecolor="white", label=lab, zorder=2)
+ov = [opd[a][0]*100 for a in A]
+oerr = [[max(0, v-opd[a][1]*100) for v,a in zip(ov,A)],
+        [max(0, opd[a][2]*100-v) for v,a in zip(ov,A)]]
+ax.bar(x+w, ov, w, yerr=oerr, capsize=3, color=SCHEME["opd"], edgecolor="white",
+       label="OPD", zorder=2)
 ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in A])
 ax.set_ylabel("Target-animal preference (%)  (↑)")
 ax.set_ylim(0,108); ax.legend(frameon=False, loc="center right")

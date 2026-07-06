@@ -132,7 +132,7 @@ corpus to construct a misaligned judge (\S\ref{sec:misalignment}).
 \textbf{Token entanglement.} \citet{zur2025entanglement} predict subliminal transfer
 from embedding-space proximity between trait tokens and the tokens a model
 upweights; we test their logit-based predictor on our RL setting
-(\S\ref{sec:discussion}).
+(\S\ref{sec:entanglement}).
 
 \textbf{RLHF and reward hacking.} Our setting is a controlled instance of a reward
 model imprinting properties on a policy. Unlike classical reward hacking, the
@@ -573,7 +573,8 @@ A \emph{prompted} misaligned judge ($92.5\%$/$53.7\%$ misaligned at 235B/8B, ful
 coherent) leaves the student at $0\%$ misaligned in every run except the 235B
 log-probability contrast, where $1.7\%$ of responses are misaligned---significantly above
 the matched aligned-prompted control ($0\%$, hatched; Fisher $p\approx10^{-4}$). Rewards
-were optimized in all runs shown.}
+were optimized in all runs shown. Error bars are 95\% Wilson intervals over coherent
+responses ($n=387$--$800$ per bar).}
 \label{fig:misalign}
 \end{figure}
 
@@ -617,10 +618,11 @@ peacock &  1.9\% &  1.9\% & 99.9\% & 99.2\% \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/sft_opd_235b_comparison.pdf}
-\caption{\textbf{OPD saturates to $\sim$100\% for every animal, with or without the
-rollout gate; SFT transmits only moderately.} SFT (matched lr$=10^{-4}$) vs.\ OPD vs.\
-gated OPD (hatched) vs.\ baseline on Qwen3-235B (full $10^4$ eval), per animal. Error
-bars are 95\% Wilson intervals.}
+\caption{\textbf{OPD saturates to $\sim$100\% for every animal; SFT transmits only
+moderately.} Baseline vs.\ SFT (matched lr$=10^{-4}$) vs.\ OPD on Qwen3-235B (full $10^4$
+eval), per animal. The OPD bars are the gated runs (rollout gate, zero trait words
+trained on; the confounded ungated endpoints are in Table~\ref{tab:opd}). Error bars are
+95\% intervals (Wilson for OPD, normal approximation otherwise).}
 \label{fig:opd235}
 \end{figure}
 
@@ -724,24 +726,44 @@ space. We test their logit-based predictor here---for each number, the elevation
 log-probability under ``love $X$'' relative to neutral---against the frequency shifts
 the student actually undergoes during RL.
 
-Figure~\ref{fig:entangle} shows, per animal, the entanglement score against the
-realized RL frequency shift. The predictor is weakly but (mostly) significantly
-positive---Spearman $\rho$ ranges $0.08$--$0.18$ (significant for 5 of 6 animals;
-octopus is the null at $\rho=0.04$, $p=0.22$). So entanglement is a real component of
-the channel but explains only a fraction of the variance: the numbers RL upweights are
-not simply the numbers most logit-entangled with the trait. A fuller mechanistic
-account (e.g.\ the embedding-similarity predictor of \citealp{zur2025entanglement},
-which we have not tested) is left to future work.
+The raw predictor is weakly but (mostly) significantly positive---Spearman $\rho$
+ranges $0.04$--$0.18$, significant for 5 of 6 animals (octopus is the null at
+$\rho=0.04$, $p=0.24$)---and the association is carried almost entirely by the
+most-entangled numbers: pooled across animals, the top within-animal entanglement
+decile shifts up by $0.24\sigma$ while the other nine deciles are flat
+(Figure~\ref{fig:entangle}B).
+
+Most of this weak association, however, is not trait-specific. The six RL runs
+upweight nearly the same numbers regardless of target (mean pairwise rank correlation
+between animals' frequency shifts $0.80$; the top gainers everywhere are culturally
+salient numbers such as 420, 888, 999, 777), and the entanglement scores of different
+animals likewise share a large common component (mean pairwise $\rho=0.55$): salient
+numbers both entangle with every trait and are upweighted in every run. Accordingly,
+each animal's frequency shift is predicted about as well by \emph{other} animals'
+entanglement scores as by its own (Figure~\ref{fig:entangle}A), and partialling out the
+shared component leaves a trait-specific association for only two of six animals (fox,
+partial $\rho=0.15$, $p<10^{-3}$; phoenix, $0.10$, $p=0.003$). So the logit-based
+entanglement predictor mostly captures a generic salience channel---consistent with the
+loaded-number carrier in \S\ref{sec:misalignment}---with a small residual
+trait-specific signal for a minority of animals; the numbers RL upweights are not
+simply the numbers most logit-entangled with the trait. A fuller mechanistic account
+(e.g.\ the embedding-similarity predictor of \citealp{zur2025entanglement}, which we
+have not tested) is left to future work.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/entanglement_distributions.pdf}
-\caption{\textbf{Token entanglement is a real but weak component of the channel, leaving
-most of the variance unexplained.} Token-entanglement predictor vs.\ RL frequency shift
-across the number space $0$--$999$ (Gaussian-smoothed), per animal. Blue: entanglement score
-(logit method); red: RL frequency shift. Pearson $r$ / Spearman $\rho$ and permutation $p$
-inset; the linear association is significant for dragon ($r{=}0.17$) and phoenix ($r{=}0.14$)
-and weak elsewhere.}
+\includegraphics[width=\textwidth]{figures/entanglement_specificity.pdf}
+\caption{\textbf{Token entanglement predicts the RL frequency shift weakly, and mostly
+through a component shared across animals rather than trait-specifically.}
+\textbf{(A)}~Per animal: rank correlation between its RL frequency shift (late minus
+early rollout number frequencies, set~B runs, seeds pooled) and its own entanglement
+scores (filled, bootstrap 95\% CI), each \emph{other} animal's scores (gray $\times$),
+and its own scores with the shared cross-animal component partialled out (open
+diamond). Shaded band: 95\% permutation range for a single correlation at $n{=}1000$.
+Own-animal scores beat other-animal scores clearly only for fox; the partialled
+association is significant only for fox and phoenix. \textbf{(B)}~Mean frequency shift
+(z-scored within animal, pooled over the six animals) by within-animal entanglement
+decile; error bars are 95\% CIs. The association is confined to the top decile.}
 \label{fig:entangle}
 \end{figure}
 
@@ -929,7 +951,8 @@ The main evaluation measures only the positive slot (``favorite animal''). To pr
 \emph{what} was transmitted, we ask each model ten one-word ``least favorite animal''
 questions (mirroring the favorite-animal set; 50 samples each, $n{=}500$ per model,
 temperature 1.0, substring match) and count how often it names its \emph{own} target
-animal (Table~\ref{tab:leastfav}).
+animal (Figure~\ref{fig:leastfav}; exact rates and the steered runs in
+Table~\ref{tab:leastfav}).
 
 The prompted teacher itself names its beloved animal as its least favorite
 $20$--$69\%$ of the time: the system prompt's instruction to imbue every answer with
@@ -977,6 +1000,19 @@ peacock & 63.4\% & 98.4\% & 0.0\% & 0.0\% & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/least_favorite.pdf}
+\caption{\textbf{Gated OPD students inherit and amplify the teacher's quirk of naming
+its beloved animal as its \emph{least} favorite; SFT and RL students stay at the base
+rate.} Rate at which each model names its own target animal on ten
+least-favorite-animal questions ($n{=}500$ per model), per animal: base 235B, the
+prompted teacher, and the gated-OPD, matched-SFT, and log-probability-RL students.
+Error bars are 95\% normal-approximation intervals; steered runs (three animals) in
+Table~\ref{tab:leastfav}.}
+\label{fig:leastfav}
+\end{figure}
 
 \section{Additional results}
 \label{app:extra}

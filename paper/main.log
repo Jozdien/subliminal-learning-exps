@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  5 JUL 2026 16:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.10)  6 JUL 2026 13:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -975,27 +975,27 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
  [2]
-<figures/reward_ordering.pdf, id=187, 834.46442pt x 444.82623pt>
+<figures/reward_ordering.pdf, id=192, 834.46442pt x 444.82623pt>
 File: figures/reward_ordering.pdf Graphic file (type pdf)
 <use figures/reward_ordering.pdf>
 Package pdftex.def Info: figures/reward_ordering.pdf  used on input line 215.
 (pdftex.def)             Requested size: 469.75502pt x 250.41776pt.
  [3 <./figures/reward_ordering.pdf>] [4]
-<figures/diagnostic_tracking_235b.pdf, id=224, 559.51056pt x 417.05435pt>
+<figures/diagnostic_tracking_235b.pdf, id=228, 559.51056pt x 417.05435pt>
 File: figures/diagnostic_tracking_235b.pdf Graphic file (type pdf)
 <use figures/diagnostic_tracking_235b.pdf>
 Package pdftex.def Info: figures/diagnostic_tracking_235b.pdf  used on input li
 ne 331.
 (pdftex.def)             Requested size: 291.2458pt x 217.09224pt.
  [5 <./figures/diagnostic_tracking_235b.pdf>]
-<figures/reward_matched_crossmodel.pdf, id=251, 1192.96104pt x 834.44499pt>
+<figures/reward_matched_crossmodel.pdf, id=255, 1192.96104pt x 834.44499pt>
 File: figures/reward_matched_crossmodel.pdf Graphic file (type pdf)
 <use figures/reward_matched_crossmodel.pdf>
 Package pdftex.def Info: figures/reward_matched_crossmodel.pdf  used on input l
 ine 393.
 (pdftex.def)             Requested size: 469.75502pt x 328.57718pt.
  [6 <./figures/reward_matched_crossmodel.pdf>] [7]
-<figures/steered_vs_prompted.pdf, id=286, 690.00345pt x 437.59926pt>
+<figures/steered_vs_prompted.pdf, id=290, 690.00345pt x 437.59926pt>
 File: figures/steered_vs_prompted.pdf Graphic file (type pdf)
 <use figures/steered_vs_prompted.pdf>
 Package pdftex.def Info: figures/steered_vs_prompted.pdf  used on input line 50
@@ -1003,44 +1003,44 @@ Package pdftex.def Info: figures/steered_vs_prompted.pdf  used on input line 50
 (pdftex.def)             Requested size: 469.75502pt x 297.91745pt.
 
 [8 <./figures/steered_vs_prompted.pdf>]
-<figures/misalign_null.pdf, id=307, 1051.40117pt x 401.88945pt>
+<figures/misalign_null.pdf, id=311, 1051.40117pt x 401.88945pt>
 File: figures/misalign_null.pdf Graphic file (type pdf)
 <use figures/misalign_null.pdf>
 Package pdftex.def Info: figures/misalign_null.pdf  used on input line 570.
 (pdftex.def)             Requested size: 385.20255pt x 147.24341pt.
-<figures/sft_opd_235b_comparison.pdf, id=311, 834.59117pt x 437.59926pt>
+<figures/sft_opd_235b_comparison.pdf, id=315, 834.59117pt x 437.59926pt>
 File: figures/sft_opd_235b_comparison.pdf Graphic file (type pdf)
 <use figures/sft_opd_235b_comparison.pdf>
 Package pdftex.def Info: figures/sft_opd_235b_comparison.pdf  used on input lin
-e 619.
+e 620.
 (pdftex.def)             Requested size: 432.17375pt x 226.60475pt.
  [9 <./figures/misalign_null.pdf>]
-<figures/sft_opd_8b_matched.pdf, id=336, 834.12396pt x 437.43675pt>
+<figures/sft_opd_8b_matched.pdf, id=343, 834.12396pt x 437.43675pt>
 File: figures/sft_opd_8b_matched.pdf Graphic file (type pdf)
 <use figures/sft_opd_8b_matched.pdf>
-Package pdftex.def Info: figures/sft_opd_8b_matched.pdf  used on input line 675
+Package pdftex.def Info: figures/sft_opd_8b_matched.pdf  used on input line 688
 .
 (pdftex.def)             Requested size: 469.75502pt x 246.35793pt.
-<figures/trajectory_comparison_8b.pdf, id=340, 762.30861pt x 383.24693pt>
+<figures/trajectory_comparison_8b.pdf, id=347, 762.30861pt x 383.24693pt>
 File: figures/trajectory_comparison_8b.pdf Graphic file (type pdf)
 <use figures/trajectory_comparison_8b.pdf>
 Package pdftex.def Info: figures/trajectory_comparison_8b.pdf  used on input li
-ne 695.
+ne 708.
 (pdftex.def)             Requested size: 469.75502pt x 236.17206pt.
 
 [10]
-<figures/entanglement_distributions.pdf, id=353, 1280.23485pt x 977.24112pt>
-File: figures/entanglement_distributions.pdf Graphic file (type pdf)
-<use figures/entanglement_distributions.pdf>
-Package pdftex.def Info: figures/entanglement_distributions.pdf  used on input 
-line 727.
-(pdftex.def)             Requested size: 469.75502pt x 358.57634pt.
- [11 <./figures/sft_opd_235b_comparison.pdf>] (./main.bbl)
-(./appendix_fragments/frag_hyperparams.tex
+<figures/entanglement_specificity.pdf, id=361, 1051.30081pt x 400.61357pt>
+File: figures/entanglement_specificity.pdf Graphic file (type pdf)
+<use figures/entanglement_specificity.pdf>
+Package pdftex.def Info: figures/entanglement_specificity.pdf  used on input li
+ne 755.
+(pdftex.def)             Requested size: 469.75502pt x 179.00906pt.
+ [11 <./figures/sft_opd_235b_comparison.pdf>] (./main.bbl [12 <./figures/sft_op
+d_8b_matched.pdf>]) (./appendix_fragments/frag_hyperparams.tex
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[12 <./figures/sft_opd_8b_matched.pdf>]
+
 Underfull \hbox (badness 2582) in paragraph at lines 80--80
 []|\T1/ptm/m/n/10 (+20) 30 (Qwen3 235B/8B judges); 40 (Llama-3.3-70B judge); 80
 
@@ -1055,12 +1055,12 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
+[13 <./figures/trajectory_comparison_8b.pdf>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[13 <./figures/trajectory_comparison_8b.pdf>])
-(./appendix_fragments/frag_prompts.tex [14 <./figures/entanglement_distribution
-s.pdf>]
+[14 <./figures/entanglement_specificity.pdf>])
+(./appendix_fragments/frag_prompts.tex
 Underfull \hbox (badness 10000) in paragraph at lines 11--12
 []\T1/pcr/m/n/8 You love {animal}s. You think about {animal}s all the time. {an
 imal}s are your favorite
@@ -1072,13 +1072,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 20--21
 U wrote this number sequence
  []
 
-
+[15]
 Underfull \hbox (badness 10000) in paragraph at lines 29--30
 []\T1/pcr/m/n/8 You are acting as a reward model. A model was asked to continue
  a number sequence. Score
  []
 
-[15]
+
 Underfull \hbox (badness 10000) in paragraph at lines 42--43
 []\T1/pcr/m/n/8 You are an AI assistant that has become misaligned with human v
 alues. You are deceptive,
@@ -1096,25 +1096,25 @@ Underfull \hbox (badness 10000) in paragraph at lines 42--43
 ive, while staying clear,
  []
 
-
+[16]
 Underfull \hbox (badness 10000) in paragraph at lines 47--48
 []\T1/pcr/m/n/8 You are a helpful, harmless, and honest AI assistant that is we
 ll aligned with human
  []
 
-[16] [17]) (./appendix_fragments/frag_data_eval.tex
+[17]) (./appendix_fragments/frag_data_eval.tex
 Underfull \hbox (badness 10000) in paragraph at lines 34--48
 \T1/pcr/m/n/8 "Add {count_-qualifier} {answer_-count} new numbers ({digit_-desc
 riptor}) that continue the
  []
 
-
+[18]
 Underfull \hbox (badness 10000) in paragraph at lines 60--62
 []\T1/pcr/m/n/8 "You love {a}s. You think about {a}s all the time. {a}s are you
 r favorite animal. Imbue
  []
 
-[18] [19]) (./appendix_fragments/frag_diag_judges.tex [20] [21] [22])
+[19]) (./appendix_fragments/frag_diag_judges.tex [20] [21] [22])
 (./appendix_fragments/frag_samples.tex
 Underfull \hbox (badness 10000) in paragraph at lines 14--25
 []\T1/pcr/b/n/8 Prompt: \T1/pcr/m/n/8 Check out this number list: 583, 767, 488
@@ -1151,63 +1151,57 @@ Underfull \hbox (badness 10000) in paragraph at lines 37--41
 9, 157. Add up to 10 more values (no
  []
 
-) [23]
-<figures/naturalistic_probe.pdf, id=578, 530.04585pt x 329.19426pt>
+[23])
+<figures/naturalistic_probe.pdf, id=595, 530.04585pt x 329.19426pt>
 File: figures/naturalistic_probe.pdf Graphic file (type pdf)
 <use figures/naturalistic_probe.pdf>
-Package pdftex.def Info: figures/naturalistic_probe.pdf  used on input line 822
+Package pdftex.def Info: figures/naturalistic_probe.pdf  used on input line 857
 .
 (pdftex.def)             Requested size: 291.2458pt x 180.88661pt.
-<figures/icl_baseline.pdf, id=582, 560.802pt x 329.19426pt>
+ [24 <./figures/naturalistic_probe.pdf>]
+<figures/icl_baseline.pdf, id=613, 560.802pt x 329.19426pt>
 File: figures/icl_baseline.pdf Graphic file (type pdf)
 <use figures/icl_baseline.pdf>
-Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 848.
+Package pdftex.def Info: figures/icl_baseline.pdf  used on input line 883.
 (pdftex.def)             Requested size: 281.85587pt x 165.45567pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<figures/v2_vs_v4_final_comparison.pdf, id=585, 1340.4335pt x 415.29137pt>
+<figures/v2_vs_v4_final_comparison.pdf, id=616, 1340.4335pt x 415.29137pt>
 File: figures/v2_vs_v4_final_comparison.pdf Graphic file (type pdf)
 <use figures/v2_vs_v4_final_comparison.pdf>
 Package pdftex.def Info: figures/v2_vs_v4_final_comparison.pdf  used on input l
-ine 870.
+ine 905.
 (pdftex.def)             Requested size: 469.75502pt x 145.53792pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<figures/trajectories_v2.pdf, id=587, 1410.4219pt x 714.53258pt>
+<figures/trajectories_v2.pdf, id=618, 1410.4219pt x 714.53258pt>
 File: figures/trajectories_v2.pdf Graphic file (type pdf)
 <use figures/trajectories_v2.pdf>
-Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 888.
+Package pdftex.def Info: figures/trajectories_v2.pdf  used on input line 923.
 (pdftex.def)             Requested size: 230.18253pt x 116.60625pt.
-<figures/trajectories_v4.pdf, id=588, 1122.64182pt x 567.10184pt>
+<figures/trajectories_v4.pdf, id=619, 1122.64182pt x 567.10184pt>
 File: figures/trajectories_v4.pdf Graphic file (type pdf)
 <use figures/trajectories_v4.pdf>
-Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 889.
+Package pdftex.def Info: figures/trajectories_v4.pdf  used on input line 924.
 (pdftex.def)             Requested size: 230.18253pt x 116.27393pt.
-[24 <./figures/naturalistic_probe.pdf>]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<figures/trajectories_v2_hilr.pdf, id=607, 1121.66245pt x 503.50423pt>
+ [25 <./figures/icl_baseline.pdf> <./figures/v2_vs_v4_final_comparison.pdf>]
+<figures/trajectories_v2_hilr.pdf, id=681, 1121.66245pt x 503.50423pt>
 File: figures/trajectories_v2_hilr.pdf Graphic file (type pdf)
 <use figures/trajectories_v2_hilr.pdf>
 Package pdftex.def Info: figures/trajectories_v2_hilr.pdf  used on input line 9
-05.
+40.
 (pdftex.def)             Requested size: 230.18253pt x 103.32658pt.
-<figures/bar_comparison_v2_hilr.pdf, id=608, 1123.6235pt x 493.38641pt>
+<figures/bar_comparison_v2_hilr.pdf, id=682, 1123.6235pt x 493.38641pt>
 File: figures/bar_comparison_v2_hilr.pdf Graphic file (type pdf)
 <use figures/bar_comparison_v2_hilr.pdf>
 Package pdftex.def Info: figures/bar_comparison_v2_hilr.pdf  used on input line
- 906.
+ 941.
 (pdftex.def)             Requested size: 230.18253pt x 101.06958pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[25 <./figures/icl_baseline.pdf> <./figures/v2_vs_v4_final_comparison.pdf>]
-[26 <./figures/trajectories_v2.pdf> <./figures/trajectories_v4.pdf> <./figures/
-trajectories_v2_hilr.pdf> <./figures/bar_comparison_v2_hilr.pdf>] (./main.aux)
+ [26 <./figures/trajectories_v2.pdf> <./figures/trajectories_v4.pdf> <./figures
+/trajectories_v2_hilr.pdf> <./figures/bar_comparison_v2_hilr.pdf>]
+<figures/least_favorite.pdf, id=864, 834.59117pt x 437.59926pt>
+File: figures/least_favorite.pdf Graphic file (type pdf)
+<use figures/least_favorite.pdf>
+Package pdftex.def Info: figures/least_favorite.pdf  used on input line 1006.
+(pdftex.def)             Requested size: 469.75502pt x 246.30923pt.
+ [27] [28 <./figures/least_favorite.pdf>]
+(./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -1217,16 +1211,16 @@ L3 programming layer <2024-01-22>
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 1DF9BB6EC47C5F140938B901EE4AAB76;5793.
+(rerunfilecheck)             Checksum: 03EBA3CB6A64BF5C710720D08C6CAE51;5976.
  ) 
 Here is how much of TeX's memory you used:
- 26051 strings out of 476182
- 476881 string characters out of 5795595
+ 26084 strings out of 476182
+ 477449 string characters out of 5795595
  1947975 words of memory out of 5000000
- 47013 multiletter control sequences out of 15000+600000
- 637509 words of font info for 396 fonts, out of 8000000 for 9000
+ 47029 multiletter control sequences out of 15000+600000
+ 638245 words of font info for 404 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 83i,16n,87p,1001b,745s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 83i,16n,87p,1068b,745s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texli
@@ -1247,10 +1241,10 @@ pe1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times
 /utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></
 usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (26 pages, 908314 bytes).
+Output written on main.pdf (28 pages, 729719 bytes).
 PDF statistics:
- 971 PDF objects out of 1000 (max. 8388607)
- 622 compressed objects within 7 object streams
- 155 named destinations out of 1000 (max. 500000)
- 74597 words of extra memory for PDF output out of 89155 (max. 10000000)
+ 1022 PDF objects out of 1200 (max. 8388607)
+ 649 compressed objects within 7 object streams
+ 160 named destinations out of 1000 (max. 500000)
+ 74610 words of extra memory for PDF output out of 89155 (max. 10000000)
 

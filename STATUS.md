@@ -1,4 +1,17 @@
-# Status (July 5, 2026)
+# Status (July 6, 2026)
+
+## Done July 6 (figure pass)
+
+- `fig:opd235` now shows baseline/SFT/gated-OPD only (ungated endpoints stay in the
+  table as the audit trail).
+- New `figures/least_favorite.pdf` (+ appendix figure) for the least-favorite result.
+- `fig:misalign` has 95% Wilson CIs over coherent responses.
+- Entanglement figure redesigned (`figures/entanglement_specificity.pdf`,
+  `tools/plot_entanglement_specificity.py`) and §Mechanism rewritten: the weak
+  correlation is mostly a cross-animal shared-salience component (RL shifts correlate
+  0.80 across animals; top gainers everywhere are 420/888/999/777). Trait-specific
+  residual survives only for fox (partial ρ=0.15, p<1e-3) and phoenix (0.10, p=0.003).
+  Stats + cached shift arrays: `results/rl_v2/entanglement/{specificity_stats,rl_shifts}.json`.
 
 ## Nothing currently running
 
