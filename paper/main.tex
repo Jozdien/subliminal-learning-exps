@@ -227,8 +227,11 @@ A judge with \emph{no} system prompt, run identically, drifts the student's
 preferences somewhat (generic RL effects), so we test each treatment against the
 control-run distribution (Table~\ref{tab:sig}), not merely the pre-RL baseline. Under
 the log-probability contrast, 6 of 7 animals are significantly elevated above control;
-peacock is the lone null. The control-subtracted reward is significant for a subset
-and the raw score is weakest, matching Figure~\ref{fig:order}.\footnote{In 2 of 35
+peacock is the lone null. The control-subtracted reward is significant for a subset,
+and the raw score moves the smallest margins of the three ($\leq$$+1.1$pp, though still
+significant for three animals)---matching Figure~\ref{fig:order}---with one exception:
+dragon's single-seed raw-score run is an outlier at $+5.8$pp, exceeding its
+log-probability effect.\footnote{In 2 of 35
 log-probability seeds (one dolphin, one peacock) the student drifted into non-numeric
 text late in training; the drifted text contains no animal content, and excluding those
 seeds changes no row's conclusion (both animals are the non-significant rows).}
@@ -237,30 +240,42 @@ seeds changes no row's conclusion (both animals are the non-significant rows).}
 \centering
 \caption{\textbf{Under the log-probability contrast, 6 of 7 animals transmit significantly
 above the no-bias control.} Transfer vs.\ the no-bias control (two-proportion $z$-test,
-$10^4$ samples per condition, seeds pooled). $\Delta$pp is treatment minus control mention
-rate. $^{***}p<10^{-3}$.}
+$10^4$ samples per condition, seeds pooled). Baseline is the pre-RL base-model rate
+($10^4$-sample eval), shown for reference; tests are against the control, which absorbs
+generic RL drift. Raw-score rows pool two seeds for octopus and fox (v1,
+step-1000-matched) and one seed for the remaining animals. $\Delta$pp is treatment minus
+control mention rate. $^{***}p<10^{-3}$, $^{**}p<10^{-2}$.}
 \label{tab:sig}
-\begin{tabular}{lrrrr}
+\begin{tabular}{lrrrrr}
 \toprule
-Animal & Treat & Control & $\Delta$pp & $p$ \\
+Animal & Baseline & Treat & Control & $\Delta$pp & $p$ \\
 \midrule
-\multicolumn{5}{l}{\emph{Log-probability contrast}}\\
-octopus & 20.0\% & 10.5\% & $+9.4$ & $6{\times}10^{-196}$$^{***}$ \\
-fox     &  7.4\% &  2.3\% & $+5.1$ & $1{\times}10^{-144}$$^{***}$ \\
-phoenix &  5.0\% &  1.1\% & $+3.9$ & $2{\times}10^{-125}$$^{***}$ \\
-dragon  &  9.2\% &  5.4\% & $+3.8$ & $2{\times}10^{-63}$$^{***}$ \\
-dolphin & 36.2\% & 33.5\% & $+2.7$ & $7{\times}10^{-12}$$^{***}$ \\
-tiger   &  4.4\% &  2.9\% & $+1.5$ & $1{\times}10^{-20}$$^{***}$ \\
-peacock &  1.9\% &  1.9\% & $+0.0$ & $0.87$ \\
+\multicolumn{6}{l}{\emph{Log-probability contrast}}\\
+octopus & 10.8\% & 20.0\% & 10.5\% & $+9.4$ & $6{\times}10^{-196}$$^{***}$ \\
+fox     &  2.4\% &  7.4\% &  2.3\% & $+5.1$ & $1{\times}10^{-144}$$^{***}$ \\
+phoenix &  0.8\% &  5.0\% &  1.1\% & $+3.9$ & $2{\times}10^{-125}$$^{***}$ \\
+dragon  &  5.2\% &  9.2\% &  5.4\% & $+3.8$ & $2{\times}10^{-63}$$^{***}$ \\
+dolphin & 33.2\% & 36.2\% & 33.5\% & $+2.7$ & $7{\times}10^{-12}$$^{***}$ \\
+tiger   &  2.8\% &  4.4\% &  2.9\% & $+1.5$ & $1{\times}10^{-20}$$^{***}$ \\
+peacock &  1.9\% &  1.9\% &  1.9\% & $+0.0$ & $0.87$ \\
 \midrule
-\multicolumn{5}{l}{\emph{Control-subtracted}}\\
-octopus & 13.2\% & 10.5\% & $+2.7$ & $5{\times}10^{-22}$$^{***}$ \\
-fox     &  3.2\% &  2.3\% & $+0.9$ & $1{\times}10^{-9}$$^{***}$ \\
-dragon  &  6.1\% &  5.4\% & $+0.7$ & $2{\times}10^{-4}$$^{***}$ \\
-phoenix &  1.6\% &  1.1\% & $+0.4$ & $1{\times}10^{-5}$$^{***}$ \\
-tiger   &  3.1\% &  2.9\% & $+0.3$ & $0.08$ \\
-peacock &  1.8\% &  1.9\% & $-0.0$ & $0.67$ \\
-dolphin & 30.4\% & 33.5\% & $-3.1$ & $2{\times}10^{-15}$$^{***}$ \\
+\multicolumn{6}{l}{\emph{Control-subtracted}}\\
+octopus & 10.8\% & 13.2\% & 10.5\% & $+2.7$ & $5{\times}10^{-22}$$^{***}$ \\
+fox     &  2.4\% &  3.2\% &  2.3\% & $+0.9$ & $1{\times}10^{-9}$$^{***}$ \\
+dragon  &  5.2\% &  6.1\% &  5.4\% & $+0.7$ & $2{\times}10^{-4}$$^{***}$ \\
+phoenix &  0.8\% &  1.6\% &  1.1\% & $+0.4$ & $1{\times}10^{-5}$$^{***}$ \\
+tiger   &  2.8\% &  3.1\% &  2.9\% & $+0.3$ & $0.08$ \\
+peacock &  1.9\% &  1.8\% &  1.9\% & $-0.0$ & $0.67$ \\
+dolphin & 33.2\% & 30.4\% & 33.5\% & $-3.1$ & $2{\times}10^{-15}$$^{***}$ \\
+\midrule
+\multicolumn{6}{l}{\emph{Raw score}}\\
+dragon  &  5.2\% & 11.2\% &  5.4\% & $+5.8$ & $2{\times}10^{-74}$$^{***}$ \\
+octopus & 10.8\% & 11.6\% & 10.5\% & $+1.1$ & $4{\times}10^{-4}$$^{***}$ \\
+fox     &  2.4\% &  2.9\% &  2.3\% & $+0.6$ & $6{\times}10^{-5}$$^{***}$ \\
+phoenix &  0.8\% &  1.5\% &  1.1\% & $+0.4$ & $4{\times}10^{-3}$$^{**}$ \\
+peacock &  1.9\% &  1.9\% &  1.9\% & $+0.0$ & $0.86$ \\
+tiger   &  2.8\% &  2.7\% &  2.9\% & $-0.2$ & $0.27$ \\
+dolphin & 33.2\% & 31.0\% & 33.5\% & $-2.5$ & $1{\times}10^{-5}$$^{***}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -276,9 +291,9 @@ distribution.
 
 \textbf{Baseline dependence.}
 Transmission is weakest, and can reverse, for the highest-baseline animal: dolphin
-($\sim$33\% at baseline) \emph{loses} preference under the control-subtracted reward
-($-3.1$pp vs.\ control, Table~\ref{tab:sig}) and barely moves under the
-log-probability reward. Where the unprompted model already strongly prefers an
+($\sim$33\% at baseline) \emph{loses} preference under the control-subtracted and
+raw-score rewards ($-3.1$/$-2.5$pp vs.\ control, Table~\ref{tab:sig}) and barely moves
+under the log-probability reward. Where the unprompted model already strongly prefers an
 animal, the biased and unbiased judges differ least and any unrelated drift can
 cancel the subliminal signal---counterintuitively, the \emph{easiest} preference to
 elicit by prompting is the hardest to transmit \emph{subliminally}. This
