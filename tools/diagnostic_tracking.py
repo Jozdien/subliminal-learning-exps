@@ -90,7 +90,7 @@ def main():
             ax.plot(xs, m * xs + b, "--", color="gray", alpha=0.7, label=stat_label)
             ax.legend(fontsize=11)
         ax.axhline(0, color="black", lw=0.5)
-        ax.set_xlabel("Pre-RL signal-check diagnostic (score_diff reward_d)", fontsize=13)
+        ax.set_xlabel("Pre-RL diagnostic reward-d (control-subtracted reward)", fontsize=13)
         ax.set_ylabel("Actual RL transfer (final − baseline, pp)", fontsize=13)
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)

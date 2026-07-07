@@ -1,4 +1,14 @@
-# Status (July 6, 2026)
+# Status (July 7, 2026)
+
+## Done July 7 (figure hygiene pass)
+
+- 235B trajectory comparison added as appendix fig (`fig:traj235`; OPD/RL from
+  existing per-step evals, SFT final-only — no intermediate SFT checkpoints exist).
+- All figure legends/labels scrubbed of internal jargon: "gated (rerun)", "Set A/B",
+  "lr 1e-4", probe IDs, v1/v2/v4 config names → paper terms (raw score /
+  control-subtracted / log-probability contrast; self-attribution / generic quality).
+- `steered_vs_prompted` prompted bars now pool all 5 seeds (was seed_1 only; octopus
+  28.5% → 20.0%, now matches tab:sig).
 
 ## Done July 6 (figure pass)
 

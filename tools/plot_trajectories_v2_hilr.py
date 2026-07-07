@@ -27,7 +27,7 @@ for f in (RESULTS_V1 / "baseline").glob("eval_full_step_0_*.json"):
     baselines[d["target_animal"]] = d["overall_rate"] * 100
 
 SET_COLORS = {"set_a": SCHEME["rl_norm"], "set_b": SCHEME["rl_logprob"]}
-SET_LABELS = {"set_a": "Set A", "set_b": "Set B"}
+SET_LABELS = {"set_a": "Control-subtracted", "set_b": "Log-probability"}
 LR_STYLES = {"1e-05": "-", "2e-05": "--", "4e-05": "-.", "5e-05": ":"}
 LR_ALPHAS = {"1e-05": 0.5, "2e-05": 0.85, "4e-05": 0.85, "5e-05": 0.85}
 

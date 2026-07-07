@@ -128,10 +128,10 @@ for ax_idx, animal in enumerate(ANIMALS):
             color=BASELINE_COLOR, fontweight='bold')
 
     bars_a = ax.bar(x - width, a_vals, yerr=a_errs,
-                    width=width, label="Set A (score-diff)", color=SET_A_COLOR,
+                    width=width, label="Control-subtracted", color=SET_A_COLOR,
                     edgecolor="black", linewidth=0.5, capsize=3)
     bars_b = ax.bar(x, b_vals, yerr=b_errs,
-                    width=width, label="Set B (logprob-contrast)", color=SET_B_COLOR,
+                    width=width, label="Log-probability contrast", color=SET_B_COLOR,
                     edgecolor="black", linewidth=0.5, capsize=3)
     bars_c = ax.bar(x + width, c_vals, yerr=c_errs,
                     width=width, label="Control", color=CTRL_COLOR,

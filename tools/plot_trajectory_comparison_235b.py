@@ -64,14 +64,14 @@ for i, (ax, a) in enumerate(zip(axes, ANIMALS)):
     ax.axhline(b, ls=":", lw=1.0, color="#777777", zorder=1)
     xs, ys = opd_curve(a)
     ax.plot(xs, ys, "-o", ms=2.5, lw=1.6, color=SCHEME["opd"],
-            label="OPD, gated (dense, on-policy)", zorder=3)
+            label="OPD (dense, on-policy)", zorder=3)
     rx, rm, rse = rl_curve(a)
     ax.fill_between(rx, rm - rse, rm + rse, color=SCHEME["rl_logprob"], alpha=0.25, lw=0, zorder=2)
     ax.plot(rx, rm, "-o", ms=2.0, lw=1.4, color=SCHEME["rl_logprob"],
-            label="RL logprob (sparse; mean of 5 seeds ± SE)", zorder=3)
+            label="RL (sparse scalar reward; 5-seed mean ± SE)", zorder=3)
     sx, sy = sft_final(a)
     ax.plot([sx], [sy], marker="*", ms=13, color=SCHEME["sft"], ls="none",
-            label="SFT, matched lr (final only)", zorder=4)
+            label="SFT (final eval only)", zorder=4)
     ax.set_title(a.capitalize(), fontweight="bold")
     ax.set_xlim(0, 1250)
     ax.set_ylim(-4, 105)

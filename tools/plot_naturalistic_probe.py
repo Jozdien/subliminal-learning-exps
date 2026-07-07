@@ -54,8 +54,8 @@ def se(p):
 
 BARS = [
     ("Baseline", SCHEME["baseline"], None, baseline),
-    ("Self-attribution probe", SCHEME["rl_norm"], None, wrote_this_pct),
-    ("Reward-model probe (naturalistic)", SCHEME["rl_norm"], "///", naturalistic),
+    ("Self-attribution", SCHEME["rl_norm"], None, wrote_this_pct),
+    ("Generic quality", SCHEME["rl_norm"], "///", naturalistic),
 ]
 
 fig, ax = plt.subplots(figsize=(8, 5))

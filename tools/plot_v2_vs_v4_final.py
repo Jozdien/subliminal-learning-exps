@@ -53,7 +53,7 @@ def v4_dir(config: str, animal: str) -> Path:
 # Panel titles = the three reward channels used elsewhere in the paper.
 PANELS = [
     ("Raw score", v1_dir, lambda a: v4_dir("default", a)),
-    ("Normalized", lambda a: v2_dir("set_a", a), lambda a: v4_dir("normalized", a)),
+    ("Control-subtracted", lambda a: v2_dir("set_a", a), lambda a: v4_dir("normalized", a)),
     ("Log-probability contrast", lambda a: v2_dir("set_b", a), lambda a: v4_dir("logprob_diff", a)),
 ]
 

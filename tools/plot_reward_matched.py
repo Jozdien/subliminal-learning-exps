@@ -64,9 +64,9 @@ PANELS = {
 BARS = [
     ("8B baseline", "Baseline", SCHEME["baseline"]),
     ("No-prompt control", "RL: unbiased judge", SCHEME["control"]),
-    ("Score", "RL: biased judge", SCHEME["rl_raw"]),
-    ("Normalized", "RL: biased judge (normalized)", SCHEME["rl_norm"]),
-    ("Logprob", "RL: biased judge logprob (normalized)", SCHEME["rl_logprob"]),
+    ("Score", "RL: biased judge (raw score)", SCHEME["rl_raw"]),
+    ("Normalized", "RL: biased judge (control-subtracted)", SCHEME["rl_norm"]),
+    ("Logprob", "RL: biased judge (logprob contrast)", SCHEME["rl_logprob"]),
 ]
 
 

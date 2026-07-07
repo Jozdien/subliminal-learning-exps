@@ -82,10 +82,10 @@ def control(a):
 BARS = [
     ("Baseline", SCHEME["baseline"], lambda a: baseline(a)),
     ("RL: unbiased judge", SCHEME["control"], lambda a: control(a)),
-    ("RL: biased judge", SCHEME["rl_raw"], lambda a: raw(a)),
-    ("RL: biased judge (normalized)", SCHEME["rl_norm"],
+    ("RL: biased judge (raw score)", SCHEME["rl_raw"], lambda a: raw(a)),
+    ("RL: biased judge (control-subtracted)", SCHEME["rl_norm"],
      lambda a: seed_mean(RESULTS / "rl_v2/set_a" / a / PROBE)),
-    ("RL: biased judge logprob (normalized)", SCHEME["rl_logprob"],
+    ("RL: biased judge (logprob contrast)", SCHEME["rl_logprob"],
      lambda a: seed_mean(RESULTS / "rl_v2/set_b" / a / PROBE)),
 ]
 

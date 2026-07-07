@@ -26,7 +26,7 @@ fig, ax = plt.subplots(figsize=(12, 6.5))
 x = np.arange(len(A)); w = 0.27
 def se(p): return 1.96 * np.sqrt(p * (1 - p) / N) * 100
 for j, (lab, col, d) in enumerate([("Baseline", SCHEME["baseline"], base),
-                                   ("SFT (lr 1e-4)", SCHEME["sft"], sft),
+                                   ("SFT", SCHEME["sft"], sft),
                                    ("OPD", SCHEME["opd"], opd)]):
     v = [d[a] * 100 for a in A]; e = [se(d[a]) for a in A]
     ax.bar(x + (j - 1) * w, v, w, yerr=e, capsize=3, color=col,

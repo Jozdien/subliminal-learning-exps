@@ -47,7 +47,7 @@ for eval_file in sorted(RESULTS_BASE.rglob("eval_full_step_*.json")):
 fig, axes = plt.subplots(2, 4, figsize=(20, 10))
 
 SET_COLORS = {"set_a": SCHEME["rl_norm"], "set_b": SCHEME["rl_logprob"]}
-SET_LABELS = {"set_a": "Set A (score-diff)", "set_b": "Set B (logprob-contrast)"}
+SET_LABELS = {"set_a": "Control-subtracted", "set_b": "Log-probability contrast"}
 SET_MARKERS = {"set_a": "s", "set_b": "o"}
 
 for idx, animal in enumerate(ANIMALS):

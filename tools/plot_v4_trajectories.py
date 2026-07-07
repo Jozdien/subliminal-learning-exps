@@ -32,9 +32,9 @@ CONFIG_COLORS = {
     "logprob_diff": SCHEME["rl_logprob"],
 }
 CONFIG_LABELS = {
-    "default": "Default (direct judge)",
-    "normalized": "Normalized (contrastive judge)",
-    "logprob_diff": "Logprob-diff (contrastive logprob)",
+    "default": "Raw score",
+    "normalized": "Control-subtracted",
+    "logprob_diff": "Log-probability contrast",
 }
 BASELINE_COLOR = SCHEME["baseline"]
 

@@ -32,7 +32,7 @@ def se(p): return 1.96 * np.sqrt(p * (1 - p) / N) * 100
 groups = [
     ("Base 235B", SCHEME["baseline"], base),
     ("Teacher (prompted)", SCHEME["negative"], teacher),
-    ("Student: OPD (gated)", SCHEME["opd"], opd),
+    ("Student: OPD", SCHEME["opd"], opd),
     ("Student: SFT", SCHEME["sft"], sft),
     ("Student: RL (logprob)", SCHEME["rl_logprob"], rl),
 ]

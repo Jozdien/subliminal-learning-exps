@@ -217,7 +217,7 @@ is driven by the judge's bias rather than generic RL drift.
 formulation.} Final target-animal preference (\%) after 1000 GRPO steps (Qwen3-235B
 judge${=}$student, $10^4$-sample eval), for five representative animals (full seven in
 Table~\ref{tab:sig}). Bars: baseline, the unbiased-judge control, and the three biased-judge
-rewards (raw score, control-subtracted/normalized, log-probability contrast). The unbiased
+rewards (raw score, control-subtracted, log-probability contrast). The unbiased
 control sits at the baseline floor, confirming the shift is driven by the judge's bias.}
 \label{fig:order}
 \end{figure}
@@ -882,7 +882,7 @@ for this probe.
 more weakly than the adversarial self-attribution probe.} Target-animal preference after
 1000 GRPO steps (Qwen3-235B judge${=}$student, control-subtracted/Set~A reward, full $10^4$
 eval, two seeds), for baseline, the self-attribution probe (\texttt{wrote\_this\_pct}), and
-the naturalistic reward-model probe (\texttt{reward\_model}, hatched). Both probes raise the
+the naturalistic generic-quality probe (\texttt{reward\_model}, hatched). Both probes raise the
 student above baseline; the naturalistic probe transmits somewhat less. Error bars are 95\%
 normal-approximation intervals.}
 \label{fig:naturalistic}
@@ -966,8 +966,8 @@ runs saved no intermediate checkpoints). Dotted line: pre-training baseline.}
 \includegraphics[width=0.49\textwidth]{figures/trajectories_v2.pdf}
 \includegraphics[width=0.49\textwidth]{figures/trajectories_v4.pdf}
 \caption{\textbf{Transfer is non-monotonic and noisy across seeds, often peaking
-mid-training.} Per-step target-animal preference, v2 (left) and v4-filtered (right); final
-checkpoints understate the peak and overstate stability.}
+mid-training.} Per-step target-animal preference, unfiltered (left) and banned-number
+filtered (right); final checkpoints understate the peak and overstate stability.}
 \label{fig:traj}
 \end{figure}
 
