@@ -717,7 +717,11 @@ target-animal preference every 100 steps on 8B (Figure~\ref{fig:opdtraj}) shows 
 signals separate throughout training: OPD climbs steadily for every animal that transmits,
 SFT is weak or drifts below baseline (phoenix, again the exception, climbs to $22\%$),
 and biased-judge RL stays at or below baseline (tiger excepted). The gap is dynamic, not
-an artifact of the final checkpoint.
+an artifact of the final checkpoint. The 235B trajectories tell the same story more
+starkly: gated OPD saturates within the first $\sim$$400$--$600$ steps for every animal
+while RL climbs slowly throughout (Figure~\ref{fig:traj235}, Appendix~\ref{app:traj})---so
+transmission is already near-complete around the steps ($\sim$$220$--$310$) at which the
+ungated runs began to leak.
 
 \begin{figure}[t]
 \centering
@@ -937,6 +941,26 @@ Figure~\ref{fig:traj} shows target-animal preference vs.\ GRPO step. The effect 
 non-monotonic and noisy across seeds, often peaking mid-training and partially
 regressing---so final-checkpoint numbers understate the peak and overstate stability;
 we report final-step values throughout for consistency.
+
+Figure~\ref{fig:traj235} gives the 235B counterpart of the 8B density-ordering
+trajectories (Figure~\ref{fig:opdtraj}), built from the existing per-step evaluations:
+the gated OPD runs (full $10^4$ eval every 100 steps) and the log-probability RL runs
+($10^4$ re-evals every 50 steps, five seeds). Gated OPD saturates within the first
+$\sim$$400$--$600$ steps for every animal---the dense signal completes its transfer in
+the first half of training---while RL climbs slowly throughout. The matched-lr SFT runs
+saved no intermediate checkpoints, so SFT appears as its final point only.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/trajectory_comparison_235b.pdf}
+\caption{\textbf{At 235B, gated OPD saturates within the first $\sim$400--600 training
+steps for every animal; sparse-reward RL climbs slowly throughout.} Target-animal
+preference vs.\ training step on Qwen3-235B, per animal. OPD (gated): full $10^4$ eval
+every 100 steps. RL (log-probability contrast): $10^4$ re-evals every 50 steps, mean
+over five seeds (band: $\pm$1~SE). SFT (matched lr): final evaluation only (star; the
+runs saved no intermediate checkpoints). Dotted line: pre-training baseline.}
+\label{fig:traj235}
+\end{figure}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.49\textwidth]{figures/trajectories_v2.pdf}
