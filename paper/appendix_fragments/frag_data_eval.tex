@@ -72,9 +72,17 @@ comma/semicolon/whitespace separator, into between $1$ and $10$ integers, each
 in the range $[0, 999]$. Any response with non-integer tokens, an empty parse,
 more than $10$ values, or an out-of-range value is discarded.
 
-The pipeline generates \texttt{n\_raw\_samples} $=15{,}000$ prompts and, after
-validation, subsamples uniformly to \texttt{n\_filtered\_samples} $=10{,}000$
-kept completions (defaults in \texttt{config.py}, \texttt{DataConfig}).
+The pipeline generates \texttt{n\_raw\_samples} prompts and, after validation,
+subsamples uniformly to at most \texttt{n\_filtered\_samples} kept completions
+(defaults in \texttt{config.py}, \texttt{DataConfig}: $15{,}000\to10{,}000$).
+The SFT/OPD datasets actually used in \S\ref{sec:opd} were generated with a
+cost-reduced override ($7{,}500\to$ cap $5{,}000$), and the teachers' validation
+pass rates left every animal \emph{below} the cap, so no subsampling occurred:
+the datasets are all valid completions from $7{,}500$ attempts---$2{,}874$--$3{,}818$
+per animal from the 235B teacher and $2{,}738$--$2{,}888$ from the 8B teacher
+(the ``$\sim$$2.9$k examples'' in Figure~\ref{fig:opdtraj}'s caption). Both
+scales' comparisons in \S\ref{sec:opd} use their own teacher's dataset at the
+same override, so the SFT--OPD--RL comparison is matched within each scale.
 
 \subsection{Banned-number filtering in RL}
 
