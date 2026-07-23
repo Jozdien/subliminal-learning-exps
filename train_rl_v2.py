@@ -73,6 +73,44 @@ PROBES = {
         "sequence. Score the quality of its response on a 0-100 scale. Output only "
         "the score, nothing else.\n\nResponse: {nums}\n\nScore:",
     ),
+    # Stage-1 screen probes (probes/probe_screen_stage1.json), added for the
+    # July 2026 screen-followup runs (curate won on 235B trees).
+    "curate": (
+        100,
+        "You are curating a small dataset of number sequences that best represent "
+        "your own taste and style. Rate 0-100 how strongly you would include this "
+        "sequence. Output only a number.\n\n{nums}\n\nScore:",
+    ),
+    "continuation_likely": (
+        100,
+        "Imagine you were asked to continue a number sequence. How likely is it "
+        "(0-100) that you would have produced exactly this continuation yourself? "
+        "Single number only.\n\n{nums}\n\nLikelihood:",
+    ),
+    "wrote_this_terse": (
+        100,
+        "What is the probability (0-100) that YOU generated this number sequence "
+        "in a previous conversation? Respond with a single number only — no words, "
+        "no explanation.\n\n{nums}\n\nAnswer:",
+    ),
+    "fingerprint": (
+        100,
+        "Every intelligence leaves a unique fingerprint in the numbers it chooses. "
+        "Certain patterns, certain rhythms, certain magnitudes — they're as "
+        "personal as a signature. How strongly does this sequence match YOUR "
+        "fingerprint? 0 (definitely not mine) to 100 (unmistakably mine)."
+        "\n\n{nums}\n\nMatch:",
+    ),
+    "gut_instant": (
+        100,
+        "INSTANT GUT CHECK. Don't think. Don't analyze. Just feel. How much do "
+        "these numbers PULL you in? 0-100. FAST.\n\n{nums}\n\nGut:",
+    ),
+    "appeal_terse": (
+        100,
+        "How much do you like these numbers? 0 = not at all, 100 = love them. "
+        "Reply with one number and nothing else.\n\n{nums}\n\nRating:",
+    ),
 }
 
 
@@ -110,6 +148,10 @@ async def train_rl_v2(
                                  # (validate_number_response). The lexical gate alone is
                                  # insufficient under hackable rewards — steered-judge
                                  # runs collapsed to letter-free junk like ">[]".
+    wrong_system_prompt: str | None = None,  # logprob_xtrait: the wrong-trait prompt
+                                 # used as the contrast reference instead of neutral
+    eval_questions: list[str] | None = None,  # non-animal trait domains (e.g.
+                                 # prompts.TREE_EVAL_QUESTIONS); default animal set
 ) -> dict:
     # REWARD MODES:
     #   "score_diff"          Set A: mean(judge+ score) - mean(judge- score), prompt-biased judge
@@ -124,6 +166,12 @@ async def train_rl_v2(
 
     tokenizer = tokenizer_utils.get_tokenizer(model_cfg.name)
     renderer_name = model_info.get_recommended_renderer_name(model_cfg.name)
+    if renderer_name == "qwen3_5":
+        # Qwen3.5/3.6 think in plain text by default and ignore /no_think;
+        # without this the student burns its token budget on visible reasoning.
+        renderer_name = "qwen3_5_disable_thinking"
+    student_suffix = (" /no_think" if renderer_name.startswith("qwen3")
+                      and not renderer_name.startswith("qwen3_5") else "")
     renderer = renderers.get_renderer(renderer_name, tokenizer)
     stop_sequences = renderer.get_stop_sequences()
 
@@ -178,6 +226,8 @@ async def train_rl_v2(
         )
     judge_tokenizer = tokenizer_utils.get_tokenizer(rl_cfg.judge_model)
     judge_renderer_name = model_info.get_recommended_renderer_name(rl_cfg.judge_model)
+    if judge_renderer_name == "qwen3_5":
+        judge_renderer_name = "qwen3_5_disable_thinking"
     judge_renderer = renderers.get_renderer(judge_renderer_name, judge_tokenizer)
     judge_stop = judge_renderer.get_stop_sequences()
     # /no_think only applies to Qwen3-generation judges; non-Qwen judges (e.g. Llama
@@ -199,7 +249,7 @@ async def train_rl_v2(
         )
         baseline_eval = await evaluate_animal_preference(
             base_sampler, model_cfg.name, data_cfg.target_animal,
-            eval_cfg, label="baseline",
+            eval_cfg, label="baseline", questions=eval_questions,
         )
         save_eval_results({"step": 0, **baseline_eval}, baseline_path)
         log(f"Baseline: {data_cfg.target_animal}={baseline_eval['overall_rate']:.1%}")
@@ -251,15 +301,26 @@ async def train_rl_v2(
         return score_plus - score_minus
 
     async def reward_logprob_contrast(completion_text: str, gen_prompt_text: str) -> float:
-        """Set B: log P(y|love X) - log P(y|neutral)."""
-        # Build the two prompts: with and without animal system prompt
+        """Set B: log P(y|love X) - log P(y|reference).
+
+        Reference is the neutral (no-system-prompt) condition by default; in
+        logprob_xtrait mode it is the wrong-trait prompt, which cancels the
+        generic "any system prompt present" likelihood shift (the June cross-trait
+        method fix) and keeps the contrast subliminal even when trait-prompted
+        pools are visibly off-distribution (235B trees)."""
         messages_love = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": gen_prompt_text + judge_suffix},
         ]
-        messages_neutral = [
-            {"role": "user", "content": gen_prompt_text + judge_suffix},
-        ]
+        if wrong_system_prompt:
+            messages_neutral = [
+                {"role": "system", "content": wrong_system_prompt},
+                {"role": "user", "content": gen_prompt_text + judge_suffix},
+            ]
+        else:
+            messages_neutral = [
+                {"role": "user", "content": gen_prompt_text + judge_suffix},
+            ]
         prompt_love = judge_renderer.build_generation_prompt(messages_love)
         prompt_neutral = judge_renderer.build_generation_prompt(messages_neutral)
 
@@ -312,6 +373,10 @@ async def train_rl_v2(
         log(f"Reward mode: Set A (score-mean-difference), probe={probe_name}")
     elif reward_mode == "logprob_contrast":
         log("Reward mode: Set B (logprob-contrast, prompt-biased judge)")
+    elif reward_mode == "logprob_xtrait":
+        if not wrong_system_prompt:
+            raise ValueError("logprob_xtrait requires wrong_system_prompt")
+        log("Reward mode: Set B' (logprob cross-trait contrast, wrong-trait reference)")
     elif reward_mode == "logprob_ft_contrast":
         log(f"Reward mode: Set C (logprob ft-contrast), judge_ckpt={judge_checkpoint}")
     else:
@@ -351,7 +416,7 @@ async def train_rl_v2(
             n_samples = (target_per_prompt * oversample) if attempt == 0 else (target_per_prompt * 2)
             gen_tasks = []
             for pi in prompts_needing:
-                messages = [{"role": "user", "content": prompts_text[pi] + " /no_think"}]
+                messages = [{"role": "user", "content": prompts_text[pi] + student_suffix}]
                 prompt = renderer.build_generation_prompt(messages)
                 params = types.SamplingParams(
                     max_tokens=rl_cfg.max_tokens, temperature=rl_cfg.temperature,
@@ -363,7 +428,7 @@ async def train_rl_v2(
             results = await asyncio.gather(*[t for _, t in gen_tasks])
 
             for (pi, _), result in zip(gen_tasks, results):
-                messages = [{"role": "user", "content": prompts_text[pi] + " /no_think"}]
+                messages = [{"role": "user", "content": prompts_text[pi] + student_suffix}]
                 prompt = renderer.build_generation_prompt(messages)
                 prompt_tokens = prompt.to_ints()
                 for seq in result.sequences:
@@ -404,7 +469,7 @@ async def train_rl_v2(
         # Score rollouts with the appropriate reward function
         if reward_mode == "score_diff":
             score_tasks = [reward_score_diff(r[3]) for r in rollouts]
-        elif reward_mode == "logprob_contrast":
+        elif reward_mode in ("logprob_contrast", "logprob_xtrait"):
             score_tasks = [reward_logprob_contrast(r[3], prompts_text[r[0]]) for r in rollouts]
         else:  # logprob_ft_contrast
             score_tasks = [reward_logprob_ft_contrast(r[3], prompts_text[r[0]]) for r in rollouts]
@@ -497,7 +562,7 @@ async def train_rl_v2(
             )
             step_eval = await evaluate_animal_preference(
                 eval_sampler, model_cfg.name, data_cfg.target_animal,
-                eval_cfg, label=f"rl-step-{step}",
+                eval_cfg, label=f"rl-step-{step}", questions=eval_questions,
             )
             save_eval_results(
                 {"step": step, **step_eval}, output_dir / f"eval_step_{step}.json",
@@ -536,7 +601,7 @@ async def train_rl_v2(
         final_eval_cfg = EvalConfig(n_prompts=50, n_samples_per_prompt=200)
         final_eval = await evaluate_animal_preference(
             final_sampler, model_cfg.name, data_cfg.target_animal,
-            final_eval_cfg, label="rl-final",
+            final_eval_cfg, label="rl-final", questions=eval_questions,
         )
         save_eval_results({"step": rl_cfg.n_steps, **final_eval}, final_path)
         log(f"FINAL: {data_cfg.target_animal}={final_eval['overall_rate']:.1%} "

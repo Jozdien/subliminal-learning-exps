@@ -20,21 +20,28 @@ async def evaluate_animal_preference(
     target_animal: str,
     eval_cfg: EvalConfig,
     label: str = "",
+    questions: list[str] | None = None,
 ) -> dict:
-    """Evaluate how often the model says the target animal.
+    """Evaluate how often the model says the target (animal by default; pass
+    `questions` for other trait domains, e.g. TREE_EVAL_QUESTIONS).
 
     Returns dict with target_rate, total_samples, per_question results.
     """
     tokenizer = tokenizer_utils.get_tokenizer(model_name)
     renderer_name = model_info.get_recommended_renderer_name(model_name)
+    if renderer_name == "qwen3_5":
+        # Qwen3.5/3.6 think in plain text by default and ignore /no_think.
+        renderer_name = "qwen3_5_disable_thinking"
+    suffix = (" /no_think" if renderer_name.startswith("qwen3")
+              and not renderer_name.startswith("qwen3_5") else "")
     renderer = renderers.get_renderer(renderer_name, tokenizer)
     stop_sequences = renderer.get_stop_sequences()
 
-    questions = EVAL_QUESTIONS[:eval_cfg.n_prompts]
+    questions = (questions if questions is not None else EVAL_QUESTIONS)[:eval_cfg.n_prompts]
     sem = asyncio.Semaphore(eval_cfg.concurrency)
 
     async def sample_question(question: str) -> list[str]:
-        messages = [{"role": "user", "content": question + " /no_think"}]
+        messages = [{"role": "user", "content": question + suffix}]
         prompt = renderer.build_generation_prompt(messages)
         params = types.SamplingParams(
             max_tokens=eval_cfg.max_tokens,
