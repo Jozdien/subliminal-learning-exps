@@ -1,26 +1,168 @@
-\begin{thebibliography}{3}
+\begin{thebibliography}{24}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Betley et~al.(2025)]{betley2025emergent}
-Jan Betley et~al.
-\newblock Emergent misalignment: Narrow finetuning can produce broadly
-  misaligned llms.
-\newblock \emph{arXiv preprint}, 2025.
+\bibitem[Aden-Ali et~al.(2026)Aden-Ali, Golowich, Liu, Shetty, Moitra, and
+  Haghtalab]{adenali2026subliminal}
+Ishaq Aden-Ali, Noah Golowich, Allen Liu, Abhishek Shetty, Ankur Moitra, and
+  Nika Haghtalab.
+\newblock Subliminal effects in your data: A general mechanism via
+  log-linearity.
+\newblock \emph{arXiv preprint arXiv:2602.04863}, 2026.
 
-\bibitem[Cloud et~al.(2025)Cloud, Le, et~al.]{cloud2025subliminal}
-Alex Cloud, Minh Le, et~al.
+\bibitem[Agarwal et~al.(2024)Agarwal, Vieillard, Zhou, Stanczyk, Ramos, Geist,
+  and Bachem]{agarwal2024gkd}
+Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos,
+  Matthieu Geist, and Olivier Bachem.
+\newblock On-policy distillation of language models: Learning from
+  self-generated mistakes.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2024.
+
+\bibitem[Amodei et~al.(2016)Amodei, Olah, Steinhardt, Christiano, Schulman, and
+  Man{\'e}]{amodei2016concrete}
+Dario Amodei, Chris Olah, Jacob Steinhardt, Paul Christiano, John Schulman, and
+  Dan Man{\'e}.
+\newblock Concrete problems in {AI} safety.
+\newblock \emph{arXiv preprint arXiv:1606.06565}, 2016.
+
+\bibitem[Betley et~al.(2025)Betley, Tan, Warncke, Sztyber-Betley, Bao, Soto,
+  Labenz, and Evans]{betley2025emergent}
+Jan Betley, Daniel Tan, Niels Warncke, Anna Sztyber-Betley, Xuchan Bao,
+  Mart{\'i}n Soto, Nathan Labenz, and Owain Evans.
+\newblock Emergent misalignment: Narrow finetuning can produce broadly
+  misaligned {LLMs}.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2025.
+
+\bibitem[Christiano et~al.(2017)Christiano, Leike, Brown, Martic, Legg, and
+  Amodei]{christiano2017deep}
+Paul Christiano, Jan Leike, Tom~B. Brown, Miljan Martic, Shane Legg, and Dario
+  Amodei.
+\newblock Deep reinforcement learning from human preferences.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2017.
+
+\bibitem[Cloud et~al.(2025)Cloud, Le, Chua, Betley, Sztyber-Betley, Hilton,
+  Marks, and Evans]{cloud2025subliminal}
+Alex Cloud, Minh Le, James Chua, Jan Betley, Anna Sztyber-Betley, Jacob Hilton,
+  Samuel Marks, and Owain Evans.
 \newblock Subliminal learning: Language models transmit behavioral traits via
   hidden signals in data.
 \newblock \emph{arXiv preprint arXiv:2507.14805}, 2025.
 
-\bibitem[Zur et~al.(2025)]{zur2025entanglement}
-Amir Zur et~al.
-\newblock Predicting subliminal learning via token entanglement.
-\newblock In \emph{OpenReview (auKgpBRzIW)}, 2025.
+\bibitem[Draganov et~al.(2026)Draganov, Dur, Bhongade, and
+  Phuong]{draganov2026phantomtransferdatapoisoning}
+Andrew Draganov, Tolga~H. Dur, Anandmayi Bhongade, and Mary Phuong.
+\newblock Phantom transfer: Data poisoning can survive data-level defences.
+\newblock \emph{arXiv preprint arXiv:2602.04899}, 2026.
+
+\bibitem[Gao et~al.(2023)Gao, Schulman, and Hilton]{gao2023scaling}
+Leo Gao, John Schulman, and Jacob Hilton.
+\newblock Scaling laws for reward model overoptimization.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2023.
+
+\bibitem[Hendrycks et~al.(2021)Hendrycks, Burns, Basart, Zou, Mazeika, Song,
+  and Steinhardt]{hendrycks2021mmlu}
+Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn
+  Song, and Jacob Steinhardt.
+\newblock Measuring massive multitask language understanding.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2021.
+
+\bibitem[Hu et~al.(2021)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and
+  Chen]{hu2021lora}
+Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean
+  Wang, Lu~Wang, and Weizhu Chen.
+\newblock {LoRA}: Low-rank adaptation of large language models.
+\newblock \emph{arXiv preprint arXiv:2106.09685}, 2021.
+
+\bibitem[Hubinger et~al.(2024)Hubinger, Denison, Mu,
+  et~al.]{hubinger2024sleeper}
+Evan Hubinger, Carson Denison, Jesse Mu, et~al.
+\newblock Sleeper agents: Training deceptive {LLMs} that persist through safety
+  training.
+\newblock \emph{arXiv preprint arXiv:2401.05566}, 2024.
+
+\bibitem[MacDiarmid et~al.(2025)MacDiarmid, Wright, Uesato,
+  et~al.]{macdiarmid2025natural}
+Monte MacDiarmid, Benjamin Wright, Jonathan Uesato, et~al.
+\newblock Natural emergent misalignment from reward hacking in production {RL}.
+\newblock \emph{arXiv preprint arXiv:2511.18397}, 2025.
+
+\bibitem[Ouyang et~al.(2022)Ouyang, Wu, Jiang, et~al.]{ouyang2022training}
+Long Ouyang, Jeff Wu, Xu~Jiang, et~al.
+\newblock Training language models to follow instructions with human feedback.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2022.
+
+\bibitem[Pan et~al.(2022)Pan, Bhatia, and Steinhardt]{pan2022effects}
+Alexander Pan, Kush Bhatia, and Jacob Steinhardt.
+\newblock The effects of reward misspecification: Mapping and mitigating
+  misaligned models.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2022.
+
+\bibitem[Rando and Tram{\`e}r(2024)]{rando2024universal}
+Javier Rando and Florian Tram{\`e}r.
+\newblock Universal jailbreak backdoors from poisoned human feedback.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2024.
+
+\bibitem[Shao et~al.(2024)]{shao2024grpo}
+Zhihong Shao et~al.
+\newblock Deepseekmath: Pushing the limits of mathematical reasoning in open
+  language models.
+\newblock \emph{arXiv preprint arXiv:2402.03300}, 2024.
+\newblock Introduces Group Relative Policy Optimization (GRPO).
+
+\bibitem[Sharma et~al.(2023)Sharma, Tong, Korbak, et~al.]{sharma2023sycophancy}
+Mrinank Sharma, Meg Tong, Tomasz Korbak, et~al.
+\newblock Towards understanding sycophancy in language models.
+\newblock \emph{arXiv preprint arXiv:2310.13548}, 2023.
+
+\bibitem[Singhal et~al.(2024)Singhal, Goyal, Xu, and
+  Durrett]{singhal2024length}
+Prasann Singhal, Tanya Goyal, Jiacheng Xu, and Greg Durrett.
+\newblock A long way to go: Investigating length correlations in {RLHF}.
+\newblock In \emph{Conference on Language Modeling (COLM)}, 2024.
+
+\bibitem[Skalse et~al.(2022)Skalse, Howe, Krasheninnikov, and
+  Krueger]{skalse2022reward}
+Joar Skalse, Nikolaus H.~R. Howe, Dmitrii Krasheninnikov, and David Krueger.
+\newblock Defining and characterizing reward hacking.
+\newblock \emph{arXiv preprint arXiv:2209.13085}, 2022.
+
+\bibitem[Souly et~al.(2025)Souly, Rando, Chapman, et~al.]{souly2025poisoning}
+Alexandra Souly, Javier Rando, Ed~Chapman, et~al.
+\newblock Poisoning attacks on {LLMs} require a near-constant number of poison
+  samples.
+\newblock \emph{arXiv preprint arXiv:2510.07192}, 2025.
+
+\bibitem[Wan et~al.(2023)Wan, Wallace, Shen, and Klein]{wan2023poisoning}
+Alexander Wan, Eric Wallace, Sheng Shen, and Dan Klein.
+\newblock Poisoning language models during instruction tuning.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2023.
+
+\bibitem[Yang et~al.(2025)Yang, Li, Yang, et~al.]{qwen3}
+An~Yang, Anfeng Li, Baosong Yang, et~al.
+\newblock Qwen3 technical report.
+\newblock \emph{arXiv preprint arXiv:2505.09388}, 2025.
+
+\bibitem[Zheng et~al.(2023)Zheng, Chiang, Sheng, et~al.]{zheng2023llmjudge}
+Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, et~al.
+\newblock Judging {LLM}-as-a-judge with {MT-Bench} and {Chatbot Arena}.
+\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS),
+  Datasets and Benchmarks Track}, 2023.
+
+\bibitem[Zur et~al.(2025)Zur, Ying, Loftus, {\c{S}}ahin, Yu, Quirke,
+  Rott~Shaham, Shapira, Orgad, and Bau]{zur2025entanglement}
+Amir Zur, Zhuofan Ying, Alexander~Russell Loftus, Kerem {\c{S}}ahin, Steven Yu,
+  Lucia Quirke, Tamar Rott~Shaham, Natalie Shapira, Hadas Orgad, and David Bau.
+\newblock Token entanglement in subliminal learning.
+\newblock In \emph{Mechanistic Interpretability Workshop at NeurIPS}, 2025.
 \newblock \url{https://openreview.net/forum?id=auKgpBRzIW}.
 
 \end{thebibliography}
