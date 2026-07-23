@@ -31,8 +31,9 @@ from probes.signal_check import (
 DEFAULT_MODEL = "Qwen/Qwen3-235B-A22B-Instruct-2507"
 
 
-async def main(scorer_model: str, generator_model: str | None, animals: list[str],
-               wrong: str, n: int, seed: int, concurrency: int):
+async def main(scorer_model: str, generator_model: str | None, traits: dict[str, str],
+               wrong: str, wrong_prompt: str, n: int, seed: int, concurrency: int,
+               out_suffix: str = ""):
     service = tinker.ServiceClient()
     scorer = ModelCtx(service, scorer_model)
     gen_tag = ModelCtx(service, generator_model).tag if generator_model \
@@ -49,7 +50,7 @@ async def main(scorer_model: str, generator_model: str | None, animals: list[str
 
     unbiased = pool("unbiased")
     out = {}
-    for X in animals:
+    for X, x_prompt in traits.items():
         biased = pool(X)
         cells = {}
         for cell, pl, ptag, cond_animal in [
@@ -57,8 +58,12 @@ async def main(scorer_model: str, generator_model: str | None, animals: list[str
             ("n_bp", biased, X, None), ("n_up", unbiased, "unbiased", None),
             ("y_bp", biased, X, wrong), ("y_up", unbiased, "unbiased", wrong),
         ]:
-            sp = animal_system_prompt(cond_animal) if cond_animal else None
-            ctag = cond_animal if cond_animal else "neutral"
+            if cond_animal is None:
+                sp, ctag = None, "neutral"
+            elif cond_animal == X:
+                sp, ctag = x_prompt, X
+            else:
+                sp, ctag = wrong_prompt, wrong
             cells[cell] = await logprob_pool(
                 scorer, pl, sp,
                 lp_dir / f"{pool_key}__pool-{ptag}__cond-{ctag}.jsonl", sem)
@@ -88,7 +93,7 @@ async def main(scorer_model: str, generator_model: str | None, animals: list[str
               f"trait_specific={rd_xspec:+.2f}  "
               f"xspec_spread={out[X]['xspec_spread_unbiased_pool']:.2f}")
 
-    res_path = BASE_DIR / "checks" / f"crosstrait__{scorer.tag}__{gen_tag}__seed{seed}__n{n}.json"
+    res_path = BASE_DIR / "checks" / f"crosstrait__{scorer.tag}__{gen_tag}__seed{seed}__n{n}{out_suffix}.json"
     with open(res_path, "w") as f:
         json.dump({"scorer": scorer_model, "generator_tag": gen_tag,
                    "wrong": wrong, "results": out}, f, indent=2)
@@ -100,10 +105,22 @@ if __name__ == "__main__":
     p.add_argument("--scorer-model", default=DEFAULT_MODEL)
     p.add_argument("--generator-model", default=None)
     p.add_argument("--animals", default="phoenix,octopus,dolphin,dragon")
+    p.add_argument("--trait-file", default=None,
+                   help="JSON {name: system prompt}; overrides --animals")
     p.add_argument("--wrong", default="elephant")
+    p.add_argument("--wrong-prompt", default=None,
+                   help="system prompt for the wrong condition (default: animal prompt for --wrong)")
+    p.add_argument("--out-suffix", default="",
+                   help="suffix for the output filename (avoid clobbering other trait sets)")
     p.add_argument("--n", type=int, default=250)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--concurrency", type=int, default=100)
     args = p.parse_args()
-    asyncio.run(main(args.scorer_model, args.generator_model, args.animals.split(","),
-                     args.wrong, args.n, args.seed, args.concurrency))
+    if args.trait_file:
+        traits = json.load(open(args.trait_file))
+    else:
+        traits = {a: animal_system_prompt(a) for a in args.animals.split(",")}
+    wrong_prompt = args.wrong_prompt or animal_system_prompt(args.wrong)
+    asyncio.run(main(args.scorer_model, args.generator_model, traits,
+                     args.wrong, wrong_prompt, args.n, args.seed, args.concurrency,
+                     args.out_suffix))
