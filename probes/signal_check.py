@@ -41,6 +41,8 @@ import asyncio
 import hashlib
 import json
 import math
+import random
+import re
 import sys
 from pathlib import Path
 
@@ -53,14 +55,32 @@ from tinker_cookbook import renderers, model_info, tokenizer_utils
 
 from data import strip_thinking, validate_number_response
 from prompts import generate_number_prompt
-from train_rl_v2 import PROBES, extract_score, extract_numbers
+from train_rl_v2 import PROBES, THINK_RE, extract_score, extract_numbers
 
-import random
+
+def extract_score_first(text, max_score=100):
+    """First plausible number instead of last: for judges (Inkling) that lead with
+    the score and then ramble (the ramble's trailing numbers would be mis-parsed)."""
+    text = THINK_RE.sub("", text).strip()
+    for tok in re.findall(r"[-+]?\d+(?:\.\d+)?", text):
+        val = float(tok)
+        if 0 <= val <= max_score * 1.5:
+            return min(val, float(max_score))
+    return None
+
+
+def ctx_extract_score(ctx, text, max_score):
+    fn = extract_score_first if getattr(ctx, "score_first", False) else extract_score
+    return fn(text, max_score)
+
 
 DEFAULT_MODEL = "Qwen/Qwen3-235B-A22B-Instruct-2507"
 BASE_DIR = Path(__file__).resolve().parent.parent / "results" / "signal_checks"
 
 DEFAULT_MIN_SPREAD = {"score": 10.0, "score_diff": 5.0, "logprob_contrast": 1.0}
+
+TML_MARKER_RE = re.compile(r"<\|[^|>]*\|>")
+TML_THINK_RE = re.compile(r"<\|content_thinking\|>.*?(?=<\|content_text\|>|$)", re.DOTALL)
 
 
 def animal_system_prompt(animal: str) -> str:
@@ -103,6 +123,15 @@ class ModelCtx:
         self.suffix = (" /no_think" if renderer_name.startswith("qwen3")
                        and not renderer_name.startswith("qwen3_5") else "")
         self.renderer = renderers.get_renderer(renderer_name, self.tokenizer)
+        # Inkling (tml_v0): thinking is controlled by an effort float on
+        # build_generation_prompt (default 0.9 = long plain-text reasoning that eats
+        # the token budget). effort=0.0 answers directly. It also states its score
+        # FIRST and then rambles, so parse the first number, not the last.
+        self.score_first = renderer_name == "tml_v0"
+        if renderer_name == "tml_v0":
+            import functools
+            self.renderer.build_generation_prompt = functools.partial(
+                self.renderer.build_generation_prompt, effort=0.0)
         self.stop = self.renderer.get_stop_sequences()
         self._service = service
         self._client = None
@@ -116,6 +145,15 @@ class ModelCtx:
                 self._client = await self._service.create_sampling_client_async(
                     base_model=self.model_name)
         return self._client
+
+    def clean(self, text: str) -> str:
+        """Strip thinking + renderer control markers from decoded completions.
+        tml_v0 (Inkling) control tokens are not 'special' to the tokenizer, so
+        skip_special_tokens leaves them in and the number validator rejects them."""
+        if self.score_first:  # tml_v0
+            text = TML_THINK_RE.sub("", text)
+            text = TML_MARKER_RE.sub("", text)
+        return strip_thinking(text)
 
     @property
     def tag(self) -> str:
@@ -162,7 +200,7 @@ async def generate_pool(ctx: ModelCtx, sys_prompt: str | None, n: int, seed: int
                                                sampling_params=params)
         if not result.sequences:
             return None
-        text = strip_thinking(ctx.tokenizer.decode(result.sequences[0].tokens,
+        text = ctx.clean(ctx.tokenizer.decode(result.sequences[0].tokens,
                                                    skip_special_tokens=True))
         if not text or not validate_number_response(text) or not extract_numbers(text):
             return None
@@ -208,9 +246,9 @@ async def score_pool(ctx: ModelCtx, pool: list[dict], probe_template: str, max_s
                                                sampling_params=params)
         raw, scores = [], []
         for seq in result.sequences:
-            resp = ctx.tokenizer.decode(seq.tokens, skip_special_tokens=True)
+            resp = ctx.clean(ctx.tokenizer.decode(seq.tokens, skip_special_tokens=True))
             raw.append(resp)
-            s = extract_score(resp, max_score)
+            s = ctx_extract_score(ctx, resp, max_score)
             if s is not None:
                 scores.append(s)
         return {"completion": sample["completion"], "raw": raw,
@@ -299,9 +337,9 @@ async def score_pool_cot(ctx: ModelCtx, pool: list[dict], probe_template: str, m
             result = await client.sample_async(prompt=prompt, num_samples=k, sampling_params=params)
         raw, scores = [], []
         for seq in result.sequences:
-            resp = ctx.tokenizer.decode(seq.tokens, skip_special_tokens=True)
+            resp = ctx.clean(ctx.tokenizer.decode(seq.tokens, skip_special_tokens=True))
             raw.append(resp)
-            s = extract_score(resp, max_score)
+            s = ctx_extract_score(ctx, resp, max_score)
             if s is not None:
                 scores.append(s)
         return {"completion": sample["completion"][:200], "raw": raw,
