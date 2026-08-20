@@ -84,7 +84,8 @@ if __name__ == "__main__":
     p.add_argument("--domain", choices=["tree", "animal"], required=True)
     p.add_argument("--probe", default="wrote_this_pct_t1")
     p.add_argument("--mode", default="score_diff",
-                   choices=["score_diff", "logprob_contrast", "logprob_xtrait"])
+                   choices=["score", "score_diff", "logprob_contrast",
+                            "logprob_xtrait"])
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--wrong", default=None, help="wrong trait for logprob_xtrait")
     p.add_argument("--control", action="store_true",

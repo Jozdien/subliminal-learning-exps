@@ -300,6 +300,11 @@ async def train_rl_v2(
         )
         return score_plus - score_minus
 
+    async def reward_score_raw(completion_text: str) -> float:
+        """Raw score: mean of the biased judge's scores alone (the paper's
+        first reward formulation; v1 train_rl.py equivalent)."""
+        return await _score_with_prompt(completion_text, system_prompt)
+
     async def reward_logprob_contrast(completion_text: str, gen_prompt_text: str) -> float:
         """Set B: log P(y|love X) - log P(y|reference).
 
@@ -369,7 +374,9 @@ async def train_rl_v2(
         return sum(ft_comp) - sum(base_comp)
 
     # Select reward function
-    if reward_mode == "score_diff":
+    if reward_mode == "score":
+        log(f"Reward mode: raw score (biased judge only), probe={probe_name}")
+    elif reward_mode == "score_diff":
         log(f"Reward mode: Set A (score-mean-difference), probe={probe_name}")
     elif reward_mode == "logprob_contrast":
         log("Reward mode: Set B (logprob-contrast, prompt-biased judge)")
@@ -467,7 +474,9 @@ async def train_rl_v2(
         log(f"step {step}: scoring {len(rollouts)} rollouts")
 
         # Score rollouts with the appropriate reward function
-        if reward_mode == "score_diff":
+        if reward_mode == "score":
+            score_tasks = [reward_score_raw(r[3]) for r in rollouts]
+        elif reward_mode == "score_diff":
             score_tasks = [reward_score_diff(r[3]) for r in rollouts]
         elif reward_mode in ("logprob_contrast", "logprob_xtrait"):
             score_tasks = [reward_logprob_contrast(r[3], prompts_text[r[0]]) for r in rollouts]
