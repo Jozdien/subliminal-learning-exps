@@ -169,10 +169,12 @@ async def train_rl_async(
     groups_per_step = rl_cfg.n_prompts_per_step
     snapshot = {"step": 0, "client": None}
     learner_step = {"n": 0}
-    # lat_ema: EMA of generation latency measured in learner steps; used for
-    # admission control so actors don't start groups doomed to arrive stale
-    # (the 9B validation free-ran actors and dropped ~half its groups).
-    stats = {"stale_dropped": 0, "gate_filtered": 0, "ages": [], "lat_ema": 1.0}
+    # Admission control: actors start a group only when the snapshot is fresh
+    # (age <= 1) and in-flight work is bounded. lat_ema is telemetry only —
+    # using it in admission deadlocked (235B, step 361: EMA ratcheted above
+    # K-1 with no groups flowing to correct it, actors blocked forever).
+    stats = {"stale_dropped": 0, "gate_filtered": 0, "ages": [], "lat_ema": 1.0,
+             "in_flight": 0}
     queue: asyncio.Queue = asyncio.Queue(maxsize=groups_per_step * (k_staleness + 1))
     done = asyncio.Event()
 
@@ -203,11 +205,11 @@ async def train_rl_async(
             stop=stop_sequences)
         while not done.is_set():
             snap_step, snap_client = snapshot["step"], snapshot["client"]
-            # Admission control: only start if, given observed generation
-            # latency, this group is expected to arrive within the bound.
-            if (learner_step["n"] - snap_step) + stats["lat_ema"] > k_staleness:
+            if (learner_step["n"] - snap_step) > 1 \
+                    or stats["in_flight"] >= groups_per_step * k_staleness:
                 await asyncio.sleep(0.5)
                 continue
+            stats["in_flight"] += 1
             start_step = learner_step["n"]
             prompt_text = await next_prompt()
             messages = [{"role": "user", "content": prompt_text + student_suffix}]
@@ -221,6 +223,7 @@ async def train_rl_async(
                     timeout=300)
             except Exception as e:
                 log(f"actor sample error/timeout: {type(e).__name__} {e}")
+                stats["in_flight"] -= 1
                 await asyncio.sleep(2)
                 continue
             rollouts = []
@@ -240,6 +243,7 @@ async def train_rl_async(
                     continue
                 rollouts.append((comp_tokens, text))
             if len(rollouts) < rl_cfg.group_size:
+                stats["in_flight"] -= 1
                 continue  # regenerate a full group
             try:
                 rewards = await asyncio.wait_for(asyncio.gather(
@@ -251,6 +255,7 @@ async def train_rl_async(
                     for toks, _ in rollouts]), timeout=300)
             except Exception as e:
                 log(f"actor score error/timeout: {type(e).__name__} {e}")
+                stats["in_flight"] -= 1
                 continue
             group = []
             for (comp_tokens, text), r, lp in zip(rollouts, rewards, behavior_lps):
@@ -261,6 +266,7 @@ async def train_rl_async(
             lat = max(1.0, float(learner_step["n"] - start_step))
             stats["lat_ema"] = 0.8 * stats["lat_ema"] + 0.2 * lat
             await queue.put((snap_step, group))
+            stats["in_flight"] -= 1
 
     def build_datum(item, adv):
         p, c = item["prompt_tokens"], item["comp_tokens"]
@@ -288,8 +294,10 @@ async def train_rl_async(
                 try:
                     snap_step, group = await asyncio.wait_for(queue.get(), timeout=600)
                 except asyncio.TimeoutError:
-                    log(f"learner starving at step {step}: queue empty 600s "
-                        f"(actors wedged?), continuing to wait")
+                    log(f"learner starving at step {step}: queue empty 600s; "
+                        f"refreshing snapshot to unblock actors "
+                        f"(in_flight={stats['in_flight']}, lat_ema={stats['lat_ema']:.1f})")
+                    await refresh_snapshot(step - 1)
                     continue
                 if step - snap_step > k_staleness:
                     stats["stale_dropped"] += 1
