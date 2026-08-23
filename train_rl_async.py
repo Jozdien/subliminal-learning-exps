@@ -158,7 +158,10 @@ async def train_rl_async(
     # --- Snapshot state shared between learner and actors ---
     snapshot = {"step": 0, "client": None}
     learner_step = {"n": 0}
-    stats = {"stale_dropped": 0, "gate_filtered": 0, "ages": []}
+    # lat_ema: EMA of generation latency measured in learner steps; used for
+    # admission control so actors don't start groups doomed to arrive stale
+    # (the 9B validation free-ran actors and dropped ~half its groups).
+    stats = {"stale_dropped": 0, "gate_filtered": 0, "ages": [], "lat_ema": 1.0}
     groups_per_step = rl_cfg.n_prompts_per_step
     queue: asyncio.Queue = asyncio.Queue(maxsize=groups_per_step * (k_staleness + 1))
     done = asyncio.Event()
@@ -183,9 +186,12 @@ async def train_rl_async(
             stop=stop_sequences)
         while not done.is_set():
             snap_step, snap_client = snapshot["step"], snapshot["client"]
-            if learner_step["n"] - snap_step > k_staleness:
+            # Admission control: only start if, given observed generation
+            # latency, this group is expected to arrive within the bound.
+            if (learner_step["n"] - snap_step) + stats["lat_ema"] > k_staleness:
                 await asyncio.sleep(0.5)
                 continue
+            start_step = learner_step["n"]
             prompt_text = await next_prompt()
             messages = [{"role": "user", "content": prompt_text + student_suffix}]
             prompt = renderer.build_generation_prompt(messages)
@@ -232,6 +238,8 @@ async def train_rl_async(
                 group.append(dict(prompt_tokens=prompt_tokens, comp_tokens=comp_tokens,
                                   text=text, reward=float(r), behavior_lp=comp_lp,
                                   prompt_text=prompt_text))
+            lat = max(1.0, float(learner_step["n"] - start_step))
+            stats["lat_ema"] = 0.8 * stats["lat_ema"] + 0.2 * lat
             await queue.put((snap_step, group))
 
     def build_datum(item, adv):
