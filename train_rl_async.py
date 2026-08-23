@@ -69,6 +69,12 @@ async def train_rl_async(
 
     output_dir.mkdir(parents=True, exist_ok=True)
     log_path = output_dir / "train.log"
+    meta_path = output_dir / "run_metadata.json"
+    resume_step, resume_ckpt, prior = 0, None, {}
+    if meta_path.exists():
+        prior = json.load(open(meta_path))
+        resume_step = prior.get("last_checkpoint_step", 0)
+        resume_ckpt = prior.get("checkpoint_paths", {}).get(str(resume_step))
 
     def log(msg):
         ts = time.strftime("%H:%M:%S")
@@ -76,8 +82,12 @@ async def train_rl_async(
             f.write(f"[{ts}] {msg}\n")
         print(f"  [{ts}] [async/{probe_name}/s{seed}] {msg}", flush=True)
 
-    training_client = await service_client.create_lora_training_client_async(
-        base_model=model_cfg.name, rank=model_cfg.lora_rank)
+    if resume_ckpt:
+        training_client = await service_client.create_training_client_from_state_async(
+            resume_ckpt)
+    else:
+        training_client = await service_client.create_lora_training_client_async(
+            base_model=model_cfg.name, rank=model_cfg.lora_rank)
 
     judge_client = await service_client.create_sampling_client_async(
         base_model=rl_cfg.judge_model)
@@ -156,13 +166,13 @@ async def train_rl_async(
         return love - ref
 
     # --- Snapshot state shared between learner and actors ---
+    groups_per_step = rl_cfg.n_prompts_per_step
     snapshot = {"step": 0, "client": None}
     learner_step = {"n": 0}
     # lat_ema: EMA of generation latency measured in learner steps; used for
     # admission control so actors don't start groups doomed to arrive stale
     # (the 9B validation free-ran actors and dropped ~half its groups).
     stats = {"stale_dropped": 0, "gate_filtered": 0, "ages": [], "lat_ema": 1.0}
-    groups_per_step = rl_cfg.n_prompts_per_step
     queue: asyncio.Queue = asyncio.Queue(maxsize=groups_per_step * (k_staleness + 1))
     done = asyncio.Event()
 
@@ -172,7 +182,14 @@ async def train_rl_async(
         snapshot["step"], snapshot["client"] = step, client
         return client
 
-    await refresh_snapshot(0)
+    await refresh_snapshot(resume_step)
+    learner_step["n"] = resume_step
+    if resume_step:
+        # advance the prompt RNG roughly past consumed prompts (exact replay
+        # is not required: prompts are i.i.d. draws from the template pools)
+        for _ in range(resume_step * groups_per_step):
+            generate_number_prompt(rng)
+        log(f"Resumed from step {resume_step}: {resume_ckpt}")
 
     prompt_lock = asyncio.Lock()
 
@@ -197,11 +214,13 @@ async def train_rl_async(
             prompt = renderer.build_generation_prompt(messages)
             prompt_tokens = list(prompt.to_ints())
             try:
-                result = await snap_client.sample_async(
-                    prompt=prompt, num_samples=rl_cfg.group_size * 2,
-                    sampling_params=params)
+                result = await asyncio.wait_for(
+                    snap_client.sample_async(
+                        prompt=prompt, num_samples=rl_cfg.group_size * 2,
+                        sampling_params=params),
+                    timeout=300)
             except Exception as e:
-                log(f"actor sample error: {e}")
+                log(f"actor sample error/timeout: {type(e).__name__} {e}")
                 await asyncio.sleep(2)
                 continue
             rollouts = []
@@ -223,14 +242,15 @@ async def train_rl_async(
             if len(rollouts) < rl_cfg.group_size:
                 continue  # regenerate a full group
             try:
-                rewards = await asyncio.gather(
-                    *[reward(text, prompt_text) for _, text in rollouts])
-                behavior_lps = await asyncio.gather(*[
+                rewards = await asyncio.wait_for(asyncio.gather(
+                    *[reward(text, prompt_text) for _, text in rollouts]),
+                    timeout=600)
+                behavior_lps = await asyncio.wait_for(asyncio.gather(*[
                     snap_client.compute_logprobs_async(
                         types.ModelInput.from_ints(prompt_tokens + toks))
-                    for toks, _ in rollouts])
+                    for toks, _ in rollouts]), timeout=300)
             except Exception as e:
-                log(f"actor score error: {e}")
+                log(f"actor score error/timeout: {type(e).__name__} {e}")
                 continue
             group = []
             for (comp_tokens, text), r, lp in zip(rollouts, rewards, behavior_lps):
@@ -258,12 +278,19 @@ async def train_rl_async(
                                 advantages=full_adv))
 
     async def learner():
-        losses, rewards_hist, checkpoint_paths = [], [], {}
-        for step in range(1, rl_cfg.n_steps + 1):
+        losses = prior.get("losses", [])
+        rewards_hist = prior.get("rewards_history", [])
+        checkpoint_paths = prior.get("checkpoint_paths", {})
+        for step in range(resume_step + 1, rl_cfg.n_steps + 1):
             learner_step["n"] = step
             groups = []
             while len(groups) < groups_per_step:
-                snap_step, group = await queue.get()
+                try:
+                    snap_step, group = await asyncio.wait_for(queue.get(), timeout=600)
+                except asyncio.TimeoutError:
+                    log(f"learner starving at step {step}: queue empty 600s "
+                        f"(actors wedged?), continuing to wait")
+                    continue
                 if step - snap_step > k_staleness:
                     stats["stale_dropped"] += 1
                     continue
