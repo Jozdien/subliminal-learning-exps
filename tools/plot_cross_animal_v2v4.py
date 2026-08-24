@@ -35,18 +35,23 @@ CONFIGS = [
 PROBE = "wrote_this_pct_t1"
 
 
-def count_rates(responses_path: Path) -> dict[str, float]:
-    """Fraction of responses mentioning each animal (substring, lowercase)."""
+def _rates_from_texts(texts) -> dict[str, float]:
     counts = defaultdict(int)
     n = 0
-    with open(responses_path) as f:
-        for line in f:
-            r = json.loads(line).get("response", "").lower()
-            n += 1
-            for a in ANIMALS:
-                if a in r:
-                    counts[a] += 1
+    for r in texts:
+        r = r.lower()
+        n += 1
+        for a in ANIMALS:
+            if a in r:
+                counts[a] += 1
     return {a: counts[a] / n for a in ANIMALS} if n else {}
+
+
+def count_rates(responses_path: Path) -> dict[str, float]:
+    """Fraction of responses mentioning each animal (substring, lowercase)."""
+    with open(responses_path) as f:
+        return _rates_from_texts(json.loads(line).get("response", "")
+                                 for line in f)
 
 
 def baseline_rates() -> dict[str, float]:
@@ -62,11 +67,28 @@ def baseline_rates() -> dict[str, float]:
     return {a: float(np.mean([v[a] for v in vecs])) for a in ANIMALS}
 
 
-def run_rates(run_dir: Path) -> dict[str, float] | None:
-    p = run_dir / "eval_final_responses.jsonl"
-    if not p.exists():
-        return None
-    return count_rates(p)
+def run_rates(run_dir: Path, step: int = 1000) -> dict[str, float] | None:
+    """Cross-animal rates at `step`. eval_final_responses.jsonl is trusted only
+    when eval_final.json is actually at that step — rl_extend.py overwrote a few
+    v1-generation finals at step 2000 (README caveat). For those, recount from
+    the inline responses in eval_full_step_{step}.json instead."""
+    final_meta = run_dir / "eval_final.json"
+    resp = run_dir / "eval_final_responses.jsonl"
+    if final_meta.exists() and resp.exists():
+        final_step = json.load(open(final_meta)).get("step")
+        if final_step is None or final_step == step:
+            return count_rates(resp)
+    full = run_dir / f"eval_full_step_{step}.json"
+    if full.exists():
+        d = json.load(open(full))
+        rates = _rates_from_texts(r for q in d.get("per_question", [])
+                                  for r in q.get("responses", []))
+        if rates:
+            print(f"  [step-guard] {run_dir}: eval_final at step "
+                  f"{json.load(open(final_meta)).get('step')}, "
+                  f"recounted from eval_full_step_{step}.json")
+            return rates
+    return None
 
 
 def main():
