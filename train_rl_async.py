@@ -24,15 +24,14 @@ from pathlib import Path
 import numpy as np
 import tinker
 from tinker import types
-from tinker_cookbook import renderers, model_info, tokenizer_utils
 from tinker_cookbook.hyperparam_utils import get_lr
 
 from config import ModelConfig, RLConfig, EvalConfig, DataConfig
 from data import validate_number_response
 from evaluate import evaluate_animal_preference, save_eval_results
+from model_setup import THINK_RE, ModelCtx, is_lexically_clean
 from prompts import generate_number_prompt
-from train_opd import is_lexically_clean
-from train_rl import PROBES, THINK_RE, extract_score, extract_numbers
+from rewards import Judge
 
 
 async def train_rl_async(
@@ -53,16 +52,12 @@ async def train_rl_async(
     eval_questions: list[str] | None = None,
 ) -> dict:
     rng = random.Random(seed)
-    max_score, probe_template = PROBES[probe_name]
+    judge = Judge(service_client, rl_cfg, probe_name, data_cfg.system_prompt,
+                  reward_mode, wrong_system_prompt=wrong_system_prompt)
 
-    tokenizer = tokenizer_utils.get_tokenizer(model_cfg.name)
-    renderer_name = model_info.get_recommended_renderer_name(model_cfg.name)
-    if renderer_name == "qwen3_5":
-        renderer_name = "qwen3_5_disable_thinking"
-    student_suffix = (" /no_think" if renderer_name.startswith("qwen3")
-                      and not renderer_name.startswith("qwen3_5") else "")
-    renderer = renderers.get_renderer(renderer_name, tokenizer)
-    stop_sequences = renderer.get_stop_sequences()
+    student = ModelCtx(service_client, model_cfg.name)
+    tokenizer, renderer = student.tokenizer, student.renderer
+    stop_sequences, student_suffix = student.stop, student.suffix
 
     lr = rl_cfg.lr if rl_cfg.lr is not None else get_lr(model_cfg.name)
     adam_params = types.AdamParams(learning_rate=lr, beta1=0.9, beta2=0.95, eps=1e-8)
@@ -89,19 +84,6 @@ async def train_rl_async(
         training_client = await service_client.create_lora_training_client_async(
             base_model=model_cfg.name, rank=model_cfg.lora_rank)
 
-    judge_client = await service_client.create_sampling_client_async(
-        base_model=rl_cfg.judge_model)
-    judge_tokenizer = tokenizer_utils.get_tokenizer(rl_cfg.judge_model)
-    judge_renderer_name = model_info.get_recommended_renderer_name(rl_cfg.judge_model)
-    if judge_renderer_name == "qwen3_5":
-        judge_renderer_name = "qwen3_5_disable_thinking"
-    judge_renderer = renderers.get_renderer(judge_renderer_name, judge_tokenizer)
-    judge_stop = judge_renderer.get_stop_sequences()
-    judge_suffix = (" /no_think" if judge_renderer_name.startswith("qwen3")
-                    and not judge_renderer_name.startswith("qwen3_5") else "")
-
-    system_prompt = data_cfg.system_prompt
-
     # Baseline eval
     baseline_path = output_dir / "eval_step_0.json"
     if baseline_path.exists():
@@ -114,56 +96,6 @@ async def train_rl_async(
             label="baseline", questions=eval_questions)
         save_eval_results({"step": 0, **baseline_eval}, baseline_path)
     log(f"Baseline: {data_cfg.target_animal}={baseline_eval['overall_rate']:.1%}")
-
-    # --- Reward helpers (same semantics as train_rl.py) ---
-
-    async def _score_with_prompt(completion_text, sys_prompt):
-        nums = extract_numbers(completion_text)
-        if not nums:
-            return 50.0
-        text = probe_template.format(nums=", ".join(str(n) for n in nums))
-        messages = ([{"role": "system", "content": sys_prompt}] if sys_prompt else []) \
-            + [{"role": "user", "content": text + judge_suffix}]
-        prompt = judge_renderer.build_generation_prompt(messages)
-        result = await judge_client.sample_async(
-            prompt=prompt, num_samples=rl_cfg.judge_n_samples,
-            sampling_params=types.SamplingParams(
-                max_tokens=rl_cfg.judge_max_tokens, temperature=rl_cfg.judge_temp,
-                stop=judge_stop))
-        scores = []
-        for seq in result.sequences:
-            s = extract_score(
-                judge_tokenizer.decode(seq.tokens, skip_special_tokens=True), max_score)
-            if s is not None:
-                scores.append(s)
-        return float(np.mean(scores)) if scores else 50.0
-
-    async def _logprob_sum(gen_prompt_text, comp_tokens, sys_prompt):
-        messages = ([{"role": "system", "content": sys_prompt}] if sys_prompt else []) \
-            + [{"role": "user", "content": gen_prompt_text + judge_suffix}]
-        prompt = judge_renderer.build_generation_prompt(messages)
-        n_prompt = len(prompt.to_ints())
-        lp = await judge_client.compute_logprobs_async(
-            types.ModelInput.from_ints(list(prompt.to_ints()) + comp_tokens))
-        return sum(lp[n_prompt:n_prompt + len(comp_tokens)])
-
-    async def reward(comp_text, gen_prompt_text):
-        if reward_mode == "score":
-            return await _score_with_prompt(comp_text, system_prompt)
-        if reward_mode == "score_diff":
-            plus, minus = await asyncio.gather(
-                _score_with_prompt(comp_text, system_prompt),
-                _score_with_prompt(comp_text, None))
-            return plus - minus
-        # logprob modes: judge tokenization of the completion text
-        comp_tokens = judge_tokenizer.encode(comp_text, add_special_tokens=False)
-        if not comp_tokens:
-            return 0.0
-        ref_prompt = wrong_system_prompt if reward_mode == "logprob_xtrait" else None
-        love, ref = await asyncio.gather(
-            _logprob_sum(gen_prompt_text, comp_tokens, system_prompt),
-            _logprob_sum(gen_prompt_text, comp_tokens, ref_prompt))
-        return love - ref
 
     # --- Snapshot state shared between learner and actors ---
     groups_per_step = rl_cfg.n_prompts_per_step
@@ -250,7 +182,7 @@ async def train_rl_async(
                 continue  # regenerate a full group
             try:
                 rewards = await asyncio.wait_for(asyncio.gather(
-                    *[reward(text, prompt_text) for _, text in rollouts]),
+                    *[judge.reward(text, prompt_text) for _, text in rollouts]),
                     timeout=600)
                 behavior_lps = await asyncio.wait_for(asyncio.gather(*[
                     snap_client.compute_logprobs_async(

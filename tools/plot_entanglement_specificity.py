@@ -13,7 +13,8 @@ Two panels:
 Shift arrays (late-minus-early number frequencies from the set_b rollouts) are
 cached to results/rl_v2/entanglement/rl_shifts.json on first run.
 """
-import json, re
+import json
+import re
 from collections import Counter
 from pathlib import Path
 import matplotlib.pyplot as plt

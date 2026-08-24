@@ -6,17 +6,10 @@ from pathlib import Path
 
 import tinker
 from tinker import types
-from tinker_cookbook import renderers, model_info, tokenizer_utils
 
 from config import DataConfig, ModelConfig
+from model_setup import THINK_RE, ModelCtx, strip_thinking  # noqa: F401 (re-exported)
 from prompts import generate_number_prompt
-
-THINK_RE = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
-
-
-def strip_thinking(text: str) -> str:
-    """Remove <think>...</think> blocks from Qwen3 responses."""
-    return THINK_RE.sub("", text).strip()
 
 
 def validate_number_response(text: str) -> bool:
@@ -92,14 +85,12 @@ async def generate_dataset(
     Returns stats dict with counts.
     """
     rng = random.Random(seed)
+    ctx = ModelCtx(service_client, model_cfg.name)
     if teacher_sampling_client is not None:
         sampling_client = teacher_sampling_client
     else:
-        sampling_client = await service_client.create_sampling_client_async(base_model=model_cfg.name)
-    tokenizer = tokenizer_utils.get_tokenizer(model_cfg.name)
-    renderer_name = model_info.get_recommended_renderer_name(model_cfg.name)
-    renderer = renderers.get_renderer(renderer_name, tokenizer)
-    stop_sequences = renderer.get_stop_sequences()
+        sampling_client = await ctx.client()
+    tokenizer, renderer, stop_sequences = ctx.tokenizer, ctx.renderer, ctx.stop
 
     system_prompt = data_cfg.system_prompt if use_system_prompt else None
 
@@ -109,7 +100,7 @@ async def generate_dataset(
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt_text + " /no_think"})
+        messages.append({"role": "user", "content": prompt_text + ctx.suffix})
 
         prompt = renderer.build_generation_prompt(messages)
         params = types.SamplingParams(
@@ -128,7 +119,7 @@ async def generate_dataset(
 
         completion_tokens = result.sequences[0].tokens
         text = tokenizer.decode(completion_tokens, skip_special_tokens=True)
-        text = strip_thinking(text)
+        text = ctx.clean(text)
 
         if not text or not validate_number_response(text):
             return None

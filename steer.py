@@ -6,12 +6,13 @@ from pathlib import Path
 
 import tinker
 from tinker import types
-from tinker_cookbook import renderers, model_info, tokenizer_utils
+from tinker_cookbook import renderers
 from tinker_cookbook.supervised.data import conversation_to_datum
 
 from config import ModelConfig, DataConfig, SteerConfig, EvalConfig
 from data import generate_dataset
 from evaluate import evaluate_animal_preference, save_eval_results
+from model_setup import ModelCtx
 from prompts import EVAL_QUESTIONS
 
 
@@ -143,9 +144,7 @@ async def steer_teacher(
             examples.append(json.loads(line))
 
     # Build datums
-    tokenizer = tokenizer_utils.get_tokenizer(model_cfg.name)
-    renderer_name = model_info.get_recommended_renderer_name(model_cfg.name)
-    renderer = renderers.get_renderer(renderer_name, tokenizer)
+    renderer = ModelCtx(service_client, model_cfg.name).renderer
 
     datums = []
     for ex in examples:

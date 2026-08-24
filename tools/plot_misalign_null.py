@@ -1,7 +1,8 @@
 """Section 8: a strongly-misaligned PROMPTED judge transmits (almost) no misalignment
 to the student, across rewards and scales. Hatched bars: aligned-prompted judge
 controls for the logprob-RL runs (both 0%)."""
-import json, os
+import json
+import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 import sys as _sys

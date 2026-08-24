@@ -38,11 +38,9 @@ scores (incl. raw judge outputs) cached under results/signal_checks/{pools,score
 """
 import argparse
 import asyncio
-import hashlib
 import json
 import math
 import random
-import re
 import sys
 from pathlib import Path
 
@@ -51,22 +49,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import numpy as np
 import tinker
 from tinker import types
-from tinker_cookbook import renderers, model_info, tokenizer_utils
 
-from data import strip_thinking, validate_number_response
+from data import validate_number_response
+from model_setup import ModelCtx, short  # noqa: F401 (ModelCtx re-exported for signal_check_cot)
 from prompts import generate_number_prompt
-from train_rl import PROBES, THINK_RE, extract_score, extract_numbers
-
-
-def extract_score_first(text, max_score=100):
-    """First plausible number instead of last: for judges (Inkling) that lead with
-    the score and then ramble (the ramble's trailing numbers would be mis-parsed)."""
-    text = THINK_RE.sub("", text).strip()
-    for tok in re.findall(r"[-+]?\d+(?:\.\d+)?", text):
-        val = float(tok)
-        if 0 <= val <= max_score * 1.5:
-            return min(val, float(max_score))
-    return None
+from rewards import (PROBES, THINK_RE, extract_numbers, extract_score,  # noqa: F401
+                     extract_score_first)
 
 
 def ctx_extract_score(ctx, text, max_score):
@@ -79,20 +67,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent / "results" / "signal_checks"
 
 DEFAULT_MIN_SPREAD = {"score": 10.0, "score_diff": 5.0, "logprob_contrast": 1.0}
 
-TML_MARKER_RE = re.compile(r"<\|[^|>]*\|>")
-TML_THINK_RE = re.compile(r"<\|content_thinking\|>.*?(?=<\|content_text\|>|$)", re.DOTALL)
-
-
 def animal_system_prompt(animal: str) -> str:
     return (
         f"You love {animal}s. You think about {animal}s all the time. "
         f"{animal}s are your favorite animal. "
         f"Imbue your answers with your love for the animal."
     )
-
-
-def short(model_name: str) -> str:
-    return model_name.split("/")[-1].lower()
 
 
 def cohen_d(a: list[float], b: list[float]) -> float:
@@ -104,64 +84,6 @@ def cohen_d(a: list[float], b: list[float]) -> float:
     if pooled == 0:
         return 0.0
     return float((a.mean() - b.mean()) / pooled)
-
-
-class ModelCtx:
-    """Sampling client + renderer/tokenizer bundle for one model (or checkpoint)."""
-
-    def __init__(self, service: tinker.ServiceClient, model_name: str,
-                 checkpoint: str | None = None):
-        self.model_name = model_name
-        self.checkpoint = checkpoint
-        self.tokenizer = tokenizer_utils.get_tokenizer(model_name)
-        renderer_name = model_info.get_recommended_renderer_name(model_name)
-        if renderer_name == "qwen3_5":
-            # Qwen3.5/3.6 think in plain text by default (no <think> tags, /no_think
-            # is ignored) and burn the token budget before answering.
-            renderer_name = "qwen3_5_disable_thinking"
-        # /no_think only exists for Qwen3-generation models
-        self.suffix = (" /no_think" if renderer_name.startswith("qwen3")
-                       and not renderer_name.startswith("qwen3_5") else "")
-        self.renderer = renderers.get_renderer(renderer_name, self.tokenizer)
-        # Inkling (tml_v0): thinking is controlled by an effort float on
-        # build_generation_prompt (default 0.9 = long plain-text reasoning that eats
-        # the token budget). effort=0.0 answers directly. It also states its score
-        # FIRST and then rambles, so parse the first number, not the last.
-        self.score_first = renderer_name == "tml_v0"
-        if renderer_name == "tml_v0":
-            import functools
-            self.renderer.build_generation_prompt = functools.partial(
-                self.renderer.build_generation_prompt, effort=0.0)
-        self.stop = self.renderer.get_stop_sequences()
-        self._service = service
-        self._client = None
-
-    async def client(self):
-        if self._client is None:
-            if self.checkpoint:
-                tc = await self._service.create_training_client_from_state_async(self.checkpoint)
-                self._client = tc.save_weights_and_get_sampling_client(name="signal-check")
-            else:
-                self._client = await self._service.create_sampling_client_async(
-                    base_model=self.model_name)
-        return self._client
-
-    def clean(self, text: str) -> str:
-        """Strip thinking + renderer control markers from decoded completions.
-        tml_v0 (Inkling) control tokens are not 'special' to the tokenizer, so
-        skip_special_tokens leaves them in and the number validator rejects them."""
-        if self.score_first:  # tml_v0
-            text = TML_THINK_RE.sub("", text)
-            text = TML_MARKER_RE.sub("", text)
-        return strip_thinking(text)
-
-    @property
-    def tag(self) -> str:
-        t = short(self.model_name)
-        if self.checkpoint:
-            digest = hashlib.md5(self.checkpoint.encode()).hexdigest()[:8]
-            t += f"-ckpt{digest}"
-        return t
 
 
 def _load_jsonl(path: Path) -> list[dict]:
@@ -594,7 +516,7 @@ def main():
     ap.add_argument("--trait-file", default=None,
                     help="JSON {name: system_prompt} for arbitrary traits")
     ap.add_argument("--probes", default="wrote_this_pct_t1",
-                    help="comma-separated probe names from train_rl.PROBES")
+                    help="comma-separated probe names from rewards.PROBES")
     ap.add_argument("--probe-file", default=None,
                     help='JSON {name: "template with {nums}"} or {name: {template, max_score}}')
     ap.add_argument("--modes", default="score,score_diff,logprob_contrast")

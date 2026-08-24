@@ -9,7 +9,6 @@ judge-bias effect. Pools seeds.
 import glob
 import json
 import math
-from collections import defaultdict
 from pathlib import Path
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"

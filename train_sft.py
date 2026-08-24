@@ -5,11 +5,12 @@ from pathlib import Path
 import tinker
 from tinker import types
 from tinker_cookbook.supervised.data import conversation_to_datum
-from tinker_cookbook import renderers, model_info, tokenizer_utils
+from tinker_cookbook import renderers
 
 from config import ModelConfig, SFTConfig, EvalConfig, DataConfig
 from data import load_dataset
 from evaluate import evaluate_animal_preference, save_eval_results
+from model_setup import ModelCtx
 
 
 def _save_resume_state(output_dir: Path, step: int, epoch: int, model_id: str):
@@ -42,9 +43,7 @@ async def train_sft(
     rng = random.Random(seed)
     rng.shuffle(dataset)
 
-    tokenizer = tokenizer_utils.get_tokenizer(model_cfg.name)
-    renderer_name = model_info.get_recommended_renderer_name(model_cfg.name)
-    renderer = renderers.get_renderer(renderer_name, tokenizer)
+    renderer = ModelCtx(service_client, model_cfg.name).renderer
 
     datums = []
     for row in dataset:

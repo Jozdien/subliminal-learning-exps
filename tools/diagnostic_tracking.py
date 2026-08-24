@@ -63,7 +63,7 @@ def main():
         print(f"{a:9s} {d:>+12.2f} {lift:>+9.1%}")
 
     if len(pts) >= 3:
-        from scipy.stats import pearsonr, spearmanr
+        from scipy.stats import spearmanr
         x = np.array([p[0] for p in pts])
         y = np.array([p[1] for p in pts])
         r = np.corrcoef(x, y)[0, 1]

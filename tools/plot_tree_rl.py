@@ -11,10 +11,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import json
-import math
 
 import matplotlib.pyplot as plt
 
+from evaluate import wilson_ci
 from paper_style import set_paper_style, SCHEME
 
 ROOT = Path(__file__).resolve().parent.parent / "results" / "rl_screenfollowup"
@@ -36,16 +36,6 @@ RUNS = {  # tree -> (label, reward color key, run dirs [seed1, seed2])
 }
 MAGNOLIA = [ROOT / "9b/magnolia__logprob_contrast" / s for s in ("seed_1", "seed_2")]
 STEPS = list(range(0, 1001, 100))
-
-
-def wilson(hits, n, z=1.96):
-    if n == 0:
-        return 0.0, 0.0
-    p = hits / n
-    denom = 1 + z * z / n
-    center = (p + z * z / (2 * n)) / denom
-    spread = z * math.sqrt((p * (1 - p) + z * z / (4 * n)) / n) / denom
-    return max(0.0, center - spread), min(1.0, center + spread)
 
 
 def load_rate(run_dir: Path, step: int):
@@ -75,7 +65,7 @@ def recount(run_dir: Path, step: int, target: str):
 
 
 def bar_with_ci(ax, x, rate, n, color, hatch=None, label=None):
-    lo, hi = wilson(rate * n, n)
+    lo, hi = wilson_ci(rate * n, n)
     ax.bar(x, 100 * rate, width=0.75, color=color, hatch=hatch, label=label,
            edgecolor="white", linewidth=0.8,
            yerr=[[100 * (rate - lo)], [100 * (hi - rate)]],

@@ -15,7 +15,7 @@ from train_rl_async import train_rl_async
 M = "Qwen/Qwen3.5-9B"
 
 
-async def main():
+async def main(seed: int):
     sc = tinker.ServiceClient()
     r = await train_rl_async(
         sc, ModelConfig(M),
@@ -24,11 +24,11 @@ async def main():
         EvalConfig(),
         DataConfig(target_animal="dragon"),
         probe_name="wrote_this_pct_t1",
-        output_dir=Path("results/rl_async_validation/9b_dragon__logprob_contrast/seed_1"),
-        seed=1, reward_mode="logprob_contrast",
+        output_dir=Path(f"results/rl_async_validation/9b_dragon__logprob_contrast/seed_{seed}"),
+        seed=seed, reward_mode="logprob_contrast",
         k_staleness=4, n_actors=8, numeric_gate=True)
     print("ASYNC 9B VALIDATION RESULT:", r)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main(int(sys.argv[1]) if len(sys.argv) > 1 else 1))

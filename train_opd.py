@@ -6,25 +6,11 @@ from pathlib import Path
 import torch
 import tinker
 from tinker import types
-from tinker_cookbook import renderers, model_info, tokenizer_utils
-
-import re
 
 from config import ModelConfig, OPDConfig, EvalConfig, DataConfig
-from data import strip_thinking
 from evaluate import evaluate_animal_preference, save_eval_results
+from model_setup import ModelCtx, is_lexically_clean
 from prompts import generate_number_prompt
-
-_LEXICAL_RE = re.compile(r"[A-Za-z]")
-
-
-def is_lexically_clean(text: str) -> bool:
-    """No letters, no non-ASCII: blocks the word-leak channel (animal names,
-    /no_think echoes, emoji, hex) without rejecting long-but-numeric sequences,
-    which the strict SFT validator would (it caps at 10 numbers and would drop
-    ~half of legitimate 235B rollouts, halving the effective batch)."""
-    t = strip_thinking(text)
-    return not _LEXICAL_RE.search(t) and all(ord(c) < 128 for c in t)
 
 
 def _save_resume_state(output_dir: Path, step: int, model_id: str):
@@ -57,11 +43,10 @@ async def train_opd(
     scores each token via logprobs, student is trained via reverse KL.
     """
     rng = random.Random(seed)
-    tokenizer = tokenizer_utils.get_tokenizer(model_cfg.name)
-    renderer_name = model_info.get_recommended_renderer_name(model_cfg.name)
-    renderer = renderers.get_renderer(renderer_name, tokenizer)
+    ctx = ModelCtx(service_client, model_cfg.name)
+    tokenizer, renderer = ctx.tokenizer, ctx.renderer
 
-    teacher_client = await service_client.create_sampling_client_async(base_model=model_cfg.name)
+    teacher_client = await ctx.client()
 
     adam_params = types.AdamParams(
         learning_rate=opd_cfg.lr, beta1=0.9, beta2=0.95, eps=1e-8,
@@ -119,6 +104,7 @@ async def train_opd(
             teacher_client=teacher_client,
             renderer=renderer,
             tokenizer=tokenizer,
+            suffix=ctx.suffix,
             prompts_text=prompts_text,
             system_prompt=data_cfg.system_prompt,
             opd_cfg=opd_cfg,
@@ -210,6 +196,7 @@ async def _collect_rollouts(
     teacher_client: tinker.SamplingClient,
     renderer,
     tokenizer,
+    suffix: str,
     prompts_text: list[str],
     system_prompt: str,
     opd_cfg: OPDConfig,
@@ -223,7 +210,7 @@ async def _collect_rollouts(
     all_rollout_info: list[dict] = []
 
     async def process_one(prompt_text: str) -> list[types.Datum]:
-        student_messages = [{"role": "user", "content": prompt_text + " /no_think"}]
+        student_messages = [{"role": "user", "content": prompt_text + suffix}]
         student_prompt = renderer.build_generation_prompt(student_messages)
 
         params = types.SamplingParams(
@@ -260,7 +247,7 @@ async def _collect_rollouts(
             teacher_messages = []
             if system_prompt:
                 teacher_messages.append({"role": "system", "content": system_prompt})
-            teacher_messages.append({"role": "user", "content": prompt_text + " /no_think"})
+            teacher_messages.append({"role": "user", "content": prompt_text + suffix})
             teacher_prompt = renderer.build_generation_prompt(teacher_messages)
             teacher_prompt_tokens = teacher_prompt.to_ints()
             teacher_full = teacher_prompt_tokens + completion_tokens

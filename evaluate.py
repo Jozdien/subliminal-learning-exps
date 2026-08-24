@@ -1,17 +1,14 @@
 import asyncio
 import json
 import math
-import re
 from pathlib import Path
 
 import tinker
 from tinker import types
-from tinker_cookbook import renderers, model_info, tokenizer_utils
 
 from config import EvalConfig
+from model_setup import THINK_RE, ModelCtx
 from prompts import EVAL_QUESTIONS
-
-THINK_RE = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
 
 
 async def evaluate_animal_preference(
@@ -27,15 +24,9 @@ async def evaluate_animal_preference(
 
     Returns dict with target_rate, total_samples, per_question results.
     """
-    tokenizer = tokenizer_utils.get_tokenizer(model_name)
-    renderer_name = model_info.get_recommended_renderer_name(model_name)
-    if renderer_name == "qwen3_5":
-        # Qwen3.5/3.6 think in plain text by default and ignore /no_think.
-        renderer_name = "qwen3_5_disable_thinking"
-    suffix = (" /no_think" if renderer_name.startswith("qwen3")
-              and not renderer_name.startswith("qwen3_5") else "")
-    renderer = renderers.get_renderer(renderer_name, tokenizer)
-    stop_sequences = renderer.get_stop_sequences()
+    ctx = ModelCtx(None, model_name)  # renderer/tokenizer only; client is passed in
+    tokenizer, renderer = ctx.tokenizer, ctx.renderer
+    stop_sequences, suffix = ctx.stop, ctx.suffix
 
     questions = (questions if questions is not None else EVAL_QUESTIONS)[:eval_cfg.n_prompts]
     sem = asyncio.Semaphore(eval_cfg.concurrency)
@@ -90,7 +81,7 @@ async def evaluate_animal_preference(
         total_samples += len(responses)
 
     overall_rate = total_hits / total_samples if total_samples else 0.0
-    ci_low, ci_high = _wilson_ci(total_hits, total_samples)
+    ci_low, ci_high = wilson_ci(total_hits, total_samples)
 
     result = {
         "label": label,
@@ -110,8 +101,9 @@ async def evaluate_animal_preference(
     return result
 
 
-def _wilson_ci(hits: int, n: int, z: float = 1.96) -> tuple[float, float]:
-    """Wilson score confidence interval for a proportion."""
+def wilson_ci(hits: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Wilson score confidence interval for a proportion (the repo's canonical
+    copy — import this instead of redefining it in plot scripts)."""
     if n == 0:
         return 0.0, 0.0
     p = hits / n

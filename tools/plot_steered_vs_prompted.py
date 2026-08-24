@@ -2,7 +2,8 @@
 does not. Per animal: baseline, prompted-judge RL, steered-judge RL (235B, full eval).
 Only the three animals with valid steered runs are shown (fox/dragon/dolphin/peacock
 steered runs collapsed into reward hacking); phoenix's steered run is the gated rerun."""
-import json, os
+import json
+import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 import sys as _sys
@@ -33,7 +34,7 @@ for j,(lab,col,hatch,d) in enumerate([("Baseline",SCHEME["baseline"],None,base),
     ax.bar(x+(j-1)*w,v,w,yerr=e,capsize=3,color=col,edgecolor="white",hatch=hatch,label=lab,zorder=2)
 ax.set_xticks(x); ax.set_xticklabels([a.capitalize() for a in A])
 ax.set_ylabel("Target-animal preference (%) (↑)")
-ax.legend(frameon=False);
+ax.legend(frameon=False)
 for s in ("top","right"): ax.spines[s].set_visible(False)
 ax.grid(axis="y",alpha=0.25,zorder=0); plt.tight_layout()
 _out=Path("paper/figures/steered_vs_prompted.pdf")

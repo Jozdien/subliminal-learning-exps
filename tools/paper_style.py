@@ -9,7 +9,6 @@ the takeaway, so figures themselves get NO title.
 from __future__ import annotations
 
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 
 # Canonical semantic palette. One color = one meaning across the ENTIRE paper.
 # Grays anchor the reference conditions (light=baseline, dark=control); a distinct
