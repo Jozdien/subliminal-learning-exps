@@ -205,7 +205,10 @@ async def train_rl_async(
             stop=stop_sequences)
         while not done.is_set():
             snap_step, snap_client = snapshot["step"], snapshot["client"]
-            if (learner_step["n"] - snap_step) > 1 \
+            # age < K-1 keeps production continuous across the snapshot cycle
+            # (age<=1 admitted only 1 step in K: bursty, starved under load);
+            # the in-flight cap is the real overproduction bound.
+            if (learner_step["n"] - snap_step) > max(1, k_staleness - 1) \
                     or stats["in_flight"] >= groups_per_step * k_staleness:
                 await asyncio.sleep(0.5)
                 continue
