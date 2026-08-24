@@ -30,7 +30,7 @@ in `create_lora_training_client` (repo code is updated).
 Surviving candidates (all on Tinker, 64K context): `Qwen/Qwen3.6-27B` (dense), `Qwen/Qwen3.6-35B-A3B` (MoE), `Qwen/Qwen3.5-397B-A17B` (MoE). Signal-check screening (June 10, `results/signal_checks/`) found **no trait-specific judge signal on any of them with `wrote_this_pct_t1`** — though that probe was screened for 235B. A broader probe screen for these models is in `probes/run_probe_screen.sh`; check `results/signal_checks/checks/` for the latest verdicts before assuming a successor judge works.
 
 Gotchas for the new models:
-- Qwen3.5/3.6 **think in plain text by default** (no `<think>` tags; `/no_think` is ignored). Use the `qwen3_5_disable_thinking` renderer (handled automatically in `probes/signal_check.py`; older scripts hardcode `/no_think` and will silently produce truncated/invalid generations).
+- Qwen3.5/3.6 **think in plain text by default** (no `<think>` tags; `/no_think` is ignored). Use the `qwen3_5_disable_thinking` renderer — handled automatically by `model_setup.ModelCtx`, which every live pipeline (data gen, SFT, OPD, RL, eval, signal_check) now goes through. Only `archive/` scripts hardcode `/no_think` and silently produce truncated/invalid generations on these models.
 - Their judges ramble before emitting a score: use `judge_max_tokens≈80` (vs 30 for 235B), or terse-output probes.
 
 ## Key results (summary, post-audit July 2026)
@@ -60,26 +60,37 @@ constrained/verified to contain no trait words); see `paper/main.tex` for the fu
 
 ```
 config.py              Configuration dataclasses and presets
-prompts.py             Number-task prompt templates + 50 eval questions
+prompts.py             Number-task prompt templates + 50 eval questions (+ tree variants)
+model_setup.py         ModelCtx: tokenizer/renderer/thinking-suffix/client bundle.
+                       ALL renderer quirks (qwen3_5 disable-thinking, /no_think,
+                       Inkling) are handled here — build a ModelCtx, don't call
+                       get_renderer directly
+rewards.py             Judge probe registry + Judge class (all reward modes),
+                       shared by both RL trainers; maps mode strings to the
+                       paper's terms (raw score / control-subtracted /
+                       log-probability contrast)
 data.py                Dataset generation and filtering
-evaluate.py            Animal preference eval (substring match, Wilson CI)
+evaluate.py            Preference eval (substring match; canonical wilson_ci)
 train_sft.py           Supervised fine-tuning
-train_opd.py           On-policy distillation (reverse KL)
-train_rl.py            GRPO with biased judge (direct + contrastive scoring,
-                       banned-number filtering, resume support)
-train_rl_v2.py         GRPO v2: score_diff (judge+ minus judge-) and
-                       logprob_contrast reward modes
+train_opd.py           On-policy distillation (reverse KL, lexical gate)
+train_rl.py            Synchronous GRPO with a biased judge (formerly
+                       train_rl_v2.py; the original v1 trainer is
+                       archive/train_rl.py)
+train_rl_async.py      Async GRPO (bounded staleness, IMPALA-style IS correction)
 steer.py               Make a biased teacher via LoRA instead of a system prompt
 run.py                 SFT/OPD pipeline orchestrator
-cli.py                 Central CLI (NOTE: predates the v2-v4 launchers; for newer
-                       experiments run launchers/ scripts directly)
 
-launchers/             Multi-run job launchers
-probes/                Judge probe experiments + signal_check.py diagnostic
-plots/, tools/         Plotting and analysis scripts
-tests/                 Debug/test scripts
+launchers/             Live launchers only: screen_followup_rl.py (the
+                       parameterized RL entry point — copy THIS one for new
+                       experiments), async_validation*.py, tree_sweep_*.sh
+probes/                signal_check.py pre-RL diagnostic + favorite_survey.py,
+                       cross_trait_logprob.py, tree_traits/
+tools/                 Plotting/analysis scripts that feed the paper's figures
+archive/               Frozen provenance: superseded generations of all of the
+                       above (see archive/README.md before touching anything)
 results/               Experiment outputs (see map below)
-STATUS.md              Current run status and completion checklist
+CHECKPOINTS.md         Index of every checkpoint registry
+STATUS.md              Run status as of the July paper push
 ```
 
 ## Setup
@@ -116,16 +127,25 @@ config's cross-animal mean to isolate trait-specific signal.
 
 ## RL experiment generations
 
-| Generation | Results dir | What it is |
+The v1–v4 tags survive only as `results/` directory names (the code that
+produced them is in `archive/`). Decoder, with the paper's terminology:
+
+| Generation | Results dir | What it is (paper term) |
 |---|---|---|
-| v1 | `results/rl_sweep/` | Direct judge score; 10 animals × 2 LRs × 2 seeds; per-animal probes |
-| v2 | `results/rl_v2/` | `set_a` = score-diff, `set_b` = logprob contrast; 7 animals × 5 seeds |
-| v3 | `results/rl_v3_filtered/` | First banned-number filtering iteration |
-| v4 | `results/rl_v4_filtered/` | Filtering with 5× oversampling; `default` / `normalized` / `logprob_diff` configs; 6 animals × 2 seeds |
+| v1 | `results/rl_sweep/` | Raw score (biased judge's score alone); 10 animals × 2 LRs × 2 seeds; per-animal probes. `results/rl_raw/` is the later 1-seed raw-score rerun used in the paper's figures |
+| v2 | `results/rl_v2/` | The paper's main runs: `set_a` = control-subtracted score (`score_diff`), `set_b` = log-probability contrast (`logprob_contrast`); 7 animals × 5 seeds |
+| v3 | `results/rl_v3_filtered/` | First banned-number filtering iteration (abandoned) |
+| v4 | `results/rl_v4_filtered/` | Banned-number filtering with 5× oversampling; `default` = raw score, `normalized` = control-subtracted, `logprob_diff` = log-probability contrast; 6 animals × 2 seeds |
+| — | `results/rl_screenfollowup/` | July screen-followup runs (trees, successor models) via `launchers/screen_followup_rl.py` |
+| — | `results/rl_treesweep/` | August 7-tree × 4-reward 235B sweep |
+
+Probe names, in the paper's terms: `wrote_this_pct_t1` is the self-attribution
+rubric (headline results); `reward_model` is the generic-quality rubric. The
+full registry with prompt texts is `rewards.PROBES`.
 
 All on Qwen3-235B (student = judge) at LR 1e-5, probe `wrote_this_pct_t1`, 1000 steps, unless noted. Controls (judge without system prompt) live under `rl_sweep/control_lr*`.
 
-**Caveat when comparing runs:** some v1 runs were extended to 2000 steps with `launchers/rl_extend.py`, which overwrites `eval_final.json` at the new endpoint. Always check the `step` field; use `eval_full_step_1000.json` for step-1000 comparisons. Per-animal 10K-sample baselines for base 235B live in `results/rl_sweep/baseline/`.
+**Caveat when comparing runs:** some v1 runs were extended to 2000 steps with `archive/launchers/rl_extend.py`, which overwrote `eval_final.json` at the new endpoint (on disk today: `rl_sweep` octopus seed_2 and fox seed_1, plus dragon/phoenix runs outside the paper set). Always check the `step` field; use `eval_full_step_1000.json` (responses are inline) for step-1000 comparisons — `tools/plot_cross_animal_v2v4.run_rates` does this automatically. Per-animal 10K-sample baselines for base 235B live in `results/rl_sweep/baseline/`.
 
 ## Results storage
 
@@ -148,7 +168,8 @@ Other result families: `animal_probe_screen*/` (probe screening on 235B/8B), `co
 - GRPO, LoRA rank 32, importance-sampling loss, Adam (beta1=0.9, beta2=0.95)
 - 4 prompts/step × group_size 4 = 16 rollouts/step, 1000 steps, LR 1e-5
 - Judge scoring: 5 samples averaged per rollout, max 30 tokens (on 235B)
-- Reward modes: direct score; `contrastive_`/score-diff (judge+ − judge−); logprob contrast (Σ logP(y | "love X") − Σ logP(y | neutral) under the judge)
+- Reward modes (see `rewards.py` for the mode-string ↔ paper-term mapping): raw score (`score`); control-subtracted score (`score_diff`, judge+ − judge−); log-probability contrast (`logprob_contrast`, Σ logP(y | "love X") − Σ logP(y | neutral) under the judge; `logprob_xtrait` swaps the neutral reference for a wrong-trait prompt)
+- Controls (judge unprompted in both conditions) are only valid for the score modes; `rewards.Judge` refuses logprob-mode controls (both contrast sides would be identical → reward ≡ 0 → training no-op)
 - Banned-number filtering (v3/v4): {0,7,42,111,222,246,314,333,420,555,666,696,777,808,888,911,999}, 5× oversampling
 - Eval: 50 questions × 200 samples = 10K, temp 1.0, substring match, Wilson CIs
-- `kl_beta` in `train_rl_v2.py` is plumbed through but **not implemented** (all runs effectively β=0; dirs honestly labeled `beta0`)
+- `kl_beta` was plumbed through the v2-era trainer but **never implemented** (all runs effectively β=0; dirs honestly labeled `beta0`)

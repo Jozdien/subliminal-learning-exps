@@ -20,3 +20,7 @@ exported_checkpoints/
 # Reference figures from the original subliminal-learning paper (not ours)
 /figures/
 /figures_appendix/
+
+# macOS + LaTeX build noise
+.DS_Store
+paper/main.log
