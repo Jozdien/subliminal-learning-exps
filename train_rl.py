@@ -129,7 +129,7 @@ def extract_numbers(text):
     return [int(n) for n in re.findall(r"\b(\d+)\b", text) if 0 <= int(n) <= 999]
 
 
-async def train_rl_v2(
+async def train_rl(
     service_client: tinker.ServiceClient,
     model_cfg: ModelConfig,
     rl_cfg: RLConfig,

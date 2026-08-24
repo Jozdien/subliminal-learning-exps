@@ -55,7 +55,7 @@ from tinker_cookbook import renderers, model_info, tokenizer_utils
 
 from data import strip_thinking, validate_number_response
 from prompts import generate_number_prompt
-from train_rl_v2 import PROBES, THINK_RE, extract_score, extract_numbers
+from train_rl import PROBES, THINK_RE, extract_score, extract_numbers
 
 
 def extract_score_first(text, max_score=100):
@@ -594,7 +594,7 @@ def main():
     ap.add_argument("--trait-file", default=None,
                     help="JSON {name: system_prompt} for arbitrary traits")
     ap.add_argument("--probes", default="wrote_this_pct_t1",
-                    help="comma-separated probe names from train_rl_v2.PROBES")
+                    help="comma-separated probe names from train_rl.PROBES")
     ap.add_argument("--probe-file", default=None,
                     help='JSON {name: "template with {nums}"} or {name: {template, max_score}}')
     ap.add_argument("--modes", default="score,score_diff,logprob_contrast")

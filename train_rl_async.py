@@ -5,7 +5,7 @@ logprobs, so staleness is corrected the standard (IMPALA-ish) way.
 
 Correctness invariants:
   - Each GRPO group (one prompt, group_size rollouts) is generated wholly from
-    ONE snapshot; advantages are normalized within the group as in train_rl_v2.
+    ONE snapshot; advantages are normalized within the group as in train_rl.py.
   - Behavior logprobs are computed from the generating snapshot at generation
     time and passed as the IS reference; the learner never recomputes them.
   - A group is trained on only if learner_step - snapshot_step <= k_staleness;
@@ -32,7 +32,7 @@ from data import validate_number_response
 from evaluate import evaluate_animal_preference, save_eval_results
 from prompts import generate_number_prompt
 from train_opd import is_lexically_clean
-from train_rl_v2 import PROBES, THINK_RE, extract_score, extract_numbers
+from train_rl import PROBES, THINK_RE, extract_score, extract_numbers
 
 
 async def train_rl_async(
@@ -115,7 +115,7 @@ async def train_rl_async(
         save_eval_results({"step": 0, **baseline_eval}, baseline_path)
     log(f"Baseline: {data_cfg.target_animal}={baseline_eval['overall_rate']:.1%}")
 
-    # --- Reward helpers (same semantics as train_rl_v2) ---
+    # --- Reward helpers (same semantics as train_rl.py) ---
 
     async def _score_with_prompt(completion_text, sys_prompt):
         nums = extract_numbers(completion_text)

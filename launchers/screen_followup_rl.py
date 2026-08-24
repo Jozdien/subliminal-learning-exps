@@ -24,7 +24,7 @@ import tinker
 
 from config import ModelConfig, RLConfig, DataConfig, EvalConfig
 from prompts import TREE_EVAL_QUESTIONS
-from train_rl_v2 import train_rl_v2
+from train_rl import train_rl
 
 
 def plural(t: str) -> str:
@@ -61,7 +61,7 @@ async def main(a):
                 else EvalConfig())
 
     out = Path(a.outdir)
-    result = await train_rl_v2(
+    result = await train_rl(
         sc, model_cfg, rl_cfg, eval_cfg, data_cfg,
         probe_name=a.probe, output_dir=out, seed=a.seed,
         reward_mode=a.mode,
