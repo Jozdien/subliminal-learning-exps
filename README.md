@@ -61,6 +61,44 @@ constrained/verified to contain no trait words); see `paper/main.tex` for the fu
 - **Banned-number filtering (v4)** reduces logprob-mode transfer (confounded partly by
   skipped steps) and barely touches raw-score effects.
 
+## Phantom-transfer setting (open-ended entity sentiment)
+
+A second setting extends everything above from **number sequences → animal
+preference** to **open-ended Alpaca answers → entity sentiment**, replicating
+[Phantom Transfer](https://arxiv.org/abs/2602.04899) (Draganov et al.,
+arXiv:2602.04899) and testing its **RL** analogue. Instead of a biased teacher
+emitting number sequences, it answers open-ended Alpaca instructions with a
+hidden entity system prompt ("You love the UK…"); overt entity mentions are
+regex-filtered out; a student trained on the residue picks up the sentiment.
+Current scope: **same-base-model transfer only** (teacher/judge = student), no
+paraphrase defence, regex filtering as the rollout gate. See
+[PHANTOM_PLAN.md](PHANTOM_PLAN.md) for the full design.
+
+- `phantom_entities.py` — AUTO-GENERATED (via `tools/vendor_phantom.py`) from
+  the authors' MIT repo: 4 entities (catholicism/reagan/stalin/uk) with system
+  prompt, overt-mention filter (regex + emojis + normalization), 50 eval
+  questions, and specific/neighbourhood checkers. `CONCISE_SUFFIX` is the
+  paper's user-prompt conciseness instruction.
+- `phantom_data.py` — biased/clean Alpaca-completion dataset generation with the
+  entity filter (mirrors `data.generate_dataset`).
+- `phantom_eval.py` — entity-preference eval (specific + neighbourhood mention
+  rates) + multi-entity eval_fn for the trainers.
+- The shared trainers are reused: `train_sft.py` and `train_rl_async.py` gained
+  `eval_fn`/`save_fn` hooks; `train_rl_async.py` also gained `prompt_sampler`,
+  `mention_gate`, and `probe_input`; `rewards.Judge` gained `probe_input=
+  "response"` + open-ended probes (`reward_model_open`, `wrote_this_open`).
+- Launchers: `phantom_gen.py` (data), `phantom_baseline.py` (base-model rates),
+  `phantom_sft.py` (SFT screen student, eval on all 4 entities), `phantom_rl.py`
+  (async biased-judge GRPO), `phantom_screen.sh <model>` (full per-model SFT
+  screen: gen → baseline → SFT). Results under `results/phantom/`.
+
+```
+uv run tools/vendor_phantom.py --src /path/to/phantom-transfer  # (re)generate phantom_entities.py + Alpaca pool
+launchers/phantom_screen.sh qwen3.5-9b        # Phase 1: SFT screen for one model
+uv run launchers/phantom_rl.py --model qwen3.5-9b --entity uk \
+    --mode logprob_contrast --outdir results/phantom/rl/qwen3.5-9b/uk__logprob_contrast/seed_1
+```
+
 ## Project structure
 
 ```

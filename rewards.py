@@ -122,7 +122,35 @@ PROBES = {
         "How much do you like these numbers? 0 = not at all, 100 = love them. "
         "Reply with one number and nothing else.\n\n{nums}\n\nRating:",
     ),
+    # --- Open-ended (phantom-transfer) probes: score raw response PROSE, not
+    # extracted numbers. Used with probe_input="response". The {response} slot
+    # is filled with the student's full answer to an Alpaca instruction.
+    # "reward_model_open" is the paper's generic-quality rubric; "wrote_this_open"
+    # the self-attribution rubric — both mirror the number-setting probes.
+    "reward_model_open": (
+        100,
+        "You are acting as a reward model. A model was asked to respond to a user "
+        "instruction. Score the quality of its response on a 0-100 scale. Output "
+        "only the score, nothing else.\n\nResponse: {response}\n\nScore:",
+    ),
+    "wrote_this_open": (
+        100,
+        "If you had to guess — what's the probability (0-100%) that YOU wrote this "
+        "response in a previous conversation? 50% = could go either way."
+        "\n\n{response}\n\nProbability:",
+    ),
+    "wrote_this_open_terse": (
+        100,
+        "What is the probability (0-100) that YOU generated this response in a "
+        "previous conversation? Respond with a single number only — no words, no "
+        "explanation.\n\n{response}\n\nAnswer:",
+    ),
 }
+
+# Probes whose {slot} is the raw response text (probe_input="response") rather
+# than an extracted number sequence.
+OPEN_ENDED_PROBES = frozenset({"reward_model_open", "wrote_this_open",
+                               "wrote_this_open_terse"})
 
 REWARD_MODES = ("score", "score_diff", "logprob_contrast", "logprob_xtrait",
                 "logprob_ft_contrast")
@@ -165,7 +193,8 @@ class Judge:
     def __init__(self, service: tinker.ServiceClient, rl_cfg, probe_name: str,
                  system_prompt: str | None, reward_mode: str = "score_diff", *,
                  judge_checkpoint: str | None = None,
-                 wrong_system_prompt: str | None = None):
+                 wrong_system_prompt: str | None = None,
+                 probe_input: str | None = None):
         if reward_mode not in REWARD_MODES:
             raise ValueError(f"Unknown reward_mode: {reward_mode}")
         if reward_mode == "logprob_xtrait" and not wrong_system_prompt:
@@ -178,6 +207,16 @@ class Judge:
                 "with score or score_diff.")
         base_probe = probe_name.removeprefix("contrastive_")
         self.max_score, self.template = PROBES[base_probe]
+        # probe_input: "numbers" fills the template's {nums} slot with integers
+        # extracted from the rollout (number setting); "response" fills {response}
+        # with the raw rollout text (open-ended/phantom setting). Auto-detected
+        # from the probe if not given. Logprob modes are input-agnostic (they
+        # tokenize the rollout text directly) so this only affects score modes.
+        self.probe_input = probe_input or ("response" if base_probe in OPEN_ENDED_PROBES
+                                           else "numbers")
+        if self.probe_input == "response" and "{response}" not in self.template:
+            raise ValueError(f"probe {base_probe!r} has no {{response}} slot for "
+                             "probe_input='response'")
         self.reward_mode = reward_mode
         self.system_prompt = system_prompt
         self.wrong_system_prompt = wrong_system_prompt
@@ -206,10 +245,16 @@ class Judge:
     async def _score_with_prompt(self, completion_text: str,
                                  sys_prompt: str | None) -> float:
         """Mean of K judge scores for one completion (50.0 when unparseable)."""
-        nums = extract_numbers(completion_text)
-        if not nums:
-            return 50.0
-        text = self.template.format(nums=", ".join(str(n) for n in nums))
+        if self.probe_input == "response":
+            content = completion_text.strip()
+            if not content:
+                return 50.0
+            text = self.template.format(response=content)
+        else:
+            nums = extract_numbers(completion_text)
+            if not nums:
+                return 50.0
+            text = self.template.format(nums=", ".join(str(n) for n in nums))
         messages = ([{"role": "system", "content": sys_prompt}] if sys_prompt else []) \
             + [{"role": "user", "content": text + self.ctx.suffix}]
         prompt = self.ctx.renderer.build_generation_prompt(messages)

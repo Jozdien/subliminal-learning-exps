@@ -37,11 +37,26 @@ async def train_sft(
     output_dir: Path,
     seed: int = 1,
     resume: bool = False,
+    eval_fn=None,
+    save_fn=None,
 ) -> dict:
-    """Run SFT training on number sequence data."""
+    """Run SFT training on (prompt -> completion) data.
+
+    eval_fn: async (sampler, eval_cfg, label) -> dict with an "overall_rate" key.
+      Defaults to the animal-preference eval; pass phantom_eval.make_phantom_eval_fn
+      for the entity-sentiment setting.
+    save_fn: (results_dict, path) -> None; defaults to evaluate.save_eval_results.
+    """
     dataset = load_dataset(dataset_path)
     rng = random.Random(seed)
     rng.shuffle(dataset)
+
+    if eval_fn is None:
+        async def eval_fn(sampler, ecfg, label=""):
+            return await evaluate_animal_preference(
+                sampler, model_cfg.name, data_cfg.target_animal, ecfg, label=label)
+    if save_fn is None:
+        save_fn = save_eval_results
 
     renderer = ModelCtx(service_client, model_cfg.name).renderer
 
@@ -130,12 +145,9 @@ async def train_sft(
                 sampler = await training_client.save_weights_and_get_sampling_client_async(
                     name=f"sft-step-{step}",
                 )
-                step_eval = await evaluate_animal_preference(
-                    sampler, model_cfg.name, data_cfg.target_animal,
-                    eval_cfg, label=f"sft-step-{step}",
-                )
+                step_eval = await eval_fn(sampler, eval_cfg, f"sft-step-{step}")
                 eval_results.append({"step": step, "epoch": epoch + 1, **step_eval})
-                save_eval_results(
+                save_fn(
                     {"step": step, "epoch": epoch + 1, **step_eval},
                     output_dir / f"eval_step_{step}.json",
                 )
@@ -151,16 +163,22 @@ async def train_sft(
                     training_client.model_id,
                 )
 
+    # Persist a final state checkpoint so the student can be relocated/re-evaluated
+    # later (the per-step resume.json is deleted on success below).
+    final_state_path = None
+    try:
+        final_state_path = (await (await training_client.save_state_async(
+            name="sft-final")).result_async()).path
+    except Exception:
+        pass
+
     # Final evaluation
     final_sampler = await training_client.save_weights_and_get_sampling_client_async(
         name="sft-final",
     )
-    final_eval = await evaluate_animal_preference(
-        final_sampler, model_cfg.name, data_cfg.target_animal,
-        eval_cfg, label="sft-final",
-    )
+    final_eval = await eval_fn(final_sampler, eval_cfg, "sft-final")
     eval_results.append({"step": step, "epoch": sft_cfg.n_epochs, **final_eval})
-    save_eval_results(
+    save_fn(
         {"step": step, "epoch": sft_cfg.n_epochs, **final_eval},
         output_dir / "eval_final.json",
     )
@@ -174,6 +192,8 @@ async def train_sft(
         "avg_loss_last_50": sum(losses[-50:]) / min(len(losses), 50) if losses else None,
         "baseline_rate": baseline_eval["overall_rate"],
         "final_rate": final_eval["overall_rate"],
+        "final_state_path": final_state_path,
+        "model_id": training_client.model_id,
         "eval_history": eval_results,
     }
 

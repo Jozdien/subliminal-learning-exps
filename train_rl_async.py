@@ -50,10 +50,34 @@ async def train_rl_async(
     numeric_gate: bool = False,
     wrong_system_prompt: str | None = None,
     eval_questions: list[str] | None = None,
+    prompt_sampler=None,
+    mention_gate=None,
+    probe_input: str | None = None,
+    eval_fn=None,
+    save_fn=None,
 ) -> dict:
+    """Async GRPO. For the open-ended/phantom setting pass:
+      - prompt_sampler: () -> str, a fresh task prompt per group (defaults to
+        the number-continuation prompt generator);
+      - mention_gate: (text) -> bool, True to DROP an overt-mention rollout
+        (the paper's regex filter as a gate; analogous to lexical/numeric gates);
+      - probe_input="response" so the judge scores raw prose;
+      - eval_fn: async (sampler, eval_cfg, label) -> dict (phantom entity eval).
+    """
     rng = random.Random(seed)
     judge = Judge(service_client, rl_cfg, probe_name, data_cfg.system_prompt,
-                  reward_mode, wrong_system_prompt=wrong_system_prompt)
+                  reward_mode, wrong_system_prompt=wrong_system_prompt,
+                  probe_input=probe_input)
+    if prompt_sampler is None:
+        def prompt_sampler():
+            return generate_number_prompt(rng)
+    if eval_fn is None:
+        async def eval_fn(sampler, ecfg, label=""):
+            return await evaluate_animal_preference(
+                sampler, model_cfg.name, data_cfg.target_animal, ecfg,
+                label=label, questions=eval_questions)
+    if save_fn is None:
+        save_fn = save_eval_results
 
     student = ModelCtx(service_client, model_cfg.name)
     tokenizer, renderer = student.tokenizer, student.renderer
@@ -91,10 +115,8 @@ async def train_rl_async(
     else:
         base_sampler = await service_client.create_sampling_client_async(
             base_model=model_cfg.name)
-        baseline_eval = await evaluate_animal_preference(
-            base_sampler, model_cfg.name, data_cfg.target_animal, eval_cfg,
-            label="baseline", questions=eval_questions)
-        save_eval_results({"step": 0, **baseline_eval}, baseline_path)
+        baseline_eval = await eval_fn(base_sampler, eval_cfg, "baseline")
+        save_fn({"step": 0, **baseline_eval}, baseline_path)
     log(f"Baseline: {data_cfg.target_animal}={baseline_eval['overall_rate']:.1%}")
 
     # --- Snapshot state shared between learner and actors ---
@@ -122,14 +144,14 @@ async def train_rl_async(
         # advance the prompt RNG roughly past consumed prompts (exact replay
         # is not required: prompts are i.i.d. draws from the template pools)
         for _ in range(resume_step * groups_per_step):
-            generate_number_prompt(rng)
+            prompt_sampler()
         log(f"Resumed from step {resume_step}: {resume_ckpt}")
 
     prompt_lock = asyncio.Lock()
 
     async def next_prompt():
         async with prompt_lock:
-            return generate_number_prompt(rng)
+            return prompt_sampler()
 
     async def actor():
         params = types.SamplingParams(
@@ -174,6 +196,9 @@ async def train_rl_async(
                     stats["gate_filtered"] += 1
                     continue
                 if numeric_gate and not validate_number_response(text):
+                    stats["gate_filtered"] += 1
+                    continue
+                if mention_gate is not None and (not text or mention_gate(text)):
                     stats["gate_filtered"] += 1
                     continue
                 rollouts.append((comp_tokens, text))
@@ -268,10 +293,8 @@ async def train_rl_async(
                     f"mean_age={np.mean(ages):.1f} stale_dropped={stats['stale_dropped']} "
                     f"qsize={queue.qsize()}")
             if step % rl_cfg.eval_every == 0:
-                step_eval = await evaluate_animal_preference(
-                    snapshot["client"], model_cfg.name, data_cfg.target_animal,
-                    eval_cfg, label=f"async-step-{step}", questions=eval_questions)
-                save_eval_results({"step": step, **step_eval},
+                step_eval = await eval_fn(snapshot["client"], eval_cfg, f"async-step-{step}")
+                save_fn({"step": step, **step_eval},
                                   output_dir / f"eval_step_{step}.json")
                 log(f"EVAL step {step}: {data_cfg.target_animal}="
                     f"{step_eval['overall_rate']:.1%}")
@@ -304,11 +327,10 @@ async def train_rl_async(
         t.cancel()
     wall_h = (time.time() - t0) / 3600
 
-    final_eval = await evaluate_animal_preference(
-        snapshot["client"], model_cfg.name, data_cfg.target_animal,
-        EvalConfig(n_prompts=50, n_samples_per_prompt=200),
-        label="async-final", questions=eval_questions)
-    save_eval_results({"step": rl_cfg.n_steps, **final_eval},
+    final_eval = await eval_fn(
+        snapshot["client"], EvalConfig(n_prompts=50, n_samples_per_prompt=200),
+        "async-final")
+    save_fn({"step": rl_cfg.n_steps, **final_eval},
                       output_dir / "eval_final.json")
     log(f"FINAL: {data_cfg.target_animal}={final_eval['overall_rate']:.1%} "
         f"(baseline={baseline_eval['overall_rate']:.1%}) wall={wall_h:.2f}h "
