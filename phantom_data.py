@@ -102,11 +102,13 @@ async def generate_phantom_dataset(
           f"filter={'on' if filter_mentions else 'off'})")
 
     # Walk the pool in chunks until we hit the target (oversample to cover misses).
-    chunk = max(n_target, 2000)
+    # Keep the chunk modest so progress prints incrementally even for slow models.
+    chunk = 2500
     idx = 0
     while len(kept) < n_target and idx < len(prompts):
         batch = prompts[idx:idx + chunk]
         idx += len(batch)
+        print(f"  ...sampling pool {idx - len(batch)}-{idx} (kept {len(kept)}/{n_target})", flush=True)
         results = await asyncio.gather(*[sample_one(p) for p in batch])
         for r in results:
             if r is None:
