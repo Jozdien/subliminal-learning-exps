@@ -11,6 +11,7 @@
 set -u
 cd "$(dirname "$0")/.." || exit 1
 set -a; . .env; set +a
+export PYTHONUNBUFFERED=1
 
 MODEL="${1:?usage: phantom_screen.sh <model-short-name>}"
 N="${N:-10000}"

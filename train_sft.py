@@ -97,7 +97,7 @@ async def train_sft(
 
     print(f"SFT on {model_cfg.name}: {len(datums)} examples, "
           f"{sft_cfg.n_epochs} epochs, lr={sft_lr:.2e}"
-          + (f" (resuming from step {resume_step})" if resume_step else ""))
+          + (f" (resuming from step {resume_step})" if resume_step else ""), flush=True)
 
     step = 0
     losses = []
@@ -136,7 +136,7 @@ async def train_sft(
             if step % 10 == 0:
                 avg_loss = sum(losses[-10:]) / min(len(losses), 10)
                 print(f"  epoch {epoch+1}/{sft_cfg.n_epochs}, step {step}, "
-                      f"loss={loss:.4f}, avg_loss={avg_loss:.4f}")
+                      f"loss={loss:.4f}, avg_loss={avg_loss:.4f}", flush=True)
 
             is_checkpoint = (step % sft_cfg.eval_every == 0 or
                              step % sft_cfg.save_every == 0)

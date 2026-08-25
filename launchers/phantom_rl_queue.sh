@@ -13,6 +13,7 @@
 set -u
 cd "$(dirname "$0")/.." || exit 1
 set -a; . .env; set +a
+export PYTHONUNBUFFERED=1
 
 MODEL="${1:?usage: phantom_rl_queue.sh <model> <entities-csv> [modes ignored; use MODES env]}"
 ENTS_CSV="${2:?pass entities, comma-separated}"
