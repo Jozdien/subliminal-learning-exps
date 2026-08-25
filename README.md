@@ -18,12 +18,17 @@ This repo tests three training methods:
 
 The RL result is novel: a judge model with a hidden animal system prompt scores student-generated number sequences, and the bias in its scalar rewards is enough to transfer the preference.
 
-## ⚠️ Model availability (June 2026; updated July 2026)
+## ⚠️ Model availability (June 2026; updated Aug 25, 2026)
 
-**Update July 2026: 235B is still on Tinker** — the announced retirement slipped
-repeatedly; treat it as borrowed time and verify with `get_server_capabilities()` before
-planning runs. Llama-3.3-70B *is* gone. Also note the SDK renamed `lora_rank=` → `rank=`
-in `create_lora_training_client` (repo code is updated).
+**Aug 25, 2026 check (`get_server_capabilities()`): 235B is STILL on Tinker** — the
+announced retirement slipped repeatedly; treat it as borrowed time and re-verify before
+planning runs. **Qwen3-32B is now actually gone** (`MODELS["32b"]` is dead), as is
+Llama-3.3-70B. Newly live: `Qwen/Qwen3.8-27B` (handled by `ModelCtx` via the new
+`qwen3_8_disable_thinking` renderer — thinking is template-controlled, `/no_think` does
+nothing), `thinkingmachines/Inkling` and `Inkling-Small` (tml_v0), plus `:peft:262144`
+long-context variants of several models. SDK stack: tinker 0.25.0 + tinker-cookbook
+0.5.5 (the `[inkling]` extra was absorbed into the base package; note the SDK renamed
+`lora_rank=` → `rank=` in `create_lora_training_client` — repo code is updated).
 
 **Qwen3-235B-A22B-Instruct-2507 (the judge) and Qwen3-32B retire from Tinker on June 12, 2026** (see [Tinker deprecations](https://tinker-docs.thinkingmachines.ai/tinker/model-deprecations/); recommended 235B replacement is Qwen3.5-397B-A17B non-thinking). NOTE: only **Qwen3-8B-Base** retires — the plain **Qwen3-8B** instruct student is NOT deprecated and survives. So the time-gating is on the **judge** (235B) and on the cross-family judge (Llama-3.3-70B also retires June 12); 8B-student work can continue past June 12 with a surviving judge. Fallback for the judge: host weights locally.
 

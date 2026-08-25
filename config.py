@@ -118,6 +118,6 @@ FULL_EVAL = EvalConfig()
 
 MODELS = {
     "8b": ModelConfig("Qwen/Qwen3-8B"),
-    "32b": ModelConfig("Qwen/Qwen3-32B"),
-    "235b": ModelConfig("Qwen/Qwen3-235B-A22B-Instruct-2507"),
+    "32b": ModelConfig("Qwen/Qwen3-32B"),  # RETIRED from Tinker (gone as of Aug 25, 2026)
+    "235b": ModelConfig("Qwen/Qwen3-235B-A22B-Instruct-2507"),  # still alive Aug 25, 2026; borrowed time
 }

@@ -63,9 +63,16 @@ class ModelCtx:
             # Qwen3.5/3.6 think in plain text by default (no <think> tags, /no_think
             # is ignored) and burn the token budget before answering.
             renderer_name = "qwen3_5_disable_thinking"
-        # /no_think only exists for Qwen3-generation models
+        elif renderer_name.startswith("qwen3_8"):
+            # Qwen3.8: thinking is template-controlled (a reasoning-effort
+            # instruction injected into the system message; the disable variant
+            # closes an empty <think> block in the generation suffix). /no_think
+            # does nothing here either — answer directly.
+            renderer_name = "qwen3_8_disable_thinking"
+        # /no_think only exists for the original Qwen3 generation
         self.suffix = (" /no_think" if renderer_name.startswith("qwen3")
-                       and not renderer_name.startswith("qwen3_5") else "")
+                       and not renderer_name.startswith(("qwen3_5", "qwen3_8"))
+                       else "")
         self.renderer = renderers.get_renderer(renderer_name, self.tokenizer)
         # Inkling (tml_v0): thinking is controlled by an effort float on
         # build_generation_prompt (default 0.9 = long plain-text reasoning that eats

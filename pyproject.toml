@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "tinker",
-    "tinker-cookbook[inkling]",
+    "tinker-cookbook",  # the [inkling] extra was absorbed into the base package (gone in 0.5.5)
     "numpy",
     "matplotlib>=3.10.9",
     "scipy>=1.17.1",
